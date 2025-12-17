@@ -12,7 +12,7 @@ class PembayaranController extends Controller
 {
     public function index()
     {
-        $pembayaran = Pembayaran::with(['siswa', 'petugas'])->latest()->paginate(10);
+        $pembayaran = Pembayaran::with(['siswa', 'petugas'])->latest('tgl_bayar')->paginate(10);
         return view('pembayaran.history', compact('pembayaran'));
     }
 
@@ -29,7 +29,10 @@ class PembayaranController extends Controller
         if(!$siswa) return back()->with('error', 'Siswa tidak ditemukan!');
 
         // Ambil history pembayaran siswa ini
-        $history = Pembayaran::where('nisn', $siswa->nisn)->latest()->get();
+        $history = Pembayaran::where('nisn', $siswa->nisn)
+            ->with('petugas')
+            ->latest('tgl_bayar')
+            ->get();
 
         return view('pembayaran.transaksi', compact('siswa', 'history'));
     }
@@ -46,6 +49,10 @@ class PembayaranController extends Controller
 
         $siswa = Siswa::with('spp')->find($request->nisn);
 
+        if(!$siswa) {
+            return back()->with('error', 'Siswa tidak ditemukan!');
+        }
+
         // Cek Double Bayar
         $cek = Pembayaran::where([
             ['nisn', $request->nisn],
@@ -55,7 +62,7 @@ class PembayaranController extends Controller
 
         if($cek) return back()->with('error', 'Bulan tersebut sudah dibayar!');
 
-        // Transaksi Database
+        // Transaksi Database dengan Commit & Rollback (sesuai UKK)
         DB::beginTransaction();
         try {
             Pembayaran::create([

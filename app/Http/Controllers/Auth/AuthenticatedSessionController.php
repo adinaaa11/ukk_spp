@@ -11,28 +11,37 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
+    /**
+     * Display the login view (Admin/Petugas).
+     */
     public function create(): View
     {
         return view('auth.login');
     }
 
+    /**
+     * Handle an incoming authentication request (Admin/Petugas).
+     */
     public function store(LoginRequest $request): RedirectResponse
     {
-        // Login logic handled in LoginRequest::authenticate()
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', false));
+        return redirect()->intended(route('dashboard'));
     }
 
+    /**
+     * Destroy an authenticated session (Logout Admin/Petugas).
+     */
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
+
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

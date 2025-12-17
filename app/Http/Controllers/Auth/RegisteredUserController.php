@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Providers\RouteServiceProvider;
+use App\Models\Petugas;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,27 +24,27 @@ class RegisteredUserController extends Controller
 
     /**
      * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'nama_petugas' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'unique:petugas'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'level' => ['required', 'in:admin,petugas'],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+        $petugas = Petugas::create([
+            'nama_petugas' => $request->nama_petugas,
+            'username' => $request->username,
             'password' => Hash::make($request->password),
+            'level' => $request->level,
         ]);
 
-        event(new Registered($user));
+        event(new Registered($petugas));
 
-        Auth::login($user);
+        Auth::login($petugas);
 
-        return redirect(RouteServiceProvider::HOME);
+        return redirect(route('dashboard'));
     }
 }

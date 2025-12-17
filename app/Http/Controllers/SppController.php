@@ -2,63 +2,74 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Spp;
 use Illuminate\Http\Request;
 
 class SppController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $spp = Spp::withCount('siswa')->latest()->paginate(10);
+        return view('spp.index', compact('spp'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('spp.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'tahun' => 'required|integer|digits:4',
+            'nominal' => 'required|integer|min:0',
+        ]);
+
+        Spp::create($request->all());
+
+        return redirect()->route('spp.index')
+            ->with('success', 'Data SPP berhasil ditambahkan!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        //
+        $spp = Spp::with('siswa')->findOrFail($id);
+        return view('spp.show', compact('spp'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        //
+        $spp = Spp::findOrFail($id);
+        return view('spp.edit', compact('spp'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'tahun' => 'required|integer|digits:4',
+            'nominal' => 'required|integer|min:0',
+        ]);
+
+        $spp = Spp::findOrFail($id);
+        $spp->update($request->all());
+
+        return redirect()->route('spp.index')
+            ->with('success', 'Data SPP berhasil diupdate!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        //
+        $spp = Spp::findOrFail($id);
+        
+        // Cek apakah ada siswa yang menggunakan SPP ini
+        if ($spp->siswa()->count() > 0) {
+            return redirect()->route('spp.index')
+                ->with('error', 'Tidak dapat menghapus SPP yang masih digunakan siswa!');
+        }
+
+        $spp->delete();
+
+        return redirect()->route('spp.index')
+            ->with('success', 'Data SPP berhasil dihapus!');
     }
 }

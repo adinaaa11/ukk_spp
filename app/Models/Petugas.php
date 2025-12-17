@@ -10,6 +10,7 @@ class Petugas extends Authenticatable
     use Notifiable;
 
     protected $table = 'petugas';
+    protected $primaryKey = 'id_petugas'; // PRIMARY KEY
 
     protected $fillable = [
         'username',
@@ -23,8 +24,19 @@ class Petugas extends Authenticatable
         'remember_token',
     ];
 
-    // jika kamu ingin casting
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'created_at' => 'datetime',
     ];
+
+    // Override method untuk autentikasi dengan username
+    public function getAuthIdentifierName()
+    {
+        return 'id_petugas';
+    }
+
+    // Relasi ke Pembayaran
+    public function pembayaran()
+    {
+        return $this->hasMany(Pembayaran::class, 'id_petugas', 'id_petugas');
+    }
 }

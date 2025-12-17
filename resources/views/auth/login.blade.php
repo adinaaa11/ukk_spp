@@ -1,75 +1,186 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <div class="text-center">
-                <i class="fas fa-school display-4 mb-2" style="color: #001f3f;"></i>
-                <h4 class="fw-bold" style="color: #001f3f;">APP SPP UKK</h4>
-                <p class="text-muted small">Login sebagai Admin/Petugas</p>
-            </div>
-        </x-slot>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin - Aplikasi SPP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border-left: 4px solid #c33;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .remember-me input {
+            margin-right: 8px;
+        }
+        
+        .remember-me label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h2>Login Admin</h2>
+            <p>Masuk untuk mengelola sistem pembayaran SPP</p>
+        </div>
 
-        <x-validation-errors class="mb-4" />
-
-        @if (session('status'))
-            <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
-                {{ session('status') }}
+        @if ($errors->any())
+            <div class="error-message">
+                {{ $errors->first() }}
             </div>
         @endif
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
 
-            {{-- Username --}}
-            <div>
-                <x-input-label for="login_id" value="{{ __('Username') }}" />
-                <x-text-input
-                    id="login_id"
-                    class="block mt-1 w-full"
-                    type="text"
-                    name="login_id"
-                    :value="old('login_id')"
-                    required
+            <div class="form-group">
+                <label for="login_id">Username</label>
+                <input 
+                    type="text" 
+                    id="login_id" 
+                    name="login_id" 
+                    value="{{ old('login_id') }}" 
+                    required 
                     autofocus
-                    autocomplete="username"
-                />
-                <x-input-error :messages="$errors->get('login_id')" class="mt-2" />
+                    placeholder="Masukkan username"
+                >
             </div>
 
-            {{-- Password --}}
-            <div class="mt-4">
-                <x-input-label for="password" value="{{ __('Password') }}" />
-                <x-text-input
-                    id="password"
-                    class="block mt-1 w-full"
-                    type="password"
-                    name="password"
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
                     required
-                    autocomplete="current-password"
-                />
-                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                    placeholder="Masukkan password"
+                >
             </div>
 
-            {{-- Remember --}}
-            <div class="block mt-4">
-                <label for="remember_me" class="flex items-center">
-                    <x-checkbox id="remember_me" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">
-                        {{ __('Remember me') }}
-                    </span>
-                </label>
+            <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Ingat saya</label>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                @if (Route::has('password.request'))
-                    <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
-                    </a>
-                @endif
-
-                <x-button class="ms-4" style="background-color: #001f3f; color: #FFD700;">
-                    {{ __('Log in') }}
-                </x-button>
-            </div>
+            <button type="submit" class="btn-login">Login</button>
         </form>
-    </x-authentication-card>
-</x-guest-layout>
+
+        <div class="back-link">
+            <a href="/">← Kembali ke Halaman Utama</a>
+        </div>
+    </div>
+</body>
+</html>

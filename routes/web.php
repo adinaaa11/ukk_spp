@@ -8,6 +8,8 @@ use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\PetugasController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\Auth\SiswaAuthController;
+use App\Http\Controllers\SiswaDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,26 +17,30 @@ use App\Http\Controllers\LaporanController;
 |--------------------------------------------------------------------------
 */
 
-// --- 1. HALAMAN UTAMA & LOGIN ---
-
-// Arahkan halaman utama (/) langsung ke halaman login
+// --- 1. HALAMAN UTAMA ---
 Route::get('/', function () {
-    return redirect()->route('login');
-});
+    return view('welcome-page');
+})->name('home');
 
-// Route login/register bawaan Laravel Breeze
+// --- 2. AUTH ADMIN/PETUGAS ---
 require __DIR__.'/auth.php';
 
+// --- 3. AUTH SISWA (Login Terpisah) ---
+Route::middleware('guest:siswa')->group(function () {
+    Route::get('/login-siswa', [SiswaAuthController::class, 'showLoginForm'])->name('login.siswa');
+    Route::post('/login-siswa', [SiswaAuthController::class, 'login'])->name('siswa.login.submit');
+});
 
-// --- 2. DASHBOARD (SETELAH LOGIN) ---
+Route::middleware('auth:siswa')->group(function () {
+    Route::post('/logout-siswa', [SiswaAuthController::class, 'logout'])->name('siswa.logout');
+});
 
-// Menggunakan DashboardController untuk mengarahkan pengguna sesuai level
+// --- 4. DASHBOARD ADMIN/PETUGAS ---
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-
-// --- 3. GRUP ADMIN (Hanya Level 'admin') ---
+// --- 5. GRUP ADMIN (Hanya Level 'admin') ---
 Route::middleware(['auth', 'ceklevel:admin'])->group(function () {
     
     // CRUD Data Master
@@ -42,13 +48,15 @@ Route::middleware(['auth', 'ceklevel:admin'])->group(function () {
     Route::resource('spp', SppController::class);
     Route::resource('petugas', PetugasController::class);
     Route::resource('siswa', SiswaController::class);
+    
+    // Route untuk detail siswa (Ajax)
+    Route::get('siswa/{nisn}/detail', [SiswaController::class, 'getDetail'])->name('siswa.detail');
 
     // Laporan/Cetak
     Route::get('laporan/pembayaran', [LaporanController::class, 'laporanPembayaran'])->name('laporan.pembayaran');
 });
 
-
-// --- 4. GRUP ADMIN & PETUGAS (Level 'admin' dan 'petugas') ---
+// --- 6. GRUP ADMIN & PETUGAS (Level 'admin' dan 'petugas') ---
 Route::middleware(['auth', 'ceklevel:admin,petugas'])->group(function () {
     
     // Halaman Index History Pembayaran (Semua Transaksi)
@@ -64,11 +72,12 @@ Route::middleware(['auth', 'ceklevel:admin,petugas'])->group(function () {
     Route::post('/simpan-pembayaran', [PembayaranController::class, 'store'])->name('pembayaran.store');
 });
 
-
-// --- 5. GRUP SISWA (Level 'siswa') ---
-Route::middleware(['auth', 'ceklevel:siswa'])->group(function () {
+// --- 7. GRUP SISWA (Setelah Login) ---
+Route::middleware(['auth:siswa'])->group(function () {
     
-    // History Pembayaran untuk Siswa yang sedang login
-    Route::get('/history-ku', [PembayaranController::class, 'historySiswa'])->name('siswa.history');
-
+    // Dashboard Siswa
+    Route::get('/siswa/dashboard', [SiswaDashboardController::class, 'index'])->name('siswa.dashboard');
+    
+    // History Pembayaran Siswa
+    Route::get('/siswa/history', [SiswaDashboardController::class, 'history'])->name('siswa.history');
 });
