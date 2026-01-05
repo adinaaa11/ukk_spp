@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pembayaran;
-use Barryvdh\DomPDF\Facade\Pdf; // Gunakan facade PDF
+use Barryvdh\DomPDF\Facade\Pdf; 
 
 class LaporanController extends Controller
 {
@@ -11,10 +11,9 @@ class LaporanController extends Controller
     {
         $pembayaran = Pembayaran::with(['siswa', 'petugas'])->orderBy('tgl_bayar', 'DESC')->get();
 
-        // Kirim data ke view untuk di-render menjadi PDF
         $pdf = Pdf::loadView('laporan.pembayaran', compact('pembayaran')); 
 
-        // Tampilkan langsung di browser
+        
         return $pdf->stream('laporan_pembayaran_spp.pdf');
     }
 }
