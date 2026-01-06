@@ -8,9 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --accent: #e74c3c;
+            --navy-primary: #001f3f;
+            --navy-dark: #001529;
+            --yellow-accent: #FFD700;
+            --yellow-hover: #FFC000;
         }
 
         * {
@@ -21,14 +22,17 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
         }
 
+        /* Animated Background */
         .particles {
             position: fixed;
             top: 0;
@@ -41,7 +45,7 @@
 
         .particle {
             position: absolute;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 215, 0, 0.1);
             border-radius: 50%;
             animation: float 15s infinite;
         }
@@ -56,7 +60,7 @@
         .login-container {
             background: white;
             border-radius: 25px;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
             overflow: hidden;
             max-width: 450px;
             width: 100%;
@@ -77,7 +81,7 @@
         }
 
         .login-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
             padding: 50px 40px;
             text-align: center;
             color: white;
@@ -98,18 +102,19 @@
         .header-icon {
             width: 90px;
             height: 90px;
-            background: rgba(255,255,255,0.2);
+            background: var(--yellow-accent);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-            backdrop-filter: blur(10px);
-            border: 3px solid rgba(255,255,255,0.3);
+            border: 3px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
         }
 
         .header-icon i {
             font-size: 45px;
+            color: var(--navy-primary);
         }
         
         .login-header h2 {
@@ -121,6 +126,7 @@
         .login-header p {
             font-size: 15px;
             opacity: 0.95;
+            color: var(--yellow-accent);
         }
         
         .login-body {
@@ -155,8 +161,8 @@
         }
         
         .form-control:focus {
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.15);
+            border-color: var(--yellow-accent);
+            box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.15);
         }
 
         .form-floating label {
@@ -169,17 +175,17 @@
         }
 
         .form-check-input:checked {
-            background-color: var(--secondary);
-            border-color: var(--secondary);
+            background-color: var(--yellow-accent);
+            border-color: var(--yellow-accent);
         }
         
         .btn-login {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--yellow-accent) 0%, var(--yellow-hover) 100%);
+            color: var(--navy-primary);
             border: none;
             padding: 16px;
             border-radius: 12px;
-            font-weight: 600;
+            font-weight: 700;
             width: 100%;
             transition: all 0.3s;
             text-transform: uppercase;
@@ -197,7 +203,7 @@
             width: 0;
             height: 0;
             border-radius: 50%;
-            background: rgba(255,255,255,0.2);
+            background: rgba(0, 31, 63, 0.1);
             transform: translate(-50%, -50%);
             transition: width 0.6s, height 0.6s;
         }
@@ -209,7 +215,7 @@
 
         .btn-login:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
         }
 
         .btn-login i {
@@ -224,7 +230,7 @@
         }
         
         .back-link a {
-            color: var(--secondary);
+            color: var(--navy-primary);
             text-decoration: none;
             font-weight: 600;
             font-size: 14px;
@@ -232,7 +238,7 @@
         }
         
         .back-link a:hover {
-            color: var(--primary);
+            color: var(--yellow-accent);
         }
 
         .back-link a i {

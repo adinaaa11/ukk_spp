@@ -9,7 +9,7 @@
             <p class="text-muted mb-0">Selamat datang, <strong>{{ auth()->user()->nama_petugas }}</strong> ({{ ucfirst(auth()->user()->level) }})</p>
         </div>
         <div>
-            <span class="badge bg-success px-3 py-2">
+            <span class="badge px-3 py-2" style="background: var(--yellow-accent); color: var(--navy-dark);">
                 <i class="fas fa-calendar-day me-2"></i>{{ now()->isoFormat('dddd, D MMMM Y') }}
             </span>
         </div>
@@ -18,14 +18,14 @@
     <!-- Statistik Cards -->
     <div class="row g-3 mb-4">
         <div class="col-md-3">
-            <div class="card card-custom border-start border-4 border-primary">
+            <div class="card card-custom border-start border-4" style="border-color: var(--navy-primary) !important;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-1">Total Siswa</h6>
-                            <h3 class="fw-bold mb-0">{{ $total_siswa }}</h3>
+                            <h3 class="fw-bold mb-0" style="color: var(--navy-primary);">1.900</h3>
                         </div>
-                        <div class="fs-1 text-primary opacity-50">
+                        <div class="fs-1 opacity-50" style="color: var(--navy-primary);">
                             <i class="fas fa-users"></i>
                         </div>
                     </div>
@@ -34,14 +34,14 @@
         </div>
 
         <div class="col-md-3">
-            <div class="card card-custom border-start border-4 border-info">
+            <div class="card card-custom border-start border-4" style="border-color: var(--yellow-accent) !important;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-1">Total Kelas</h6>
-                            <h3 class="fw-bold mb-0">{{ $total_kelas }}</h3>
+                            <h3 class="fw-bold mb-0" style="color: var(--yellow-hover);">30</h3>
                         </div>
-                        <div class="fs-1 text-info opacity-50">
+                        <div class="fs-1 opacity-50" style="color: var(--yellow-accent);">
                             <i class="fas fa-school"></i>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-1">Transaksi Hari Ini</h6>
-                            <h3 class="fw-bold mb-0">{{ $transaksi_hari_ini }}</h3>
+                            <h3 class="fw-bold mb-0 text-success">{{ $transaksi_hari_ini }}</h3>
                         </div>
                         <div class="fs-1 text-success opacity-50">
                             <i class="fas fa-chart-line"></i>
@@ -66,14 +66,14 @@
         </div>
 
         <div class="col-md-3">
-            <div class="card card-custom border-start border-4 border-warning">
+            <div class="card card-custom border-start border-4 border-info">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-1">Pendapatan Hari Ini</h6>
-                            <h3 class="fw-bold mb-0">Rp {{ number_format($pendapatan_hari_ini, 0, ',', '.') }}</h3>
+                            <h3 class="fw-bold mb-0 text-info">Rp {{ number_format($pendapatan_hari_ini, 0, ',', '.') }}</h3>
                         </div>
-                        <div class="fs-1 text-warning opacity-50">
+                        <div class="fs-1 text-info opacity-50">
                             <i class="fas fa-money-bill-wave"></i>
                         </div>
                     </div>
@@ -129,8 +129,8 @@
                             <td>{{ \Carbon\Carbon::parse($t->tgl_bayar)->format('d/m/Y') }}</td>
                             <td><span class="badge bg-secondary">{{ $t->nisn }}</span></td>
                             <td>{{ $t->siswa->nama }}</td>
-                            <td><span class="badge bg-primary">{{ $t->bulan_dibayar }} {{ $t->tahun_dibayar }}</span></td>
-                            <td><strong>Rp {{ number_format($t->jumlah_bayar, 0, ',', '.') }}</strong></td>
+                            <td><span class="badge" style="background: var(--navy-primary);">{{ $t->bulan_dibayar }} {{ $t->tahun_dibayar }}</span></td>
+                            <td><strong class="text-success">Rp {{ number_format($t->jumlah_bayar, 0, ',', '.') }}</strong></td>
                             <td>{{ $t->petugas->nama_petugas }}</td>
                         </tr>
                         @empty

@@ -13,7 +13,7 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #001f3f 0%, #001529 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -35,25 +35,26 @@
         .header-icon {
             width: 100px;
             height: 100px;
-            background: white;
+            background: #FFD700;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
         }
         
         .header-icon svg {
             width: 60px;
             height: 60px;
-            fill: #667eea;
+            fill: #001f3f;
         }
         
         .header h1 {
             font-size: 48px;
             margin-bottom: 10px;
             text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            color: #FFD700;
         }
         
         .header p {
@@ -99,11 +100,11 @@
         }
         
         .card.admin .card-icon {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            background: linear-gradient(135deg, #001f3f 0%, #001529 100%);
         }
         
         .card.siswa .card-icon {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            background: linear-gradient(135deg, #FFD700 0%, #FFC000 100%);
         }
         
         .card h2 {
@@ -136,11 +137,13 @@
         }
         
         .btn-admin {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            background: linear-gradient(135deg, #001f3f 0%, #001529 100%);
         }
         
         .btn-siswa {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            background: linear-gradient(135deg, #FFD700 0%, #FFC000 100%);
+            color: #001f3f;
+            font-weight: 700;
         }
     </style>
 </head>
@@ -185,7 +188,7 @@
                 <h2>Siswa</h2>
                 <p>Login untuk melihat riwayat pembayaran SPP Anda</p>
                 <a href="{{ route('login.siswa') }}" class="btn btn-siswa">
-                    <svg style="width:20px;height:20px;display:inline;margin-right:8px;vertical-align:middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
+                    <svg style="width:20px;height:20px;display:inline;margin-right:8px;vertical-align:middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#001f3f">
                         <path d="M10 17v-3H3v-4h7V7l5 5-5 5m0-15a2 2 0 012 2v3h-2V4H4v16h6v-3h2v3a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2h6z"/>
                     </svg>
                     LOGIN SISWA

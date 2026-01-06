@@ -24,20 +24,29 @@ class LoginRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'login_id.required' => 'Username harus diisi',
+            'password.required' => 'Password harus diisi',
+        ];
+    }
+
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
+        // Coba autentikasi dengan username (PENTING: gunakan guard 'web')
         $credentials = [
             'username' => $this->get('login_id'),
             'password' => $this->get('password'),
         ];
 
-        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
+        if (!Auth::guard('web')->attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'login_id' => trans('auth.failed'),
+                'login_id' => 'Username atau password salah.',
             ]);
         }
 
@@ -46,7 +55,7 @@ class LoginRequest extends FormRequest
 
     public function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 
@@ -55,10 +64,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'login_id' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+            'login_id' => 'Terlalu banyak percobaan login. Silakan coba lagi dalam ' . ceil($seconds / 60) . ' menit.',
         ]);
     }
 

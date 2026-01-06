@@ -9,14 +9,18 @@
     
     <style>
         :root {
-            --primary: #2c3e50;
-            --primary-dark: #1a252f;
-            --secondary: #3498db;
-            --accent: #e74c3c;
-            --success: #27ae60;
-            --warning: #f39c12;
-            --light: #ecf0f1;
-            --text-light: #f8f9fa;
+            --navy-primary: #001f3f;
+            --navy-dark: #001529;
+            --navy-light: #003d73;
+            --yellow-accent: #FFD700;
+            --yellow-hover: #FFC000;
+            --yellow-light: #FFED4E;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
@@ -26,7 +30,7 @@
 
         /* Sidebar Styling */
         .sidebar {
-            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(180deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
             min-height: 100vh;
             color: white;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
@@ -35,6 +39,7 @@
             left: 0;
             width: 260px;
             overflow-y: auto;
+            z-index: 1000;
         }
 
         .sidebar::-webkit-scrollbar {
@@ -42,7 +47,7 @@
         }
 
         .sidebar::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.3);
+            background: rgba(255,215,0,0.3);
             border-radius: 10px;
         }
 
@@ -57,16 +62,16 @@
         }
 
         .sidebar .nav-link:hover {
-            background-color: rgba(255,255,255,0.1);
-            color: white;
+            background-color: rgba(255,215,0,0.1);
+            color: var(--yellow-accent);
             padding-left: 25px;
         }
 
         .sidebar .nav-link.active {
-            background: linear-gradient(90deg, var(--secondary) 0%, #2980b9 100%);
-            color: white;
+            background: linear-gradient(90deg, var(--yellow-accent) 0%, var(--yellow-hover) 100%);
+            color: var(--navy-dark);
             font-weight: 600;
-            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
         }
 
         .sidebar-brand {
@@ -75,37 +80,39 @@
             font-weight: bold;
             color: white;
             text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,215,0,0.2);
+            background: rgba(255,215,0,0.05);
         }
 
         .sidebar-brand i {
-            color: var(--secondary);
+            color: var(--yellow-accent);
             font-size: 2rem;
         }
 
         .user-info {
             padding: 20px;
             text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,215,0,0.2);
         }
 
         .user-avatar {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: var(--secondary);
+            background: var(--yellow-accent);
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 10px;
             font-size: 24px;
-            color: white;
+            color: var(--navy-dark);
+            font-weight: bold;
         }
 
         .content-area {
             margin-left: 260px;
             padding: 30px;
+            min-height: 100vh;
         }
 
         /* Card Styling */
@@ -115,6 +122,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             transition: transform 0.3s, box-shadow 0.3s;
             margin-bottom: 20px;
+            overflow: hidden;
         }
 
         .card-custom:hover {
@@ -123,38 +131,48 @@
         }
         
         .card-header-custom {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
             color: white;
             border-radius: 15px 15px 0 0 !important;
             padding: 20px;
             border: none;
         }
 
+        .card-header-navy {
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
+            color: white;
+            padding: 20px;
+            border: none;
+        }
+
         /* Button Styling */
         .btn-primary-custom {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
+            color: var(--yellow-accent);
             border: none;
             padding: 10px 25px;
             border-radius: 10px;
             transition: all 0.3s;
+            font-weight: 600;
         }
         
         .btn-primary-custom:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 31, 63, 0.4);
+            color: var(--yellow-light);
         }
 
         .btn-success-custom {
-            background: var(--success);
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
             color: white;
             border: none;
             padding: 10px 25px;
             border-radius: 10px;
+            font-weight: 600;
         }
 
         .btn-danger-custom {
-            background: var(--accent);
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
             border: none;
             padding: 10px 25px;
@@ -162,11 +180,30 @@
         }
 
         .btn-warning-custom {
-            background: var(--warning);
-            color: white;
+            background: linear-gradient(135deg, var(--yellow-accent) 0%, var(--yellow-hover) 100%);
+            color: var(--navy-dark);
             border: none;
             padding: 10px 25px;
             border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .btn-navy {
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
+            color: var(--yellow-accent);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .btn-yellow {
+            background: linear-gradient(135deg, var(--yellow-accent) 0%, var(--yellow-hover) 100%);
+            color: var(--navy-dark);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 600;
         }
 
         /* Table Styling */
@@ -176,8 +213,8 @@
         }
 
         .table-custom thead {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
+            color: var(--yellow-accent);
         }
 
         .table-custom tbody tr {
@@ -185,7 +222,7 @@
         }
 
         .table-custom tbody tr:hover {
-            background-color: rgba(52, 152, 219, 0.1);
+            background-color: rgba(255, 215, 0, 0.1);
         }
 
         /* Badge Custom */
@@ -195,15 +232,8 @@
             font-weight: 500;
         }
 
-        /* Alert Custom */
-        .alert-custom {
-            border-radius: 10px;
-            border: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
         .section-title {
-            color: var(--primary);
+            color: var(--navy-primary);
             font-weight: 700;
             margin-bottom: 5px;
         }
@@ -211,6 +241,29 @@
         .section-subtitle {
             color: #7f8c8d;
             font-size: 14px;
+        }
+
+        /* Form Styling */
+        .form-control:focus, .form-select:focus {
+            border-color: var(--yellow-accent);
+            box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                width: 260px;
+                transform: translateX(0);
+            }
+            
+            .content-area {
+                margin-left: 0;
+            }
         }
     </style>
 </head>
@@ -226,10 +279,10 @@
 
             <div class="user-info">
                 <div class="user-avatar">
-                    <i class="fas fa-user"></i>
+                    {{ strtoupper(substr(auth()->user()->nama_petugas, 0, 1)) }}
                 </div>
                 <div class="fw-bold">{{ auth()->user()->nama_petugas }}</div>
-                <small class="badge" style="background: var(--secondary);">{{ strtoupper(auth()->user()->level) }}</small>
+                <small class="badge" style="background: var(--yellow-accent); color: var(--navy-dark);">{{ strtoupper(auth()->user()->level) }}</small>
             </div>
 
             <ul class="nav flex-column mt-3">
@@ -293,7 +346,7 @@
                 <li class="nav-item mt-4">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="nav-link w-100 text-start border-0 bg-transparent text-danger">
+                        <button type="submit" class="nav-link w-100 text-start border-0 bg-transparent" style="color: #e74c3c;">
                             <i class="fas fa-sign-out-alt me-2"></i> Logout
                         </button>
                     </form>

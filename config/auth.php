@@ -10,13 +10,12 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'petugas',
+            'provider' => 'petugas', // UBAH dari 'users' ke 'petugas'
         ],
         
-        // GUARD UNTUK SISWA
         'siswa' => [
             'driver' => 'session',
-            'provider' => 'siswas', // Diubah dari 'siswa' menjadi 'siswas'
+            'provider' => 'siswa',
         ],
     ],
 
@@ -25,14 +24,13 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
+        
         'petugas' => [
             'driver' => 'eloquent',
             'model' => App\Models\Petugas::class,
         ],
         
-        // PROVIDER UNTUK SISWA
-        'siswas' => [ // Diubah dari 'siswa' menjadi 'siswas'
+        'siswa' => [
             'driver' => 'eloquent',
             'model' => App\Models\Siswa::class,
         ],

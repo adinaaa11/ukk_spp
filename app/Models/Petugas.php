@@ -10,7 +10,7 @@ class Petugas extends Authenticatable
     use Notifiable;
 
     protected $table = 'petugas';
-    protected $primaryKey = 'id_petugas'; // PRIMARY KEY
+    protected $primaryKey = 'id_petugas';
 
     protected $fillable = [
         'username',
@@ -28,10 +28,15 @@ class Petugas extends Authenticatable
         'created_at' => 'datetime',
     ];
 
-    // Override method untuk autentikasi dengan username
+    // PENTING: Method untuk autentikasi
     public function getAuthIdentifierName()
     {
-        return 'id_petugas';
+        return 'username'; // Login pakai username
+    }
+
+    public function getAuthPassword()
+    {
+        return $this->password;
     }
 
     // Relasi ke Pembayaran
