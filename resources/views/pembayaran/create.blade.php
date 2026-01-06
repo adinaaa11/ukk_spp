@@ -3,110 +3,70 @@
 @section('content')
 <div class="container-fluid">
     <div class="mb-4">
-        <h2 class="section-title">Tambah Data Siswa</h2>
-        <p class="section-subtitle">Masukkan informasi siswa baru</p>
+        <h2 class="section-title">Transaksi Pembayaran SPP</h2>
+        <p class="section-subtitle">Pilih siswa untuk melakukan pembayaran</p>
     </div>
 
     <div class="row">
         <div class="col-md-8">
             <div class="card card-custom">
                 <div class="card-header-custom">
-                    <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i>Form Data Siswa</h5>
+                    <h5 class="mb-0"><i class="fas fa-search me-2"></i>Cari Siswa</h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('siswa.store') }}" method="POST">
-                        @csrf
-
+                    <form action="{{ route('pembayaran.create') }}" method="GET">
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">NISN <span class="text-danger">*</span></label>
-                                <input type="text" name="nisn" class="form-control @error('nisn') is-invalid @enderror" 
-                                       value="{{ old('nisn') }}" placeholder="Contoh: 0012345678" maxlength="10" required>
-                                @error('nisn')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label fw-bold">Cari berdasarkan NISN atau Nama</label>
+                                <input type="text" name="search" class="form-control" 
+                                       placeholder="Masukkan NISN atau Nama Siswa" 
+                                       value="{{ request('search') }}">
                             </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">NIS <span class="text-danger">*</span></label>
-                                <input type="text" name="nis" class="form-control @error('nis') is-invalid @enderror" 
-                                       value="{{ old('nis') }}" placeholder="Contoh: 12345678" maxlength="8" required>
-                                @error('nis')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">&nbsp;</label>
+                                <button type="submit" class="btn btn-success-custom w-100">
+                                    <i class="fas fa-search me-2"></i>Cari
+                                </button>
                             </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Nama Lengkap <span class="text-danger">*</span></label>
-                            <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" 
-                                   value="{{ old('nama') }}" placeholder="Masukkan nama lengkap" required>
-                            @error('nama')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Kelas <span class="text-danger">*</span></label>
-                                <select name="id_kelas" class="form-select @error('id_kelas') is-invalid @enderror" required>
-                                    <option value="">-- Pilih Kelas --</option>
-                                    @foreach($kelas as $k)
-                                    <option value="{{ $k->id_kelas }}" {{ old('id_kelas') == $k->id_kelas ? 'selected' : '' }}>
-                                        {{ $k->nama_kelas }} - {{ $k->kompetensi_keahlian }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                                @error('id_kelas')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Tahun SPP <span class="text-danger">*</span></label>
-                                <select name="id_spp" class="form-select @error('id_spp') is-invalid @enderror" required>
-                                    <option value="">-- Pilih SPP --</option>
-                                    @foreach($spp as $s)
-                                    <option value="{{ $s->id_spp }}" {{ old('id_spp') == $s->id_spp ? 'selected' : '' }}>
-                                        {{ $s->tahun }} - Rp {{ number_format($s->nominal, 0, ',', '.') }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                                @error('id_spp')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Alamat <span class="text-danger">*</span></label>
-                            <textarea name="alamat" class="form-control @error('alamat') is-invalid @enderror" 
-                                      rows="3" placeholder="Masukkan alamat lengkap" required>{{ old('alamat') }}</textarea>
-                            @error('alamat')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">No. Telepon <span class="text-danger">*</span></label>
-                            <input type="text" name="no_telp" class="form-control @error('no_telp') is-invalid @enderror" 
-                                   value="{{ old('no_telp') }}" placeholder="Contoh: 081234567890" maxlength="13" required>
-                            @error('no_telp')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <hr>
-
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('siswa.index') }}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>Kembali
-                            </a>
-                            <button type="submit" class="btn btn-success-custom">
-                                <i class="fas fa-save me-2"></i>Simpan Data
-                            </button>
                         </div>
                     </form>
+
+                    @if(isset($siswa) && $siswa->count() > 0)
+                        <hr>
+                        <h6 class="mb-3">Hasil Pencarian ({{ $siswa->count() }} siswa)</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>NISN</th>
+                                        <th>Nama</th>
+                                        <th>Kelas</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($siswa as $s)
+                                    <tr>
+                                        <td>{{ $s->nisn }}</td>
+                                        <td>{{ $s->nama }}</td>
+                                        <td>{{ $s->kelas->nama_kelas ?? '-' }}</td>
+                                        <td>
+                                            <a href="{{ route('pembayaran.transaksi', $s->nisn) }}" 
+                                               class="btn btn-sm btn-success-custom">
+                                                <i class="fas fa-cash-register me-1"></i>Bayar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @elseif(request('search'))
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Siswa dengan NISN atau nama "{{ request('search') }}" tidak ditemukan.
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -114,14 +74,21 @@
         <div class="col-md-4">
             <div class="card card-custom" style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white;">
                 <div class="card-body">
-                    <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Panduan Pengisian</h5>
+                    <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Panduan</h5>
                     <ul class="ps-3">
-                        <li class="mb-2">NISN harus 10 digit angka</li>
-                        <li class="mb-2">NIS harus 8 digit angka</li>
-                        <li class="mb-2">Pastikan data kelas sudah tersedia</li>
-                        <li class="mb-2">Pilih tahun SPP sesuai angkatan</li>
-                        <li class="mb-2">No. telepon maksimal 13 digit</li>
+                        <li class="mb-2">Masukkan NISN atau Nama siswa</li>
+                        <li class="mb-2">Klik tombol "Cari" untuk mencari</li>
+                        <li class="mb-2">Pilih siswa dari hasil pencarian</li>
+                        <li class="mb-2">Klik "Bayar" untuk melakukan transaksi</li>
                     </ul>
+                </div>
+            </div>
+
+            <div class="card card-custom mt-3">
+                <div class="card-body text-center">
+                    <a href="{{ route('siswa.create') }}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-user-plus me-2"></i>Tambah Siswa Baru
+                    </a>
                 </div>
             </div>
         </div>

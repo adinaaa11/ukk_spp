@@ -60,24 +60,34 @@ Route::middleware(['auth', 'ceklevel:admin'])->group(function () {
 Route::middleware(['auth', 'ceklevel:admin,petugas'])->group(function () {
     
     // Halaman Index History Pembayaran (Semua Transaksi)
-    Route::get('/history-pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
+    Route::get('/history-pembayaran', [PembayaranController::class, 'index'])
+        ->name('pembayaran.index');
 
-    // Halaman Form Entri Pembayaran (Pencarian Siswa Awal)
-    Route::get('/entri-pembayaran', [PembayaranController::class, 'create'])->name('pembayaran.create');
+    // Halaman Form Entri Pembayaran (dengan Pencarian Siswa)
+    Route::get('/entri-pembayaran', [PembayaranController::class, 'create'])
+        ->name('pembayaran.create');
     
-    // Proses Cari Siswa dan Tampilkan Halaman Transaksi
-    Route::get('/cari-siswa', [PembayaranController::class, 'cari'])->name('pembayaran.cari');
+    // Halaman Form Transaksi Pembayaran untuk Siswa Tertentu (PERBAIKAN: tambahkan route ini)
+    Route::get('/pembayaran/transaksi/{nisn}', [PembayaranController::class, 'transaksi'])
+        ->name('pembayaran.transaksi');
     
-    // Proses POST data pembayaran (Logika Commit & Rollback ada di sini)
-    Route::post('/simpan-pembayaran', [PembayaranController::class, 'store'])->name('pembayaran.store');
+    // DEPRECATED: Proses Cari Siswa (untuk backward compatibility)
+    Route::get('/cari-siswa', [PembayaranController::class, 'cari'])
+        ->name('pembayaran.cari');
+    
+    // Proses POST data pembayaran (Logika Commit & Rollback)
+    Route::post('/simpan-pembayaran', [PembayaranController::class, 'store'])
+        ->name('pembayaran.store');
 });
 
 // --- 7. GRUP SISWA (Setelah Login) ---
 Route::middleware(['auth:siswa'])->group(function () {
     
     // Dashboard Siswa
-    Route::get('/siswa/dashboard', [SiswaDashboardController::class, 'index'])->name('siswa.dashboard');
+    Route::get('/siswa/dashboard', [SiswaDashboardController::class, 'index'])
+        ->name('siswa.dashboard');
     
     // History Pembayaran Siswa
-    Route::get('/siswa/history', [SiswaDashboardController::class, 'history'])->name('siswa.history');
+    Route::get('/siswa/history', [SiswaDashboardController::class, 'history'])
+        ->name('siswa.history');
 });
