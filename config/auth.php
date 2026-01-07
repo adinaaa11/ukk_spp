@@ -2,39 +2,63 @@
 
 return [
 
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication Defaults
+    |--------------------------------------------------------------------------
+    */
+
     'defaults' => [
         'guard' => 'web',
         'passwords' => 'users',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication Guards
+    |--------------------------------------------------------------------------
+    */
+
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'petugas', // UBAH dari 'users' ke 'petugas'
+            'provider' => 'petugas', // PENTING: Gunakan provider 'petugas'
         ],
-        
+
         'siswa' => [
             'driver' => 'session',
-            'provider' => 'siswa',
+            'provider' => 'siswa', // Guard untuk login siswa
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | User Providers
+    |--------------------------------------------------------------------------
+    */
+
     'providers' => [
+        'petugas' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Petugas::class, // Model Petugas
+        ],
+
+        'siswa' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Siswa::class, // Model Siswa
+        ],
+
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-        
-        'petugas' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Petugas::class,
-        ],
-        
-        'siswa' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Siswa::class,
-        ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Resetting Passwords
+    |--------------------------------------------------------------------------
+    */
 
     'passwords' => [
         'users' => [
@@ -44,6 +68,12 @@ return [
             'throttle' => 60,
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Password Confirmation Timeout
+    |--------------------------------------------------------------------------
+    */
 
     'password_timeout' => 10800,
 

@@ -70,11 +70,21 @@
                                 <strong>{{ $s->nama }}</strong>
                             </td>
                             <td>
-                                <span class="badge badge-custom bg-info">{{ $s->kelas->nama_kelas }}</span><br>
-                                <small class="text-muted">{{ $s->kelas->kompetensi_keahlian }}</small>
+                                @if($s->kelas)
+                                    <span class="badge badge-custom bg-info">{{ $s->kelas->nama_kelas }}</span><br>
+                                    <small class="text-muted">{{ $s->kelas->kompetensi_keahlian }}</small>
+                                @else
+                                    <span class="badge bg-warning text-dark">Belum Ada Kelas</span>
+                                @endif
                             </td>
                             <td>{{ $s->no_telp }}</td>
-                            <td><strong class="text-success">Rp {{ number_format($s->spp->nominal, 0, ',', '.') }}</strong></td>
+                            <td>
+                                @if($s->spp)
+                                    <strong class="text-success">Rp {{ number_format($s->spp->nominal, 0, ',', '.') }}</strong>
+                                @else
+                                    <span class="badge bg-warning text-dark">Belum Ada SPP</span>
+                                @endif
+                            </td>
                             <td class="text-center">
                                 <button class="btn btn-sm btn-info text-white" onclick="showDetail('{{ $s->nisn }}')" title="Detail">
                                     <i class="fas fa-eye"></i>
@@ -168,6 +178,11 @@ function showDetail(nisn) {
                 `;
             }
 
+            // Cek apakah kelas dan spp ada
+            let kelasInfo = data.siswa.kelas ? data.siswa.kelas.nama_kelas : 'Belum Ada Kelas';
+            let jurusanInfo = data.siswa.kelas ? data.siswa.kelas.kompetensi_keahlian : '-';
+            let sppInfo = data.siswa.spp ? `Rp ${parseInt(data.siswa.spp.nominal).toLocaleString('id-ID')}` : 'Belum Ada SPP';
+
             $('#detailContent').html(`
                 <div class="row">
                     <div class="col-md-4 text-center mb-4">
@@ -175,7 +190,7 @@ function showDetail(nisn) {
                              class="rounded-circle mb-3" alt="Avatar">
                         <h5 class="fw-bold">${data.siswa.nama}</h5>
                         <p class="text-muted mb-1">${data.siswa.nisn}</p>
-                        <span class="badge bg-info">${data.siswa.kelas.nama_kelas}</span>
+                        <span class="badge bg-info">${kelasInfo}</span>
                     </div>
                     <div class="col-md-8">
                         <h6 class="fw-bold mb-3">Informasi Siswa</h6>
@@ -186,11 +201,11 @@ function showDetail(nisn) {
                             </tr>
                             <tr>
                                 <td><strong>Kelas</strong></td>
-                                <td>: ${data.siswa.kelas.nama_kelas}</td>
+                                <td>: ${kelasInfo}</td>
                             </tr>
                             <tr>
                                 <td><strong>Jurusan</strong></td>
-                                <td>: ${data.siswa.kelas.kompetensi_keahlian}</td>
+                                <td>: ${jurusanInfo}</td>
                             </tr>
                             <tr>
                                 <td><strong>Alamat</strong></td>
@@ -202,7 +217,7 @@ function showDetail(nisn) {
                             </tr>
                             <tr>
                                 <td><strong>Tagihan SPP</strong></td>
-                                <td>: <strong class="text-success">Rp ${parseInt(data.siswa.spp.nominal).toLocaleString('id-ID')}</strong></td>
+                                <td>: <strong class="text-success">${sppInfo}</strong></td>
                             </tr>
                         </table>
                     </div>

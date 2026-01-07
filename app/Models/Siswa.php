@@ -41,7 +41,15 @@ class Siswa extends Authenticatable
      */
     public function getAuthIdentifierName()
     {
-        return 'nisn';
+        return 'nisn'; // Login menggunakan NISN
+    }
+
+    /**
+     * Override method untuk mendapatkan password
+     */
+    public function getAuthPassword()
+    {
+        return $this->password;
     }
 
     /**

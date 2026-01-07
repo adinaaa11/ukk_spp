@@ -6,7 +6,7 @@ use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
@@ -36,12 +36,13 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        // Coba autentikasi dengan username
+        // PERBAIKAN: Gunakan username sebagai field autentikasi
         $credentials = [
-            'username' => $this->get('login_id'),
-            'password' => $this->get('password'),
+            'username' => $this->input('login_id'),
+            'password' => $this->input('password'),
         ];
 
+        // PENTING: Gunakan guard 'web' untuk admin/petugas
         if (!Auth::guard('web')->attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
@@ -64,12 +65,12 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'login_id' => 'Terlalu banyak percobaan login. Silakan coba lagi dalam :seconds detik.',
+            'login_id' => 'Terlalu banyak percobaan login. Silakan coba lagi dalam ' . ceil($seconds / 60) . ' menit.',
         ]);
     }
 
     public function throttleKey(): string
     {
-        return Str::lower($this->get('login_id')).'|'.$this->ip();
+        return Str::lower($this->input('login_id')) . '|' . $this->ip();
     }
 }

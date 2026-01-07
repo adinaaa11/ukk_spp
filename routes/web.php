@@ -8,7 +8,7 @@ use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\PetugasController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\LaporanController;
-use App\Http\Controllers\Auth\SiswaAuthController;
+use App\Http\Controllers\SiswaAuthController;
 use App\Http\Controllers\SiswaDashboardController;
 
 /*
@@ -67,7 +67,7 @@ Route::middleware(['auth', 'ceklevel:admin,petugas'])->group(function () {
     Route::get('/entri-pembayaran', [PembayaranController::class, 'create'])
         ->name('pembayaran.create');
     
-    // Halaman Form Transaksi Pembayaran untuk Siswa Tertentu (PERBAIKAN: tambahkan route ini)
+    // Halaman Form Transaksi Pembayaran untuk Siswa Tertentu
     Route::get('/pembayaran/transaksi/{nisn}', [PembayaranController::class, 'transaksi'])
         ->name('pembayaran.transaksi');
     
