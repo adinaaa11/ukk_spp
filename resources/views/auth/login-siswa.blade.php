@@ -135,39 +135,9 @@
         .link-to-admin a:hover {
             color: var(--dark);
         }
-
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            animation: float 15s infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) translateX(0); }
-            25% { transform: translateY(-50px) translateX(50px); }
-            50% { transform: translateY(-100px) translateX(-50px); }
-            75% { transform: translateY(-50px) translateX(50px); }
-        }
     </style>
 </head>
 <body>
-    <div class="particles">
-        <div class="particle" style="width: 100px; height: 100px; top: 10%; left: 10%; animation-delay: 0s;"></div>
-        <div class="particle" style="width: 60px; height: 60px; top: 50%; left: 80%; animation-delay: 2s;"></div>
-        <div class="particle" style="width: 80px; height: 80px; top: 70%; left: 20%; animation-delay: 4s;"></div>
-    </div>
-
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
@@ -189,7 +159,15 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('login.siswa') }}">
+                @if(session('status'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        {{ session('status') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ url('/siswa/login') }}">
                     @csrf
 
                     <div class="form-floating mb-3">
@@ -200,11 +178,13 @@
                             name="nisn" 
                             placeholder="NISN"
                             value="{{ old('nisn') }}"
+                            maxlength="10"
+                            pattern="[0-9]{10}"
                             required 
                             autofocus
                         >
                         <label for="nisn">
-                            <i class="fas fa-id-card me-2"></i>NISN
+                            <i class="fas fa-id-card me-2"></i>NISN (10 digit)
                         </label>
                     </div>
 
@@ -219,6 +199,13 @@
                         >
                         <label for="password">
                             <i class="fas fa-lock me-2"></i>Password
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                        <label class="form-check-label" for="remember">
+                            Ingat saya
                         </label>
                     </div>
 
@@ -238,5 +225,11 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Validasi hanya angka untuk NISN
+        document.getElementById('nisn').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
 </body>
 </html>

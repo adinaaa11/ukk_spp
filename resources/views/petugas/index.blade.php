@@ -12,6 +12,40 @@
         </a>
     </div>
 
+    <!-- FILTER & SEARCH -->
+    <div class="card card-custom mb-3">
+        <div class="card-body">
+            <form method="GET" action="{{ route('petugas.index') }}" class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label fw-bold">Cari Username/Nama</label>
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="Masukkan username atau nama..." 
+                           value="{{ request('search') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Level</label>
+                    <select name="level" class="form-select">
+                        <option value="">Semua Level</option>
+                        <option value="admin" {{ request('level') == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="petugas" {{ request('level') == 'petugas' ? 'selected' : '' }}>Petugas</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">&nbsp;</label>
+                    <button type="submit" class="btn btn-success-custom w-100">
+                        <i class="fas fa-search me-2"></i>Cari
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">&nbsp;</label>
+                    <a href="{{ route('petugas.index') }}" class="btn btn-secondary w-100">
+                        <i class="fas fa-redo me-2"></i>Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="card card-custom">
         <div class="card-header-custom d-flex justify-content-between align-items-center">
             <h5 class="mb-0"><i class="fas fa-user-shield me-2"></i>Daftar Petugas</h5>
@@ -49,11 +83,10 @@
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 @if($p->id_petugas != auth()->id())
-                                <form action="{{ route('petugas.destroy', $p->id_petugas) }}" method="POST" class="d-inline">
+                                <form action="{{ route('petugas.destroy', $p->id_petugas) }}" method="POST" class="d-inline" onsubmit="return confirm('⚠️ Yakin ingin menghapus petugas {{ $p->nama_petugas }}?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger-custom" 
-                                            onclick="return confirm('Yakin ingin menghapus?')" title="Hapus">
+                                    <button type="submit" class="btn btn-sm btn-danger-custom" title="Hapus">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -64,7 +97,13 @@
                         <tr>
                             <td colspan="6" class="text-center py-5">
                                 <i class="fas fa-inbox fa-3x text-muted mb-3 d-block"></i>
-                                <p class="text-muted">Belum ada data petugas</p>
+                                <p class="text-muted">
+                                    @if(request('search') || request('level'))
+                                        Tidak ada data petugas yang sesuai dengan filter
+                                    @else
+                                        Belum ada data petugas
+                                    @endif
+                                </p>
                             </td>
                         </tr>
                         @endforelse
@@ -73,7 +112,7 @@
             </div>
         </div>
         <div class="card-footer bg-white">
-            {{ $petugas->links() }}
+            {{ $petugas->appends(request()->query())->links() }}
         </div>
     </div>
 </div>

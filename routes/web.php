@@ -23,16 +23,25 @@ Route::get('/', function () {
 })->name('home');
 
 // --- 2. AUTH ADMIN/PETUGAS ---
-require __DIR__.'/auth.php';
+if (file_exists(__DIR__.'/auth.php')) {
+    require __DIR__.'/auth.php';
+}
 
 // --- 3. AUTH SISWA (Login Terpisah) ---
-Route::middleware('guest:siswa')->group(function () {
-    Route::get('/login-siswa', [SiswaAuthController::class, 'showLoginForm'])->name('login.siswa');
-    Route::post('/login-siswa', [SiswaAuthController::class, 'login'])->name('siswa.login.submit');
-});
+Route::prefix('siswa')->group(function () {
+    
+    // Login Siswa (Guest Only)
+    Route::middleware('guest:siswa')->group(function () {
+        Route::get('/login', [SiswaAuthController::class, 'showLoginForm'])->name('login.siswa');
+        Route::post('/login', [SiswaAuthController::class, 'login']);
+    });
 
-Route::middleware('auth:siswa')->group(function () {
-    Route::post('/logout-siswa', [SiswaAuthController::class, 'logout'])->name('siswa.logout');
+    // Dashboard & Logout Siswa (Auth Only)
+    Route::middleware('auth:siswa')->group(function () {
+        Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('siswa.dashboard');
+        Route::get('/history', [SiswaDashboardController::class, 'history'])->name('siswa.history');
+        Route::post('/logout', [SiswaAuthController::class, 'logout'])->name('siswa.logout');
+    });
 });
 
 // --- 4. DASHBOARD ADMIN/PETUGAS ---
@@ -78,16 +87,4 @@ Route::middleware(['auth', 'ceklevel:admin,petugas'])->group(function () {
     // Proses POST data pembayaran (Logika Commit & Rollback)
     Route::post('/simpan-pembayaran', [PembayaranController::class, 'store'])
         ->name('pembayaran.store');
-});
-
-// --- 7. GRUP SISWA (Setelah Login) ---
-Route::middleware(['auth:siswa'])->group(function () {
-    
-    // Dashboard Siswa
-    Route::get('/siswa/dashboard', [SiswaDashboardController::class, 'index'])
-        ->name('siswa.dashboard');
-    
-    // History Pembayaran Siswa
-    Route::get('/siswa/history', [SiswaDashboardController::class, 'history'])
-        ->name('siswa.history');
 });

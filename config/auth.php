@@ -2,63 +2,41 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Defaults
-    |--------------------------------------------------------------------------
-    */
-
     'defaults' => [
         'guard' => 'web',
         'passwords' => 'users',
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Guards
-    |--------------------------------------------------------------------------
-    */
-
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'petugas', // PENTING: Gunakan provider 'petugas'
+            'provider' => 'petugas', // PENTING: Ubah ke 'petugas'
         ],
 
         'siswa' => [
             'driver' => 'session',
-            'provider' => 'siswa', // Guard untuk login siswa
+            'provider' => 'siswa',
         ],
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | User Providers
-    |--------------------------------------------------------------------------
-    */
-
     'providers' => [
-        'petugas' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Petugas::class, // Model Petugas
-        ],
-
-        'siswa' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Siswa::class, // Model Siswa
-        ],
-
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-    ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Resetting Passwords
-    |--------------------------------------------------------------------------
-    */
+        // Provider untuk Admin/Petugas
+        'petugas' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Petugas::class,
+        ],
+
+        // Provider untuk Siswa
+        'siswa' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Siswa::class,
+        ],
+    ],
 
     'passwords' => [
         'users' => [
@@ -68,12 +46,6 @@ return [
             'throttle' => 60,
         ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Password Confirmation Timeout
-    |--------------------------------------------------------------------------
-    */
 
     'password_timeout' => 10800,
 

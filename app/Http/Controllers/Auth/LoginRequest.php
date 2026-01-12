@@ -36,10 +36,10 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        // Coba autentikasi dengan username (PENTING: gunakan guard 'web')
+        // PENTING: Gunakan username sebagai field autentikasi dan guard 'web'
         $credentials = [
-            'username' => $this->get('login_id'),
-            'password' => $this->get('password'),
+            'username' => $this->input('login_id'),
+            'password' => $this->input('password'),
         ];
 
         if (!Auth::guard('web')->attempt($credentials, $this->boolean('remember'))) {
@@ -70,6 +70,6 @@ class LoginRequest extends FormRequest
 
     public function throttleKey(): string
     {
-        return Str::lower($this->get('login_id')).'|'.$this->ip();
+        return Str::lower($this->input('login_id')) . '|' . $this->ip();
     }
 }

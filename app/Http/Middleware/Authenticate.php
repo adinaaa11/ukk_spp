@@ -14,9 +14,9 @@ class Authenticate extends Middleware
     {
         if (! $request->expectsJson()) {
 
-            // JIKA SISWA
+            // JIKA SISWA (cek dari URL)
             if ($request->is('siswa/*') || $request->routeIs('siswa.*')) {
-                return route('siswa.login');
+                return route('login.siswa');
             }
 
             // DEFAULT (ADMIN / PETUGAS)

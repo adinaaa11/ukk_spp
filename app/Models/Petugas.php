@@ -28,18 +28,33 @@ class Petugas extends Authenticatable
         'created_at' => 'datetime',
     ];
 
-    // PENTING: Method untuk autentikasi
+    /**
+     * Override method untuk autentikasi dengan username
+     */
     public function getAuthIdentifierName()
     {
-        return 'username'; // Login pakai username
+        return 'username';
     }
 
+    /**
+     * Override method untuk mendapatkan identifier
+     */
+    public function getAuthIdentifier()
+    {
+        return $this->username;
+    }
+
+    /**
+     * Override method untuk mendapatkan password
+     */
     public function getAuthPassword()
     {
         return $this->password;
     }
 
-    // Relasi ke Pembayaran
+    /**
+     * Relasi ke Pembayaran
+     */
     public function pembayaran()
     {
         return $this->hasMany(Pembayaran::class, 'id_petugas', 'id_petugas');
