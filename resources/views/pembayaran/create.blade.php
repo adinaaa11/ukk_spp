@@ -72,22 +72,43 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card card-custom" style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white;">
-                <div class="card-body">
-                    <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Panduan</h5>
-                    <ul class="ps-3">
-                        <li class="mb-2">Masukkan NISN atau Nama siswa</li>
-                        <li class="mb-2">Klik tombol "Cari" untuk mencari</li>
-                        <li class="mb-2">Pilih siswa dari hasil pencarian</li>
-                        <li class="mb-2">Klik "Bayar" untuk melakukan transaksi</li>
+            <div class="card card-custom" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+                <div class="card-body text-white p-4">
+                    <h5 class="mb-3 fw-bold"><i class="fas fa-info-circle me-2"></i>Panduan Pembayaran</h5>
+                    <ul class="ps-3 mb-0">
+                        <li class="mb-3">
+                            <strong>Langkah 1:</strong><br>
+                            Masukkan NISN atau Nama siswa pada kolom pencarian
+                        </li>
+                        <li class="mb-3">
+                            <strong>Langkah 2:</strong><br>
+                            Klik tombol "Cari" untuk mencari data siswa
+                        </li>
+                        <li class="mb-3">
+                            <strong>Langkah 3:</strong><br>
+                            Pilih siswa dari hasil pencarian
+                        </li>
+                        <li class="mb-3">
+                            <strong>Langkah 4:</strong><br>
+                            Klik tombol "Bayar" untuk melakukan transaksi pembayaran
+                        </li>
+                        <li class="mb-0">
+                            <strong>Nominal SPP:</strong><br>
+                            <span class="badge bg-light text-dark me-1">Rp 75.000</span>
+                            <span class="badge bg-light text-dark me-1">Rp 100.000</span>
+                            <span class="badge bg-light text-dark">Rp 175.000</span>
+                        </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="card card-custom mt-3">
-                <div class="card-body text-center">
-                    <a href="{{ route('siswa.create') }}" class="btn btn-outline-primary w-100">
-                        <i class="fas fa-user-plus me-2"></i>Tambah Siswa Baru
+            <div class="card card-custom mt-3" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
+                <div class="card-body text-white text-center p-4">
+                    <i class="fas fa-user-plus fa-3x mb-3"></i>
+                    <h6 class="fw-bold mb-2">Siswa Belum Terdaftar?</h6>
+                    <p class="mb-3 small">Tambahkan data siswa baru terlebih dahulu</p>
+                    <a href="{{ route('siswa.create') }}" class="btn btn-light w-100 fw-bold">
+                        <i class="fas fa-plus me-2"></i>Tambah Siswa Baru
                     </a>
                 </div>
             </div>
