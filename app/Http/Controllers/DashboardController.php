@@ -14,9 +14,12 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
-        
+
+        // Normalisasi level (tangani null dan variasi kapitalisasi)
+        $userLevel = strtolower($user->level ?? '');
+
         // Statistik untuk Admin/Petugas
-        if (in_array($user->level, ['admin', 'petugas'])) {
+        if (in_array($userLevel, ['admin', 'petugas'])) {
             $data = [
                 'total_siswa' => Siswa::count(),
                 'total_petugas' => Petugas::count(),
@@ -35,7 +38,7 @@ class DashboardController extends Controller
         }
         
         // Jika siswa login (untuk fitur masa depan)
-        if ($user->level == 'siswa') {
+        if ($userLevel == 'siswa') {
             return redirect()->route('siswa.history');
         }
         

@@ -22,10 +22,12 @@ class CekLevel
         }
 
         // Ambil level user yang sedang login
-        $userLevel = auth()->user()->level;
+        // Normalisasi level dan parameter yang diizinkan agar case-insensitive
+        $userLevel = strtolower(auth()->user()->level ?? '');
+        $allowed = array_map('strtolower', $levels);
 
         // Cek apakah level user termasuk dalam level yang diizinkan
-        if (in_array($userLevel, $levels)) {
+        if (in_array($userLevel, $allowed)) {
             return $next($request);
         }
 
