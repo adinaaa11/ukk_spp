@@ -43,31 +43,6 @@ class PembayaranController extends Controller
     }
 
     /**
-     * DEPRECATED: Gunakan transaksi() sebagai gantinya
-     * Method ini tetap ada untuk backward compatibility
-     */
-    public function cari(Request $request)
-    {
-        $request->validate(['nisn' => 'required']);
-        
-        $siswa = Siswa::with(['kelas', 'spp'])
-            ->where('nisn', $request->nisn)
-            ->first();
-        
-        if(!$siswa) {
-            return back()->with('error', 'Siswa tidak ditemukan!');
-        }
-
-        // Ambil history pembayaran siswa ini
-        $history = Pembayaran::where('nisn', $siswa->nisn)
-            ->with('petugas')
-            ->latest('tgl_bayar')
-            ->get();
-
-        return view('pembayaran.transaksi', compact('siswa', 'history'));
-    }
-
-    /**
      * Halaman Form Transaksi Pembayaran untuk Siswa Tertentu
      */
     public function transaksi($nisn)
@@ -98,17 +73,22 @@ class PembayaranController extends Controller
     public function store(Request $request)
     {
         // Validasi Input
-        $request->validate([
-            'nisn' => 'required',
-            'bulan_dibayar' => 'required',
-            'tahun_dibayar' => 'required|numeric',
+        $validated = $request->validate([
+            'nisn' => 'required|string|size:10|exists:siswa,nisn',
+            'bulan_dibayar' => 'required|string|in:Januari,Februari,Maret,April,Mei,Juni,Juli,Agustus,September,Oktober,November,Desember',
+            'tahun_dibayar' => 'required|numeric|digits:4|min:2020|max:2030',
             'jumlah_bayar' => 'required|numeric|min:0'
+        ], [
+            'nisn.required' => 'NISN harus diisi',
+            'nisn.exists' => 'NISN tidak ditemukan',
+            'bulan_dibayar.required' => 'Bulan pembayaran harus dipilih',
+            'bulan_dibayar.in' => 'Bulan pembayaran tidak valid',
+            'tahun_dibayar.required' => 'Tahun pembayaran harus diisi',
+            'jumlah_bayar.required' => 'Jumlah bayar harus diisi',
         ]);
 
-        // Cari siswa berdasarkan NISN (PERBAIKAN: gunakan where()->first())
-        $siswa = Siswa::with('spp')
-            ->where('nisn', $request->nisn)
-            ->first();
+        // Cari siswa berdasarkan NISN
+        $siswa = Siswa::with('spp')->where('nisn', $validated['nisn'])->first();
 
         if(!$siswa) {
             return back()->with('error', 'Siswa tidak ditemukan!');
@@ -116,27 +96,27 @@ class PembayaranController extends Controller
 
         // Cek apakah bulan tersebut sudah dibayar (Hindari Double Payment)
         $cek = Pembayaran::where([
-            ['nisn', $request->nisn],
-            ['bulan_dibayar', $request->bulan_dibayar],
-            ['tahun_dibayar', $request->tahun_dibayar]
+            ['nisn', $validated['nisn']],
+            ['bulan_dibayar', $validated['bulan_dibayar']],
+            ['tahun_dibayar', $validated['tahun_dibayar']]
         ])->exists();
 
         if($cek) {
-            return back()->with('error', 'Bulan ' . $request->bulan_dibayar . ' ' . $request->tahun_dibayar . ' sudah dibayar!');
+            return back()->with('error', 'Bulan ' . $validated['bulan_dibayar'] . ' ' . $validated['tahun_dibayar'] . ' sudah dibayar!');
         }
 
-        // Transaksi Database dengan Commit & Rollback (Sesuai Standar UKK)
+        // Transaksi Database dengan Commit & Rollback
         DB::beginTransaction();
         
         try {
             Pembayaran::create([
                 'id_petugas' => Auth::user()->id_petugas,
-                'nisn' => $request->nisn,
+                'nisn' => $validated['nisn'],
                 'tgl_bayar' => now(),
-                'bulan_dibayar' => $request->bulan_dibayar,
-                'tahun_dibayar' => $request->tahun_dibayar,
+                'bulan_dibayar' => $validated['bulan_dibayar'],
+                'tahun_dibayar' => $validated['tahun_dibayar'],
                 'id_spp' => $siswa->id_spp,
-                'jumlah_bayar' => $request->jumlah_bayar
+                'jumlah_bayar' => $validated['jumlah_bayar']
             ]);
 
             DB::commit();

@@ -50,16 +50,25 @@
                     
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <label class="form-label fw-bold">Tahun Bayar</label>
+                            <label class="form-label fw-bold">Tahun Bayar <span class="text-danger">*</span></label>
                             <input type="number" name="tahun_dibayar" class="form-control" value="{{ date('Y') }}" readonly>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-bold">Bulan Bayar</label>
+                            <label class="form-label fw-bold">Bulan Bayar <span class="text-danger">*</span></label>
                             <select name="bulan_dibayar" class="form-select" required>
-                                <option value="" selected disabled>-- Pilih Bulan --</option>
-                                @foreach(['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'] as $bulan)
-                                    <option value="{{ $bulan }}">{{ $bulan }}</option>
-                                @endforeach
+                                <option value="">-- Pilih Bulan --</option>
+                                <option value="Januari">Januari</option>
+                                <option value="Februari">Februari</option>
+                                <option value="Maret">Maret</option>
+                                <option value="April">April</option>
+                                <option value="Mei">Mei</option>
+                                <option value="Juni">Juni</option>
+                                <option value="Juli">Juli</option>
+                                <option value="Agustus">Agustus</option>
+                                <option value="September">September</option>
+                                <option value="Oktober">Oktober</option>
+                                <option value="November">November</option>
+                                <option value="Desember">Desember</option>
                             </select>
                         </div>
                         <div class="col-md-4">
