@@ -62,7 +62,7 @@
 <body>
     <div class="header">
         <h2>LAPORAN PEMBAYARAN SPP</h2>
-        <p>SMK NEGERI 1 EXAMPLE</p>
+        <p>SMK NEGERI 1 PURWOSARI</p>
         <p>Periode: {{ now()->isoFormat('MMMM Y') }}</p>
         <p>Dicetak pada: {{ now()->isoFormat('dddd, D MMMM Y HH:mm') }} WIB</p>
     </div>

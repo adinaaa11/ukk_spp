@@ -26,9 +26,9 @@
         body {
             background-color: #f4f6f9;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 13px;
         }
 
-        /* Sidebar Styling */
         .sidebar {
             background: linear-gradient(180deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
             min-height: 100vh;
@@ -115,7 +115,6 @@
             min-height: 100vh;
         }
 
-        /* Card Styling */
         .card-custom {
             border: none;
             border-radius: 15px;
@@ -134,26 +133,31 @@
             background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
             color: white;
             border-radius: 15px 15px 0 0 !important;
-            padding: 20px;
+            padding: 15px 20px;
             border: none;
+        }
+
+        .card-header-custom h5 {
+            font-size: 1rem;
+            margin: 0;
         }
 
         .card-header-navy {
             background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
             color: white;
-            padding: 20px;
+            padding: 15px 20px;
             border: none;
         }
 
-        /* Button Styling */
         .btn-primary-custom {
             background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
             color: var(--yellow-accent);
             border: none;
-            padding: 10px 25px;
+            padding: 8px 20px;
             border-radius: 10px;
             transition: all 0.3s;
             font-weight: 600;
+            font-size: 0.875rem;
         }
         
         .btn-primary-custom:hover {
@@ -166,33 +170,36 @@
             background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
             color: white;
             border: none;
-            padding: 10px 25px;
+            padding: 8px 20px;
             border-radius: 10px;
             font-weight: 600;
+            font-size: 0.875rem;
         }
 
         .btn-danger-custom {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
             border: none;
-            padding: 10px 25px;
-            border-radius: 10px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
         }
 
         .btn-warning-custom {
             background: linear-gradient(135deg, var(--yellow-accent) 0%, var(--yellow-hover) 100%);
             color: var(--navy-dark);
             border: none;
-            padding: 10px 25px;
-            border-radius: 10px;
+            padding: 6px 12px;
+            border-radius: 8px;
             font-weight: 600;
+            font-size: 0.75rem;
         }
 
         .btn-navy {
             background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
             color: var(--yellow-accent);
             border: none;
-            padding: 10px 25px;
+            padding: 8px 20px;
             border-radius: 10px;
             font-weight: 600;
         }
@@ -201,12 +208,31 @@
             background: linear-gradient(135deg, var(--yellow-accent) 0%, var(--yellow-hover) 100%);
             color: var(--navy-dark);
             border: none;
-            padding: 10px 25px;
+            padding: 8px 20px;
             border-radius: 10px;
             font-weight: 600;
         }
 
-        /* Table Styling */
+        /* TABEL - UKURAN DIPERKECIL */
+        .table {
+            font-size: 0.75rem !important;
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            padding: 8px 6px !important;
+            font-size: 0.75rem !important;
+            font-weight: 600;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .table tbody td {
+            padding: 6px !important;
+            font-size: 0.75rem !important;
+            vertical-align: middle;
+        }
+
         .table-custom {
             border-radius: 10px;
             overflow: hidden;
@@ -225,31 +251,107 @@
             background-color: rgba(255, 215, 0, 0.1);
         }
 
-        /* Badge Custom */
-        .badge-custom {
-            padding: 8px 15px;
-            border-radius: 20px;
+        .table-hover tbody tr:hover {
+            background-color: rgba(255, 215, 0, 0.1);
+        }
+
+        /* BADGE - UKURAN DIPERKECIL */
+        .badge {
+            padding: 3px 8px !important;
+            font-size: 0.7rem !important;
+            border-radius: 12px;
             font-weight: 500;
+        }
+
+        .badge-custom {
+            padding: 3px 8px !important;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.7rem !important;
+            white-space: nowrap;
+        }
+
+        /* BUTTON DI TABEL - UKURAN DIPERKECIL */
+        .table .btn-sm {
+            padding: 4px 8px !important;
+            font-size: 0.7rem !important;
+        }
+
+        .table .btn-sm i {
+            font-size: 0.7rem;
+        }
+
+        /* SMALL TEXT */
+        .table small,
+        small {
+            font-size: 0.65rem !important;
+        }
+
+        /* PAGINATION - UKURAN DIPERKECIL */
+        .pagination {
+            margin: 0;
+            font-size: 0.75rem;
+        }
+
+        .pagination .page-link {
+            color: var(--navy-primary);
+            border: 1px solid #dee2e6;
+            padding: 0.25rem 0.5rem !important;
+            font-size: 0.75rem !important;
+            line-height: 1.2;
+        }
+
+        .pagination .page-item {
+            margin: 0 2px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--navy-primary);
+            border-color: var(--navy-primary);
+            color: var(--yellow-accent);
+        }
+
+        .pagination .page-link:hover {
+            color: var(--yellow-accent);
+            background-color: var(--navy-primary);
+            border-color: var(--navy-primary);
         }
 
         .section-title {
             color: var(--navy-primary);
             font-weight: 700;
             margin-bottom: 5px;
+            font-size: 1.5rem;
         }
 
         .section-subtitle {
             color: #7f8c8d;
-            font-size: 14px;
+            font-size: 0.875rem;
         }
 
-        /* Form Styling */
         .form-control:focus, .form-select:focus {
             border-color: var(--yellow-accent);
             box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
         }
 
-        /* Responsive */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-responsive::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: rgba(0, 31, 63, 0.3);
+            border-radius: 4px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 0;
@@ -263,6 +365,26 @@
             
             .content-area {
                 margin-left: 0;
+            }
+
+            .table {
+                font-size: 0.7rem !important;
+            }
+
+            .table thead th {
+                padding: 6px 4px !important;
+                font-size: 0.65rem !important;
+            }
+
+            .table tbody td {
+                padding: 5px 4px !important;
+                font-size: 0.7rem !important;
+            }
+
+            .badge,
+            .badge-custom {
+                padding: 2px 6px !important;
+                font-size: 0.65rem !important;
             }
         }
     </style>
