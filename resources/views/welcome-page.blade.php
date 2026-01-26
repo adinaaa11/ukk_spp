@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi SPP - Sistem Pembayaran SPP Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --navy-primary: #001f3f;
+            --navy-dark: #001529;
+            --yellow-accent: #FFD700;
+            --yellow-hover: #FFC000;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -13,188 +21,521 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #001f3f 0%, #001529 100%);
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            position: relative;
+            overflow: hidden;
         }
-        
-        .container {
-            max-width: 1200px;
+
+        /* Animated Background Particles */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
         }
-        
-        .header {
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        .particle:nth-child(1) { width: 80px; height: 80px; top: 10%; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 60px; height: 60px; top: 20%; left: 80%; animation-delay: 2s; }
+        .particle:nth-child(3) { width: 100px; height: 100px; top: 60%; left: 20%; animation-delay: 4s; }
+        .particle:nth-child(4) { width: 70px; height: 70px; top: 80%; left: 70%; animation-delay: 1s; }
+        .particle:nth-child(5) { width: 50px; height: 50px; top: 40%; left: 50%; animation-delay: 3s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-50px) translateX(50px); }
+            50% { transform: translateY(-100px) translateX(-50px); }
+            75% { transform: translateY(-50px) translateX(50px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            width: 100%;
+            padding: 50px 20px;
+        }
+
+        /* Header dengan Logo */
+        .header-section {
             text-align: center;
-            color: white;
-            margin-bottom: 50px;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s ease-out;
         }
-        
-        .header-icon {
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            background: var(--yellow-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .logo-container i {
+            font-size: 60px;
+            color: var(--navy-primary);
+        }
+
+        .header-section h1 {
+            font-size: 56px;
+            color: var(--yellow-accent);
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .header-section p {
+            font-size: 20px;
+            color: white;
+            opacity: 0.95;
+        }
+
+        .tagline {
+            font-size: 16px;
+            color: var(--yellow-accent);
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Cards Container */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            padding: 0 20px;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Card Styling */
+        .login-card {
+            background: white;
+            border-radius: 25px;
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: 0 30px 90px rgba(0,0,0,0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-card:hover::before {
+            left: 100%;
+        }
+
+        .login-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+        }
+
+        .card-icon-wrapper {
             width: 100px;
             height: 100px;
-            background: #FFD700;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            margin: 0 auto 30px;
+            position: relative;
+            transition: all 0.4s;
         }
-        
-        .header-icon svg {
-            width: 60px;
-            height: 60px;
-            fill: #001f3f;
+
+        .login-card:hover .card-icon-wrapper {
+            transform: rotateY(360deg);
         }
-        
-        .header h1 {
-            font-size: 48px;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            color: #FFD700;
+
+        .admin-card .card-icon-wrapper {
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
+            box-shadow: 0 10px 30px rgba(0, 31, 63, 0.4);
         }
-        
-        .header p {
-            font-size: 18px;
-            opacity: 0.9;
+
+        .siswa-card .card-icon-wrapper {
+            background: linear-gradient(135deg, var(--yellow-accent) 0%, var(--yellow-hover) 100%);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
         }
-        
-        .cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            padding: 0 20px;
+
+        .card-icon-wrapper i {
+            font-size: 50px;
         }
-        
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            transition: transform 0.3s, box-shadow 0.3s;
+
+        .admin-card .card-icon-wrapper i {
+            color: white;
         }
-        
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+
+        .siswa-card .card-icon-wrapper i {
+            color: var(--navy-primary);
         }
-        
-        .card-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-        }
-        
-        .card-icon svg {
-            width: 50px;
-            height: 50px;
-            fill: white;
-        }
-        
-        .card.admin .card-icon {
-            background: linear-gradient(135deg, #001f3f 0%, #001529 100%);
-        }
-        
-        .card.siswa .card-icon {
-            background: linear-gradient(135deg, #FFD700 0%, #FFC000 100%);
-        }
-        
-        .card h2 {
-            font-size: 28px;
+
+        .login-card h2 {
+            font-size: 32px;
             color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            font-weight: 700;
         }
-        
-        .card p {
+
+        .login-card p {
             color: #666;
-            font-size: 16px;
-            margin-bottom: 30px;
-            line-height: 1.6;
+            font-size: 17px;
+            margin-bottom: 35px;
+            line-height: 1.7;
         }
-        
-        .btn {
+
+        .features-list {
+            text-align: left;
+            margin: 25px 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .features-list li {
+            padding: 10px 0;
+            color: #555;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .features-list li i {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .admin-card .features-list li i {
+            color: var(--navy-primary);
+        }
+
+        .siswa-card .features-list li i {
+            color: var(--yellow-accent);
+        }
+
+        /* Button Styling */
+        .btn-login {
             display: inline-block;
-            padding: 15px 40px;
+            padding: 18px 50px;
             border-radius: 50px;
             text-decoration: none;
-            color: white;
-            font-weight: 600;
-            font-size: 16px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        
-        .btn-admin {
-            background: linear-gradient(135deg, #001f3f 0%, #001529 100%);
-        }
-        
-        .btn-siswa {
-            background: linear-gradient(135deg, #FFD700 0%, #FFC000 100%);
-            color: #001f3f;
             font-weight: 700;
+            font-size: 17px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+            z-index: -1;
+        }
+
+        .btn-login:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
+            color: var(--yellow-accent);
+            box-shadow: 0 10px 30px rgba(0, 31, 63, 0.3);
+        }
+
+        .btn-admin:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 31, 63, 0.4);
+        }
+
+        .btn-siswa {
+            background: linear-gradient(135deg, var(--yellow-accent) 0%, var(--yellow-hover) 100%);
+            color: var(--navy-primary);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-siswa:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-login i {
+            margin-right: 10px;
+            transition: transform 0.3s;
+        }
+
+        .btn-login:hover i {
+            transform: translateX(5px);
+        }
+
+        /* Features Section */
+        .features-section {
+            background: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .features-section h2 {
+            font-size: 42px;
+            color: var(--navy-primary);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .features-section p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-box {
+            padding: 40px 30px;
+            border-radius: 20px;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+
+        .feature-box:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .feature-box i {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .feature-box:nth-child(1) i { color: var(--navy-primary); }
+        .feature-box:nth-child(2) i { color: var(--yellow-accent); }
+        .feature-box:nth-child(3) i { color: #27ae60; }
+        .feature-box:nth-child(4) i { color: #e74c3c; }
+
+        .feature-box h3 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .feature-box p {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--navy-dark);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-section h1 {
+                font-size: 36px;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .features-section h2 {
+                font-size: 32px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="header-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
-                </svg>
-            </div>
-            <h1>APLIKASI SPP</h1>
-            <p>Sistem Pembayaran SPP Digital</p>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <!-- Animated Particles -->
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
         </div>
 
-        <div class="cards-container">
-            <!-- Card Admin -->
-            <div class="card admin">
-                <div class="card-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                        <path d="M18 8h2v2h-2v2h-2v-2h-2V8h2V6h2v2z"/>
-                    </svg>
+        <div class="hero-content">
+            <!-- Header -->
+            <div class="header-section">
+                <div class="logo-container">
+                    <i class="fas fa-graduation-cap"></i>
                 </div>
-                <h2>Admin / Petugas</h2>
-                <p>Login untuk mengelola data siswa, pembayaran, dan laporan</p>
-                <a href="{{ route('login') }}" class="btn btn-admin">
-                    <svg style="width:20px;height:20px;display:inline;margin-right:8px;vertical-align:middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
-                        <path d="M10 17v-3H3v-4h7V7l5 5-5 5m0-15a2 2 0 012 2v3h-2V4H4v16h6v-3h2v3a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2h6z"/>
-                    </svg>
-                    LOGIN ADMIN
-                </a>
+                <h1>APLIKASI SPP DIGITAL</h1>
+                <p>Sistem Pembayaran SPP Modern & Terpercaya</p>
+                <p class="tagline">Mudah, Cepat, dan Aman</p>
             </div>
 
-            <!-- Card Siswa -->
-            <div class="card siswa">
-                <div class="card-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
-                    </svg>
+            <!-- Login Cards -->
+            <div class="cards-grid">
+                <!-- Admin Card -->
+                <div class="login-card admin-card">
+                    <div class="card-icon-wrapper">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h2>Admin / Petugas</h2>
+                    <p>Portal khusus untuk administrator dan petugas mengelola sistem pembayaran SPP</p>
+                    
+                    <ul class="features-list">
+                        <li><i class="fas fa-check-circle"></i> Kelola Data Siswa</li>
+                        <li><i class="fas fa-check-circle"></i> Proses Pembayaran</li>
+                        <li><i class="fas fa-check-circle"></i> Laporan Lengkap</li>
+                        <li><i class="fas fa-check-circle"></i> Monitoring Real-time</li>
+                    </ul>
+
+                    <a href="{{ route('login') }}" class="btn-login btn-admin">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login Admin
+                    </a>
                 </div>
-                <h2>Siswa</h2>
-                <p>Login untuk melihat riwayat pembayaran SPP Anda</p>
-                <a href="{{ route('login.siswa') }}" class="btn btn-siswa">
-                    <svg style="width:20px;height:20px;display:inline;margin-right:8px;vertical-align:middle;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#001f3f">
-                        <path d="M10 17v-3H3v-4h7V7l5 5-5 5m0-15a2 2 0 012 2v3h-2V4H4v16h6v-3h2v3a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2h6z"/>
-                    </svg>
-                    LOGIN SISWA
-                </a>
+
+                <!-- Siswa Card -->
+                <div class="login-card siswa-card">
+                    <div class="card-icon-wrapper">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h2>Siswa</h2>
+                    <p>Portal khusus untuk siswa melihat riwayat dan melakukan pembayaran SPP</p>
+                    
+                    <ul class="features-list">
+                        <li><i class="fas fa-check-circle"></i> Cek Riwayat Pembayaran</li>
+                        <li><i class="fas fa-check-circle"></i> Transfer Online</li>
+                        <li><i class="fas fa-check-circle"></i> Cetak Bukti Bayar</li>
+                        <li><i class="fas fa-check-circle"></i> Notifikasi Status</li>
+                    </ul>
+
+                    <a href="{{ route('login.siswa') }}" class="btn-login btn-siswa">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login Siswa
+                    </a>
+                </div>
             </div>
         </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features-section">
+        <h2>Keunggulan Sistem Kami</h2>
+        <p>Aplikasi SPP Digital dengan fitur terlengkap untuk kemudahan Anda</p>
+        
+        <div class="features-grid">
+            <div class="feature-box">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Keamanan Terjamin</h3>
+                <p>Sistem keamanan berlapis dengan enkripsi data untuk melindungi informasi Anda</p>
+            </div>
+            
+            <div class="feature-box">
+                <i class="fas fa-bolt"></i>
+                <h3>Proses Cepat</h3>
+                <p>Pembayaran diproses secara real-time dan langsung tercatat dalam sistem</p>
+            </div>
+            
+            <div class="feature-box">
+                <i class="fas fa-mobile-alt"></i>
+                <h3>Mobile Friendly</h3>
+                <p>Akses dari mana saja menggunakan smartphone, tablet, atau komputer</p>
+            </div>
+            
+            <div class="feature-box">
+                <i class="fas fa-headset"></i>
+                <h3>Dukungan 24/7</h3>
+                <p>Tim support kami siap membantu Anda kapan saja jika ada kendala</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>APLIKASI SPP DIGITAL</strong></p>
+        <p>&copy; {{ date('Y') }} SMK NEGERI 1 PURWOSARI. All Rights Reserved.</p>
+        <p>Developed with <i class="fas fa-heart" style="color: var(--yellow-accent);"></i> 4ddnnn </p>
     </div>
 </body>
 </html>

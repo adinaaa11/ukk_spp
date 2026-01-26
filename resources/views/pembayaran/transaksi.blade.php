@@ -44,48 +44,185 @@
                     </div>
                 @endif
 
-                <form action="{{ route('pembayaran.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="nisn" value="{{ $siswa->nisn }}">
-                    
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Tahun Bayar <span class="text-danger">*</span></label>
-                            <input type="number" name="tahun_dibayar" class="form-control" value="{{ date('Y') }}" readonly>
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs mb-4" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tunai-tab" data-bs-toggle="tab" data-bs-target="#tunai" type="button" role="tab">
+                            <i class="fas fa-money-bill-wave me-2"></i>Pembayaran Tunai
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="transfer-tab" data-bs-toggle="tab" data-bs-target="#transfer" type="button" role="tab">
+                            <i class="fas fa-university me-2"></i>Transfer Bank
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- TUNAI TAB -->
+                    <div class="tab-pane fade show active" id="tunai" role="tabpanel">
+                        <form action="{{ route('pembayaran.store') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="nisn" value="{{ $siswa->nisn }}">
+                            <input type="hidden" name="metode_pembayaran" value="tunai">
+                            
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Tahun Bayar <span class="text-danger">*</span></label>
+                                    <input type="number" name="tahun_dibayar" class="form-control" value="{{ date('Y') }}" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Bulan Bayar <span class="text-danger">*</span></label>
+                                    <select name="bulan_dibayar" class="form-select" required>
+                                        <option value="">-- Pilih Bulan --</option>
+                                        <option value="Januari">Januari</option>
+                                        <option value="Februari">Februari</option>
+                                        <option value="Maret">Maret</option>
+                                        <option value="April">April</option>
+                                        <option value="Mei">Mei</option>
+                                        <option value="Juni">Juni</option>
+                                        <option value="Juli">Juli</option>
+                                        <option value="Agustus">Agustus</option>
+                                        <option value="September">September</option>
+                                        <option value="Oktober">Oktober</option>
+                                        <option value="November">November</option>
+                                        <option value="Desember">Desember</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Jumlah Bayar</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rp</span>
+                                        <input type="number" name="jumlah_bayar" class="form-control" value="{{ $siswa->spp->nominal }}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-navy btn-lg">
+                                    <i class="fas fa-save me-2"></i> Simpan Transaksi Tunai
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- TRANSFER TAB -->
+                    <div class="tab-pane fade" id="transfer" role="tabpanel">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Informasi Transfer:</strong> Pastikan siswa telah melakukan transfer ke rekening sekolah sebelum memproses pembayaran ini.
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Bulan Bayar <span class="text-danger">*</span></label>
-                            <select name="bulan_dibayar" class="form-select" required>
-                                <option value="">-- Pilih Bulan --</option>
-                                <option value="Januari">Januari</option>
-                                <option value="Februari">Februari</option>
-                                <option value="Maret">Maret</option>
-                                <option value="April">April</option>
-                                <option value="Mei">Mei</option>
-                                <option value="Juni">Juni</option>
-                                <option value="Juli">Juli</option>
-                                <option value="Agustus">Agustus</option>
-                                <option value="September">September</option>
-                                <option value="Oktober">Oktober</option>
-                                <option value="November">November</option>
-                                <option value="Desember">Desember</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Jumlah Bayar</label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rp</span>
-                                <input type="number" name="jumlah_bayar" class="form-control" value="{{ $siswa->spp->nominal }}" readonly>
+
+                        <form action="{{ route('pembayaran.store') }}" method="POST" id="formTransfer">
+                            @csrf
+                            <input type="hidden" name="nisn" value="{{ $siswa->nisn }}">
+                            <input type="hidden" name="metode_pembayaran" value="transfer">
+                            
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Tahun Bayar <span class="text-danger">*</span></label>
+                                    <input type="number" name="tahun_dibayar" class="form-control" value="{{ date('Y') }}" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Bulan Bayar <span class="text-danger">*</span></label>
+                                    <select name="bulan_dibayar" class="form-select" required>
+                                        <option value="">-- Pilih Bulan --</option>
+                                        <option value="Januari">Januari</option>
+                                        <option value="Februari">Februari</option>
+                                        <option value="Maret">Maret</option>
+                                        <option value="April">April</option>
+                                        <option value="Mei">Mei</option>
+                                        <option value="Juni">Juni</option>
+                                        <option value="Juli">Juli</option>
+                                        <option value="Agustus">Agustus</option>
+                                        <option value="September">September</option>
+                                        <option value="Oktober">Oktober</option>
+                                        <option value="November">November</option>
+                                        <option value="Desember">Desember</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Jumlah Bayar</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rp</span>
+                                        <input type="number" name="jumlah_bayar" class="form-control" value="{{ $siswa->spp->nominal }}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Bank Tujuan <span class="text-danger">*</span></label>
+                                    <select name="bank_tujuan" class="form-select" required>
+                                        <option value="">-- Pilih Bank --</option>
+                                        <option value="BRI">BRI - Bank Rakyat Indonesia</option>
+                                        <option value="BNI">BNI - Bank Negara Indonesia</option>
+                                        <option value="Mandiri">Mandiri</option>
+                                        <option value="BCA">BCA - Bank Central Asia</option>
+                                    </select>
+                                    <small class="text-muted">Pilih bank tujuan transfer</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Nomor Rekening Pengirim <span class="text-danger">*</span></label>
+                                    <input type="text" name="no_rekening_pengirim" class="form-control" placeholder="Contoh: 1234567890" required>
+                                    <small class="text-muted">Nomor rekening yang mentransfer</small>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Nama Pengirim <span class="text-danger">*</span></label>
+                                    <input type="text" name="nama_pengirim" class="form-control" placeholder="Nama pemilik rekening" required>
+                                    <small class="text-muted">Nama sesuai rekening bank</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Tanggal Transfer <span class="text-danger">*</span></label>
+                                    <input type="date" name="tanggal_transfer" class="form-control" value="{{ date('Y-m-d') }}" required>
+                                    <small class="text-muted">Tanggal melakukan transfer</small>
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <label class="form-label fw-bold">Catatan (Opsional)</label>
+                                <textarea name="catatan" class="form-control" rows="2" placeholder="Catatan tambahan jika ada..."></textarea>
+                            </div>
+                            
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-navy btn-lg">
+                                    <i class="fas fa-check-circle me-2"></i> Konfirmasi Pembayaran Transfer
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Info Rekening Sekolah -->
+                        <div class="card mt-4" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border: 2px dashed var(--navy-primary);">
+                            <div class="card-body">
+                                <h6 class="fw-bold mb-3" style="color: var(--navy-primary);">
+                                    <i class="fas fa-university me-2"></i>Rekening Sekolah
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <strong>BRI:</strong> 0012-3456-7890-1234<br>
+                                        <small class="text-muted">a.n. SMK Negeri 1 Purwosari</small>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <strong>BNI:</strong> 9876-5432-1098-7654<br>
+                                        <small class="text-muted">a.n. SMK Negeri 1 Purwosari</small>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <strong>Mandiri:</strong> 1357-2468-9012-3456<br>
+                                        <small class="text-muted">a.n. SMK Negeri 1 Purwosari</small>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <strong>BCA:</strong> 5678-9012-3456-7890<br>
+                                        <small class="text-muted">a.n. SMK Negeri 1 Purwosari</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-navy btn-lg">
-                            <i class="fas fa-save me-2"></i> Simpan Transaksi
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
 
@@ -101,6 +238,7 @@
                                 <th>Tanggal</th>
                                 <th>Bulan</th>
                                 <th>Nominal</th>
+                                <th>Metode</th>
                                 <th>Petugas</th>
                             </tr>
                         </thead>
@@ -110,11 +248,18 @@
                                 <td>{{ \Carbon\Carbon::parse($h->tgl_bayar)->format('d/m/Y') }}</td>
                                 <td><span class="badge bg-primary">{{ $h->bulan_dibayar }}</span></td>
                                 <td>Rp {{ number_format($h->jumlah_bayar, 0, ',', '.') }}</td>
+                                <td>
+                                    @if(isset($h->metode_pembayaran) && $h->metode_pembayaran == 'transfer')
+                                        <span class="badge bg-info">Transfer</span>
+                                    @else
+                                        <span class="badge bg-success">Tunai</span>
+                                    @endif
+                                </td>
                                 <td>{{ $h->petugas->nama_petugas }}</td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="text-center py-3 text-muted">Belum ada riwayat pembayaran.</td>
+                                <td colspan="5" class="text-center py-3 text-muted">Belum ada riwayat pembayaran.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -125,4 +270,25 @@
 
     </div>
 </div>
+
+<style>
+.nav-tabs .nav-link {
+    color: #666;
+    font-weight: 600;
+    border: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--navy-primary);
+    border-bottom-color: var(--yellow-accent);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--navy-primary);
+    background: transparent;
+    border-bottom-color: var(--yellow-accent);
+}
+</style>
 @endsection

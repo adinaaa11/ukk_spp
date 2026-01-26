@@ -459,8 +459,8 @@
                     <small class="text-white-50 px-3 d-block mb-2">LAPORAN</small>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('laporan.pembayaran') }}" target="_blank">
-                        <i class="fas fa-file-pdf me-2"></i> Cetak Laporan
+                    <a class="nav-link {{ Request::is('laporan*') ? 'active' : '' }}" href="{{ route('laporan.index') }}">
+                        <i class="fas fa-file-excel me-2"></i> Laporan Excel
                     </a>
                 </li>
                 @endif

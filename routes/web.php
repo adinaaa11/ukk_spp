@@ -61,8 +61,9 @@ Route::middleware(['auth', 'ceklevel:admin'])->group(function () {
     // Route untuk detail siswa (Ajax)
     Route::get('siswa/{nisn}/detail', [SiswaController::class, 'getDetail'])->name('siswa.detail');
 
-    // Laporan/Cetak
-    Route::get('laporan/pembayaran', [LaporanController::class, 'laporanPembayaran'])->name('laporan.pembayaran');
+    // Laporan/Cetak Excel
+    Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('laporan/pembayaran/excel', [LaporanController::class, 'laporanPembayaran'])->name('laporan.pembayaran');
 });
 
 // --- 6. GRUP ADMIN & PETUGAS (Level 'admin' dan 'petugas') ---

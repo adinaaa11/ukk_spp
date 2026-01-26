@@ -20,10 +20,17 @@ class Pembayaran extends Model
         'tahun_dibayar',
         'id_spp',
         'jumlah_bayar',
+        'metode_pembayaran',
+        'bank_tujuan',
+        'no_rekening_pengirim',
+        'nama_pengirim',
+        'tanggal_transfer',
+        'catatan',
     ];
 
     protected $casts = [
         'tgl_bayar' => 'date',
+        'tanggal_transfer' => 'date',
         'created_at' => 'datetime',
     ];
 
