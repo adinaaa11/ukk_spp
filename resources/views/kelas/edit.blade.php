@@ -61,18 +61,24 @@
             <div class="card card-custom">
                 <div class="card-body text-center">
                     <div class="mb-3">
-                        <i class="fas fa-school fa-4x text-primary"></i>
+                        <i class="fas fa-school" style="font-size: 3rem; color: var(--navy-primary); opacity: 0.7;"></i>
                     </div>
                     <h5 class="fw-bold">{{ $kelas->nama_kelas }}</h5>
                     <p class="text-muted">{{ $kelas->kompetensi_keahlian }}</p>
                     <hr>
                     <div class="row text-center">
                         <div class="col-12">
-                            <h3 class="text-primary mb-0">{{ $kelas->siswa->count() }}</h3>
+                            <h3 class="text-primary mb-0" style="font-size: 2rem;">{{ $kelas->siswa->count() }}</h3>
                             <small class="text-muted">Total Siswa</small>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Alert Info -->
+            <div class="alert alert-info mt-3" style="font-size: 0.85rem;">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Info:</strong> Perubahan data kelas akan mempengaruhi {{ $kelas->siswa->count() }} siswa yang terdaftar.
             </div>
         </div>
     </div>

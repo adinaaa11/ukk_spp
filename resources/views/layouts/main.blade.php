@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
+        /* =====================================================
+           VARIABLES & RESET
+           ===================================================== */
         :root {
             --navy-primary: #001f3f;
             --navy-dark: #001529;
@@ -22,13 +25,16 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             background-color: #f4f6f9;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: 13px;
         }
 
+        /* =====================================================
+           SIDEBAR
+           ===================================================== */
         .sidebar {
             background: linear-gradient(180deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
             min-height: 100vh;
@@ -115,6 +121,9 @@
             min-height: 100vh;
         }
 
+        /* =====================================================
+           CARD STYLES
+           ===================================================== */
         .card-custom {
             border: none;
             border-radius: 15px;
@@ -149,6 +158,9 @@
             border: none;
         }
 
+        /* =====================================================
+           BUTTON STYLES
+           ===================================================== */
         .btn-primary-custom {
             background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
             color: var(--yellow-accent);
@@ -180,19 +192,19 @@
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
             border: none;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 8px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
 
         .btn-warning-custom {
             background: linear-gradient(135deg, var(--yellow-accent) 0%, var(--yellow-hover) 100%);
             color: var(--navy-dark);
             border: none;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
 
         .btn-navy {
@@ -213,23 +225,25 @@
             font-weight: 600;
         }
 
-        /* TABEL - UKURAN DIPERKECIL */
+        /* =====================================================
+           TABLE STYLES - DIPERKECIL MAKSIMAL
+           ===================================================== */
         .table {
-            font-size: 0.75rem !important;
+            font-size: 0.7rem !important;
             margin-bottom: 0;
         }
 
         .table thead th {
-            padding: 8px 6px !important;
-            font-size: 0.75rem !important;
+            padding: 6px 4px !important;
+            font-size: 0.7rem !important;
             font-weight: 600;
             white-space: nowrap;
             vertical-align: middle;
         }
 
         .table tbody td {
-            padding: 6px !important;
-            font-size: 0.75rem !important;
+            padding: 5px 4px !important;
+            font-size: 0.7rem !important;
             vertical-align: middle;
         }
 
@@ -255,68 +269,122 @@
             background-color: rgba(255, 215, 0, 0.1);
         }
 
-        /* BADGE - UKURAN DIPERKECIL */
+        /* =====================================================
+           BADGE STYLES - DIPERKECIL
+           ===================================================== */
         .badge {
-            padding: 3px 8px !important;
-            font-size: 0.7rem !important;
-            border-radius: 12px;
+            padding: 2px 6px !important;
+            font-size: 0.65rem !important;
+            border-radius: 8px;
             font-weight: 500;
         }
 
         .badge-custom {
-            padding: 3px 8px !important;
-            border-radius: 12px;
+            padding: 2px 6px !important;
+            border-radius: 8px;
             font-weight: 500;
-            font-size: 0.7rem !important;
+            font-size: 0.65rem !important;
             white-space: nowrap;
         }
 
-        /* BUTTON DI TABEL - UKURAN DIPERKECIL */
+        /* =====================================================
+           BUTTON IN TABLE - DIPERKECIL
+           ===================================================== */
         .table .btn-sm {
-            padding: 4px 8px !important;
-            font-size: 0.7rem !important;
-        }
-
-        .table .btn-sm i {
-            font-size: 0.7rem;
-        }
-
-        /* SMALL TEXT */
-        .table small,
-        small {
+            padding: 3px 6px !important;
             font-size: 0.65rem !important;
         }
 
-        /* PAGINATION - UKURAN DIPERKECIL */
+        .table .btn-sm i {
+            font-size: 0.65rem;
+        }
+
+        /* =====================================================
+           ICON SIZES - DIPERKECIL
+           ===================================================== */
+        .table i {
+            font-size: 0.7rem !important;
+        }
+
+        .card-header-custom i,
+        .btn i {
+            font-size: 0.85rem;
+        }
+
+        .sidebar .nav-link i {
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+
+        /* =====================================================
+           SMALL TEXT
+           ===================================================== */
+        .table small,
+        small {
+            font-size: 0.6rem !important;
+        }
+
+        /* =====================================================
+           PAGINATION - ULTRA COMPACT
+           ===================================================== */
         .pagination {
             margin: 0;
-            font-size: 0.75rem;
+            font-size: 0.65rem !important;
+            gap: 2px;
+        }
+
+        .pagination .page-item {
+            margin: 0;
         }
 
         .pagination .page-link {
             color: var(--navy-primary);
             border: 1px solid #dee2e6;
-            padding: 0.25rem 0.5rem !important;
-            font-size: 0.75rem !important;
-            line-height: 1.2;
-        }
-
-        .pagination .page-item {
-            margin: 0 2px;
+            padding: 0.2rem 0.4rem !important;
+            font-size: 0.65rem !important;
+            line-height: 1;
+            min-width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-weight: 500;
         }
 
         .pagination .page-item.active .page-link {
             background-color: var(--navy-primary);
             border-color: var(--navy-primary);
             color: var(--yellow-accent);
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 31, 63, 0.2);
         }
 
         .pagination .page-link:hover {
-            color: var(--yellow-accent);
-            background-color: var(--navy-primary);
-            border-color: var(--navy-primary);
+            color: white;
+            background-color: var(--navy-light);
+            border-color: var(--navy-light);
+            transform: translateY(-1px);
+            transition: all 0.2s;
         }
 
+        .pagination .page-item.disabled .page-link {
+            color: #adb5bd;
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+            cursor: not-allowed;
+        }
+
+        .pagination .page-link[rel="prev"],
+        .pagination .page-link[rel="next"] {
+            font-weight: 600;
+            min-width: auto;
+            padding: 0.2rem 0.5rem !important;
+        }
+
+        /* =====================================================
+           SECTION TITLES
+           ===================================================== */
         .section-title {
             color: var(--navy-primary);
             font-weight: 700;
@@ -329,14 +397,26 @@
             font-size: 0.875rem;
         }
 
+        /* =====================================================
+           FORM CONTROLS
+           ===================================================== */
         .form-control:focus, .form-select:focus {
             border-color: var(--yellow-accent);
             box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
         }
 
+        .form-control, .form-select {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+
+        /* =====================================================
+           TABLE RESPONSIVE
+           ===================================================== */
         .table-responsive {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            max-width: 100%;
         }
 
         .table-responsive::-webkit-scrollbar {
@@ -352,6 +432,44 @@
             background: #f1f1f1;
         }
 
+        /* =====================================================
+           CARD BODY & FOOTER
+           ===================================================== */
+        .card-body {
+            padding: 15px;
+        }
+
+        .card-footer {
+            padding: 0.5rem 1rem !important;
+            background-color: #f8f9fa;
+        }
+
+        /* =====================================================
+           TABLE COLUMN WIDTH OPTIMIZATION
+           ===================================================== */
+        .table th[width],
+        .table td[width] {
+            max-width: none;
+        }
+
+        .table th:first-child,
+        .table td:first-child {
+            width: 40px;
+            min-width: 40px;
+            max-width: 40px;
+            text-align: center;
+        }
+
+        .table th:last-child,
+        .table td:last-child {
+            width: auto;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        /* =====================================================
+           RESPONSIVE STYLES
+           ===================================================== */
         @media (max-width: 768px) {
             .sidebar {
                 width: 0;
@@ -368,24 +486,63 @@
             }
 
             .table {
-                font-size: 0.7rem !important;
-            }
-
-            .table thead th {
-                padding: 6px 4px !important;
                 font-size: 0.65rem !important;
             }
 
+            .table thead th {
+                padding: 4px 2px !important;
+                font-size: 0.6rem !important;
+            }
+
             .table tbody td {
-                padding: 5px 4px !important;
-                font-size: 0.7rem !important;
+                padding: 4px 2px !important;
+                font-size: 0.65rem !important;
             }
 
             .badge,
             .badge-custom {
-                padding: 2px 6px !important;
-                font-size: 0.65rem !important;
+                padding: 1px 4px !important;
+                font-size: 0.6rem !important;
             }
+
+            .table .btn-sm {
+                padding: 2px 4px !important;
+                font-size: 0.6rem !important;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            .pagination {
+                font-size: 0.6rem !important;
+            }
+            
+            .pagination .page-link {
+                padding: 0.15rem 0.3rem !important;
+                font-size: 0.6rem !important;
+                min-width: 22px;
+                height: 22px;
+            }
+        }
+
+        /* =====================================================
+           ADDITIONAL UTILITIES
+           ===================================================== */
+        .text-navy {
+            color: var(--navy-primary);
+        }
+
+        .bg-navy {
+            background-color: var(--navy-primary);
+        }
+
+        .text-yellow {
+            color: var(--yellow-accent);
+        }
+
+        .bg-yellow {
+            background-color: var(--yellow-accent);
         }
     </style>
 </head>

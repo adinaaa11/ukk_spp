@@ -57,15 +57,90 @@
         </div>
 
         <div class="col-md-6">
-            <div class="card card-custom" style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white;">
+            <div class="card card-custom" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white;">
                 <div class="card-body">
-                    <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Panduan Pengisian</h5>
-                    <ul class="ps-3">
+                    <h5 class="mb-3 fw-bold">
+                        <i class="fas fa-info-circle me-2" style="font-size: 0.9rem;"></i>
+                        Panduan Pengisian
+                    </h5>
+                    <ul class="ps-3 mb-0" style="font-size: 0.85rem; line-height: 1.8;">
                         <li class="mb-2">Nama kelas biasanya menggunakan format: [Tingkat] [Jurusan] [Nomor Kelas]</li>
                         <li class="mb-2">Contoh: X RPL 1, XI TKJ 2, XII OTKP 1</li>
                         <li class="mb-2">Kompetensi keahlian harus sesuai dengan kurikulum</li>
-                        <li class="mb-2">Pastikan tidak ada duplikasi nama kelas</li>
+                        <li class="mb-0">Pastikan tidak ada duplikasi nama kelas</li>
                     </ul>
+                </div>
+            </div>
+
+            <!-- Info 10 Jurusan -->
+            <div class="card card-custom mt-3">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3" style="color: var(--navy-primary);">
+                        <i class="fas fa-graduation-cap me-2" style="font-size: 0.85rem;"></i>
+                        10 Jurusan Tersedia
+                    </h6>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <small class="d-block mb-1 text-muted">
+                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
+                                <strong>RPL</strong>
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small class="d-block mb-1 text-muted">
+                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
+                                <strong>DKV</strong>
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small class="d-block mb-1 text-muted">
+                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
+                                <strong>MKT</strong>
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small class="d-block mb-1 text-muted">
+                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
+                                <strong>TKJ</strong>
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small class="d-block mb-1 text-muted">
+                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
+                                <strong>TPM</strong>
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small class="d-block mb-1 text-muted">
+                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
+                                <strong>TL</strong>
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small class="d-block mb-1 text-muted">
+                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
+                                <strong>TBKR</strong>
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small class="d-block mb-1 text-muted">
+                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
+                                <strong>TKR</strong>
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small class="d-block mb-1 text-muted">
+                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
+                                <strong>APHP</strong>
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small class="d-block mb-1 text-muted">
+                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
+                                <strong>ATPH</strong>
+                            </small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
