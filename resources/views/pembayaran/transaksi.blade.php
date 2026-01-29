@@ -1,8 +1,3 @@
-{{-- 
-    FILE: resources/views/pembayaran/transaksi.blade.php
-    DESKRIPSI: Form transaksi pembayaran SPP untuk siswa tertentu
---}}
-
 @extends('layouts.main')
 
 @section('content')

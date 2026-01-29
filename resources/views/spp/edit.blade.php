@@ -1,4 +1,3 @@
-<!-- resources/views/spp/edit.blade.php -->
 @extends('layouts.main')
 
 @section('content')

@@ -46,6 +46,7 @@
             width: 260px;
             overflow-y: auto;
             z-index: 1000;
+            transition: transform 0.3s ease;
         }
 
         .sidebar::-webkit-scrollbar {
@@ -65,6 +66,7 @@
             transition: all 0.3s;
             display: flex;
             align-items: center;
+            font-size: 0.9rem;
         }
 
         .sidebar .nav-link:hover {
@@ -120,22 +122,27 @@
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
             border: none;
-            border-radius: 10px;
-            padding: 10px 20px;
+            border-radius: 0 25px 25px 0;
+            padding: 12px 20px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             width: 100%;
             transition: all 0.3s;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .btn-logout i {
+            margin-right: 10px;
+            font-size: 0.9rem;
         }
 
         .btn-logout:hover {
             background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
-            transform: translateY(-2px);
+            transform: translateX(5px);
             box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
         }
 
@@ -145,8 +152,23 @@
 
         .content-area {
             margin-left: 260px;
-            padding: 30px;
+            padding: 20px;
             min-height: 100vh;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: var(--navy-primary);
+            color: var(--yellow-accent);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         /* =====================================================
@@ -498,19 +520,36 @@
         /* =====================================================
            RESPONSIVE STYLES
            ===================================================== */
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
             .sidebar {
-                width: 0;
                 transform: translateX(-100%);
             }
             
             .sidebar.show {
-                width: 260px;
                 transform: translateX(0);
             }
             
             .content-area {
                 margin-left: 0;
+                padding: 70px 15px 20px;
+            }
+
+            .section-title {
+                font-size: 1.3rem;
+            }
+
+            .section-subtitle {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 70px 10px 15px;
             }
 
             .table {
@@ -552,6 +591,53 @@
                 min-width: 22px;
                 height: 22px;
             }
+
+            .card-custom {
+                margin-bottom: 15px;
+            }
+
+            .card-header-custom,
+            .card-header-navy {
+                padding: 12px 15px;
+            }
+
+            .card-body {
+                padding: 12px;
+            }
+
+            /* Stack form groups on mobile */
+            .row.g-3 > [class*="col-"] {
+                margin-bottom: 0.75rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .content-area {
+                padding: 65px 8px 12px;
+            }
+
+            .btn-primary-custom,
+            .btn-success-custom,
+            .btn-navy,
+            .btn-yellow {
+                font-size: 0.75rem;
+                padding: 6px 15px;
+            }
+
+            .card-header-custom h5,
+            .card-header-navy h5 {
+                font-size: 0.9rem;
+            }
+
+            /* Full width buttons on mobile */
+            .d-flex.justify-content-between .btn {
+                width: 48%;
+            }
+
+            /* Responsive stat cards */
+            .stat-card {
+                margin-bottom: 10px;
+            }
         }
 
         /* =====================================================
@@ -572,21 +658,43 @@
         .bg-yellow {
             background-color: var(--yellow-accent);
         }
+
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
 
+<!-- Mobile Menu Toggle -->
+<button class="mobile-menu-toggle" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
 <div class="container-fluid p-0">
     <div class="row g-0">
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-brand">
                 <i class="fas fa-graduation-cap"></i>
                 <div class="mt-2">APP SPP</div>
             </div>
 
-            <!-- ═══════════════════════════════════════════════════════════
-                 USER INFO SECTION (DENGAN TOMBOL LOGOUT)
-                 ═══════════════════════════════════════════════════════════ -->
+            <!-- USER INFO SECTION -->
             <div class="user-info">
                 <div class="user-avatar">
                     {{ strtoupper(substr(auth()->user()->nama_petugas, 0, 1)) }}
@@ -595,15 +703,6 @@
                 <small class="badge" style="background: var(--yellow-accent); color: var(--navy-dark);">
                     {{ strtoupper(auth()->user()->level) }}
                 </small>
-                
-                <!-- TOMBOL LOGOUT BARU -->
-                <form method="POST" action="{{ route('logout') }}" class="mt-3">
-                    @csrf
-                    <button type="submit" class="btn-logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
-                    </button>
-                </form>
             </div>
 
             <!-- NAVIGATION MENU -->
@@ -663,6 +762,28 @@
                         <i class="fas fa-file-excel me-2"></i> Laporan Excel
                     </a>
                 </li>
+
+                <!-- TOMBOL LOGOUT DI BAWAH LAPORAN EXCEL -->
+                <li class="nav-item mt-3 px-3">
+                    <form method="POST" action="{{ route('logout') }}" class="w-100">
+                        @csrf
+                        <button type="submit" class="btn-logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </li>
+                @else
+                <!-- TOMBOL LOGOUT UNTUK PETUGAS (di bawah history) -->
+                <li class="nav-item mt-3 px-3">
+                    <form method="POST" action="{{ route('logout') }}" class="w-100">
+                        @csrf
+                        <button type="submit" class="btn-logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </li>
                 @endif
             </ul>
         </div>
@@ -675,6 +796,25 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Toggle Sidebar Script -->
+<script>
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    sidebar.classList.toggle('show');
+    overlay.classList.toggle('show');
+}
+
+// Close sidebar when clicking nav link on mobile
+document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 992) {
+            toggleSidebar();
+        }
+    });
+});
+</script>
 
 @if(session('success'))
 <script>
