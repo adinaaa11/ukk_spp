@@ -115,6 +115,34 @@
             font-weight: bold;
         }
 
+        /* STYLE UNTUK TOMBOL LOGOUT */
+        .btn-logout {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            width: 100%;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-logout:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-logout:active {
+            transform: translateY(0);
+        }
+
         .content-area {
             margin-left: 260px;
             padding: 30px;
@@ -556,14 +584,29 @@
                 <div class="mt-2">APP SPP</div>
             </div>
 
+            <!-- ═══════════════════════════════════════════════════════════
+                 USER INFO SECTION (DENGAN TOMBOL LOGOUT)
+                 ═══════════════════════════════════════════════════════════ -->
             <div class="user-info">
                 <div class="user-avatar">
                     {{ strtoupper(substr(auth()->user()->nama_petugas, 0, 1)) }}
                 </div>
                 <div class="fw-bold">{{ auth()->user()->nama_petugas }}</div>
-                <small class="badge" style="background: var(--yellow-accent); color: var(--navy-dark);">{{ strtoupper(auth()->user()->level) }}</small>
+                <small class="badge" style="background: var(--yellow-accent); color: var(--navy-dark);">
+                    {{ strtoupper(auth()->user()->level) }}
+                </small>
+                
+                <!-- TOMBOL LOGOUT BARU -->
+                <form method="POST" action="{{ route('logout') }}" class="mt-3">
+                    @csrf
+                    <button type="submit" class="btn-logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
             </div>
 
+            <!-- NAVIGATION MENU -->
             <ul class="nav flex-column mt-3">
                 <li class="nav-item">
                     <a class="nav-link {{ Request::is('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
@@ -621,15 +664,6 @@
                     </a>
                 </li>
                 @endif
-                
-                <li class="nav-item mt-4">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="nav-link w-100 text-start border-0 bg-transparent" style="color: #e74c3c;">
-                            <i class="fas fa-sign-out-alt me-2"></i> Logout
-                        </button>
-                    </form>
-                </li>
             </ul>
         </div>
 
