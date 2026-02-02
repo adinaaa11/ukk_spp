@@ -88,4 +88,8 @@ Route::middleware(['auth', 'ceklevel:admin,petugas'])->group(function () {
     // Proses POST data pembayaran (Logika Commit & Rollback)
     Route::post('/simpan-pembayaran', [PembayaranController::class, 'store'])
         ->name('pembayaran.store');
+    
+    // Cetak Struk/Kwitansi Pembayaran
+    Route::get('/pembayaran/struk/{id}', [PembayaranController::class, 'cetakStruk'])
+        ->name('pembayaran.struk');
 });

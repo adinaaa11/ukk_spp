@@ -257,6 +257,7 @@
                                     <th style="padding: 12px;">Nominal</th>
                                     <th style="padding: 12px;">Metode</th>
                                     <th style="padding: 12px;">Petugas</th>
+                                    <th style="padding: 12px;" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -277,10 +278,18 @@
                                         @endif
                                     </td>
                                     <td style="padding: 12px;">{{ $h->petugas->nama_petugas }}</td>
+                                    <td style="padding: 12px;" class="text-center">
+                                        <a href="{{ route('pembayaran.struk', $h->id_pembayaran) }}" 
+                                           class="btn btn-sm btn-info text-white"
+                                           target="_blank"
+                                           title="Cetak Struk">
+                                            <i class="fas fa-print"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-3 text-muted">Belum ada riwayat pembayaran.</td>
+                                    <td colspan="6" class="text-center py-3 text-muted">Belum ada riwayat pembayaran.</td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -288,9 +297,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
 
 <style>
 .nav-tabs .nav-link {

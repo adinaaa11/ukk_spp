@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class PembayaranController extends Controller
 {
     /**
-     * Halaman History/Riwayat Pembayaran (Semua Transaksi)
+     * Halaman History / Riwayat Pembayaran (Semua Transaksi)
      */
     public function index()
     {
@@ -29,7 +29,6 @@ class PembayaranController extends Controller
     {
         $siswa = null;
         
-        // Jika ada pencarian
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             
@@ -47,18 +46,16 @@ class PembayaranController extends Controller
      */
     public function transaksi($nisn)
     {
-        // Cari siswa berdasarkan NISN
         $siswa = Siswa::with(['kelas', 'spp'])
             ->where('nisn', $nisn)
             ->first();
         
-        if(!$siswa) {
+        if (!$siswa) {
             return redirect()
                 ->route('pembayaran.create')
                 ->with('error', 'Siswa tidak ditemukan!');
         }
 
-        // Ambil history pembayaran siswa ini
         $history = Pembayaran::where('nisn', $siswa->nisn)
             ->with('petugas')
             ->latest('tgl_bayar')
@@ -68,11 +65,10 @@ class PembayaranController extends Controller
     }
 
     /**
-     * Proses Simpan Pembayaran dengan Transaction (Commit & Rollback)
+     * Proses Simpan Pembayaran
      */
     public function store(Request $request)
     {
-        // Validasi Input Dasar
         $rules = [
             'nisn' => 'required|string|size:10|exists:siswa,nisn',
             'bulan_dibayar' => 'required|string|in:Januari,Februari,Maret,April,Mei,Juni,Juli,Agustus,September,Oktober,November,Desember',
@@ -81,7 +77,6 @@ class PembayaranController extends Controller
             'metode_pembayaran' => 'required|in:tunai,transfer'
         ];
 
-        // Validasi tambahan untuk transfer
         if ($request->metode_pembayaran == 'transfer') {
             $rules['bank_tujuan'] = 'required|string|max:50';
             $rules['no_rekening_pengirim'] = 'required|string|max:50';
@@ -89,41 +84,31 @@ class PembayaranController extends Controller
             $rules['tanggal_transfer'] = 'required|date';
         }
 
-        $validated = $request->validate($rules, [
-            'nisn.required' => 'NISN harus diisi',
-            'nisn.exists' => 'NISN tidak ditemukan',
-            'bulan_dibayar.required' => 'Bulan pembayaran harus dipilih',
-            'bulan_dibayar.in' => 'Bulan pembayaran tidak valid',
-            'tahun_dibayar.required' => 'Tahun pembayaran harus diisi',
-            'jumlah_bayar.required' => 'Jumlah bayar harus diisi',
-            'metode_pembayaran.required' => 'Metode pembayaran harus dipilih',
-            'bank_tujuan.required' => 'Bank tujuan harus dipilih',
-            'no_rekening_pengirim.required' => 'Nomor rekening pengirim harus diisi',
-            'nama_pengirim.required' => 'Nama pengirim harus diisi',
-            'tanggal_transfer.required' => 'Tanggal transfer harus diisi',
-        ]);
+        $validated = $request->validate($rules);
 
-        // Cari siswa berdasarkan NISN
-        $siswa = Siswa::with('spp')->where('nisn', $validated['nisn'])->first();
+        $siswa = Siswa::with('spp')
+            ->where('nisn', $validated['nisn'])
+            ->first();
 
-        if(!$siswa) {
+        if (!$siswa) {
             return back()->with('error', 'Siswa tidak ditemukan!');
         }
 
-        // Cek apakah bulan tersebut sudah dibayar (Hindari Double Payment)
         $cek = Pembayaran::where([
             ['nisn', $validated['nisn']],
             ['bulan_dibayar', $validated['bulan_dibayar']],
             ['tahun_dibayar', $validated['tahun_dibayar']]
         ])->exists();
 
-        if($cek) {
-            return back()->with('error', 'Bulan ' . $validated['bulan_dibayar'] . ' ' . $validated['tahun_dibayar'] . ' sudah dibayar!');
+        if ($cek) {
+            return back()->with(
+                'error',
+                'Bulan ' . $validated['bulan_dibayar'] . ' ' . $validated['tahun_dibayar'] . ' sudah dibayar!'
+            );
         }
 
-        // Transaksi Database dengan Commit & Rollback
         DB::beginTransaction();
-        
+
         try {
             $data = [
                 'id_petugas' => Auth::user()->id_petugas,
@@ -133,10 +118,9 @@ class PembayaranController extends Controller
                 'tahun_dibayar' => $validated['tahun_dibayar'],
                 'id_spp' => $siswa->id_spp,
                 'jumlah_bayar' => $validated['jumlah_bayar'],
-                'metode_pembayaran' => $validated['metode_pembayaran']
+                'metode_pembayaran' => $validated['metode_pembayaran'],
             ];
 
-            // Tambahkan data transfer jika metode transfer
             if ($validated['metode_pembayaran'] == 'transfer') {
                 $data['bank_tujuan'] = $request->bank_tujuan;
                 $data['no_rekening_pengirim'] = $request->no_rekening_pengirim;
@@ -148,14 +132,30 @@ class PembayaranController extends Controller
             Pembayaran::create($data);
 
             DB::commit();
-            
-            $metode = $validated['metode_pembayaran'] == 'transfer' ? 'Transfer' : 'Tunai';
-            return back()->with('success', '✅ Pembayaran via ' . $metode . ' berhasil disimpan!');
-            
+
+            return back()->with(
+                'success',
+                '✅ Pembayaran berhasil disimpan!'
+            );
+
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            return back()->with('error', '❌ Terjadi Kesalahan: ' . $e->getMessage());
+
+            return back()->with(
+                'error',
+                '❌ Terjadi kesalahan: ' . $e->getMessage()
+            );
         }
+    }
+
+    /**
+     * CETAK STRUK PEMBAYARAN
+     */
+    public function cetakStruk($id)
+    {
+        $pembayaran = Pembayaran::with(['siswa.kelas', 'petugas', 'spp'])
+            ->findOrFail($id);
+
+        return view('pembayaran.struk', compact('pembayaran'));
     }
 }
