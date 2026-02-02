@@ -121,7 +121,7 @@
 
 <!-- Modal Detail Siswa -->
 <div class="modal fade" id="modalDetail" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg">7
         <div class="modal-content">
             <div class="modal-header" style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white;">
                 <h5 class="modal-title"><i class="fas fa-user-graduate me-2"></i>Detail Siswa & Riwayat Pembayaran</h5>
