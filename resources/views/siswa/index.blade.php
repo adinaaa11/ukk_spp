@@ -113,17 +113,14 @@
                 </table>
             </div>
         </div>
-        <div class="card-footer bg-white">
-            {{ $siswa->links() }}
-        </div>
     </div>
 </div>
 
 <!-- Modal Detail Siswa -->
 <div class="modal fade" id="modalDetail" tabindex="-1">
-    <div class="modal-dialog modal-lg">7
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header" style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white;">
+            <div class="modal-header" style="background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%); color: white;">
                 <h5 class="modal-title"><i class="fas fa-user-graduate me-2"></i>Detail Siswa & Riwayat Pembayaran</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -138,6 +135,7 @@
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 function showDetail(nisn) {
     $('#modalDetail').modal('show');
@@ -260,6 +258,4 @@ function showDetail(nisn) {
         });
 }
 </script>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @endsection

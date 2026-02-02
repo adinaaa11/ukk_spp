@@ -471,7 +471,6 @@
                 <div class="payment-label">Jumlah Uang</div>
                 <div class="payment-amount">Rp {{ number_format($pembayaran->jumlah_bayar, 0, ',', '.') }}</div>
                 <div class="payment-terbilang">
-                    <strong>Terbilang:</strong> <em>{{ ucwords(terbilang($pembayaran->jumlah_bayar)) }} Rupiah</em>
                 </div>
             </div>
             
