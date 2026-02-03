@@ -1,203 +1,191 @@
 @extends('layouts.main')
 
+@section('title', 'Dashboard Admin')
+
 @section('content')
-<div class="container-fluid">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
-        <div class="mb-2 mb-md-0">
-            <h2 class="fw-bold mb-1" style="color: var(--navy-primary);">Dashboard</h2>
-            <p class="text-muted mb-0">Selamat datang, <strong>{{ auth()->user()->nama_petugas }}</strong> ({{ ucfirst(auth()->user()->level) }})</p>
-        </div>
-        <div>
-            <span class="badge px-3 py-2" style="background: var(--yellow-accent); color: var(--navy-dark);">
-                <i class="fas fa-calendar-day me-2"></i>{{ now()->isoFormat('dddd, D MMMM Y') }}
-            </span>
+<div class="container-fluid py-4">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg bg-gradient-navy text-white" style="border-radius: 15px;">
+                <div class="card-body p-5">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-2" style="font-size: 32px;">
+                                <i class="fas fa-tachometer-alt me-3"></i>Dashboard Admin
+                            </h2>
+                            <p class="mb-0 opacity-75" style="font-size: 18px;">
+                                Selamat datang, <strong>{{ Auth::user()->nama_petugas }}</strong>
+                            </p>
+                            <p class="mb-0 opacity-50" style="font-size: 16px;">
+                                {{ now()->isoFormat('dddd, D MMMM Y') }}
+                            </p>
+                        </div>
+                        <div>
+                            <i class="fas fa-user-shield fa-4x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Statistik Cards -->
-    <div class="row g-3 mb-4">
-        <div class="col-6 col-lg-3">
-            <div class="card card-custom border-start border-4" style="border-color: var(--navy-primary) !important;">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1" style="font-size: 0.75rem;">Total Siswa</h6>
-                            <h3 class="fw-bold mb-0" style="color: var(--navy-primary); font-size: 1.5rem;">{{ $total_siswa }}</h3>
+    <div class="row g-4 mb-4">
+        <!-- Total Siswa -->
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="card border-0 shadow-lg hover-lift" style="border-radius: 15px; height: 100%;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="icon-box bg-primary bg-opacity-10 p-3" style="border-radius: 12px;">
+                            <i class="fas fa-user-graduate fa-2x text-primary"></i>
                         </div>
-                        <div class="d-none d-md-block" style="font-size: 2rem; color: var(--navy-primary); opacity: 0.3;">
-                            <i class="fas fa-users"></i>
+                        <div class="text-end">
+                            <h6 class="text-muted mb-1">Total Siswa</h6>
+                            <h2 class="mb-0 fw-bold" style="color:#001f3f;">
+                                {{ number_format($total_siswa, 0, ',', '.') }}
+                            </h2>
                         </div>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-primary" style="width: 100%"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-6 col-lg-3">
-            <div class="card card-custom border-start border-4" style="border-color: var(--yellow-accent) !important;">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1" style="font-size: 0.75rem;">Total Jurusan</h6>
-                            <h3 class="fw-bold mb-0" style="color: var(--yellow-hover); font-size: 1.5rem;">10</h3>
-                            <small class="text-muted" style="font-size: 0.65rem;">{{ $total_kelas }} Kelas</small>
+        <!-- Total Kelas -->
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="card border-0 shadow-lg hover-lift" style="border-radius: 15px; height: 100%;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="icon-box bg-success bg-opacity-10 p-3" style="border-radius: 12px;">
+                            <i class="fas fa-school fa-2x text-success"></i>
                         </div>
-                        <div class="d-none d-md-block" style="font-size: 2rem; color: var(--yellow-accent); opacity: 0.3;">
-                            <i class="fas fa-school"></i>
+                        <div class="text-end">
+                            <h6 class="text-muted mb-1">Total Kelas</h6>
+                            <h2 class="mb-0 fw-bold text-success">
+                                {{ number_format($total_kelas, 0, ',', '.') }}
+                            </h2>
                         </div>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: 100%"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-6 col-lg-3">
-            <div class="card card-custom border-start border-4 border-info">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1" style="font-size: 0.75rem;">Total Petugas</h6>
-                            <h3 class="fw-bold mb-0 text-info" style="font-size: 1.5rem;">{{ $total_petugas }}</h3>
+        <!-- Transaksi Hari Ini -->
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="card border-0 shadow-lg hover-lift" style="border-radius: 15px; height: 100%;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="icon-box bg-warning bg-opacity-10 p-3" style="border-radius: 12px;">
+                            <i class="fas fa-money-bill-wave fa-2x text-warning"></i>
                         </div>
-                        <div class="d-none d-md-block" style="font-size: 2rem; color: #3498db; opacity: 0.3;">
-                            <i class="fas fa-user-shield"></i>
+                        <div class="text-end">
+                            <h6 class="text-muted mb-1">Transaksi Hari Ini</h6>
+                            <h2 class="mb-0 fw-bold text-warning">
+                                {{ number_format($transaksi_hari_ini, 0, ',', '.') }}
+                            </h2>
                         </div>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-warning" style="width: 100%"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-6 col-lg-3">
-            <div class="card card-custom border-start border-4 border-success">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1" style="font-size: 0.75rem;">Total Transaksi</h6>
-                            <h3 class="fw-bold mb-0 text-success" style="font-size: 1.5rem;">{{ $total_transaksi }}</h3>
+        <!-- Total Pendapatan -->
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="card border-0 shadow-lg hover-lift" style="border-radius: 15px; height: 100%;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="icon-box bg-danger bg-opacity-10 p-3" style="border-radius: 12px;">
+                            <i class="fas fa-wallet fa-2x text-danger"></i>
                         </div>
-                        <div class="d-none d-md-block" style="font-size: 2rem; color: #27ae60; opacity: 0.3;">
-                            <i class="fas fa-chart-line"></i>
+                        <div class="text-end">
+                            <h6 class="text-muted mb-1">Total Pendapatan</h6>
+                            <h2 class="mb-0 fw-bold text-danger">
+                                Rp {{ number_format($total_pendapatan, 0, ',', '.') }}
+                            </h2>
                         </div>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-danger" style="width: 100%"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Total Pendapatan -->
-    <div class="row g-3 mb-4">
+    <!-- Pembayaran Terbaru -->
+    <div class="row">
         <div class="col-12">
-            <div class="card card-custom" style="background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);">
-                <div class="card-body text-white p-3 p-md-4">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h5 class="mb-2 mb-md-3"><i class="fas fa-coins me-2"></i>Total Pendapatan Keseluruhan</h5>
-                            <h2 class="fw-bold mb-0" style="color: var(--yellow-accent); font-size: clamp(1.5rem, 5vw, 2.5rem);">Rp {{ number_format($total_pendapatan, 0, ',', '.') }}</h2>
-                            <small class="opacity-75">Dari {{ $total_transaksi }} transaksi</small>
-                        </div>
-                        <div class="col-md-4 text-center mt-3 mt-md-0">
-                            <div style="font-size: clamp(3rem, 10vw, 5rem); opacity: 0.2;">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </div>
-                        </div>
+            <div class="card border-0 shadow-lg" style="border-radius: 15px;">
+                <div class="card-header bg-white border-0 py-4">
+                    <h4 class="fw-bold">
+                        <i class="fas fa-history me-2"></i>Pembayaran Terbaru
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Tanggal</th>
+                                    <th>NISN</th>
+                                    <th>Nama</th>
+                                    <th>Kelas</th>
+                                    <th>Bulan</th>
+                                    <th>Jumlah</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($transaksi_terbaru as $index => $pembayaran)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($pembayaran->tgl_bayar)->isoFormat('D MMM Y') }}</td>
+                                    <td>{{ $pembayaran->siswa->nisn }}</td>
+                                    <td>{{ $pembayaran->siswa->nama }}</td>
+                                    <td>{{ $pembayaran->siswa->kelas->nama_kelas }}</td>
+                                    <td>{{ $pembayaran->bulan_dibayar }} {{ $pembayaran->tahun_dibayar }}</td>
+                                    <td class="text-success fw-bold">
+                                        Rp {{ number_format($pembayaran->jumlah_bayar, 0, ',', '.') }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Lunas</span>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-4">
+                                        Belum ada transaksi
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Info 10 Jurusan -->
-    <div class="card card-custom mb-4">
-        <div class="card-header-navy">
-            <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>10 Jurusan yang Tersedia</h5>
-        </div>
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-12 col-md-4">
-                    <h6 class="fw-bold text-primary mb-3">📱 Bidang IT</h6>
-                    <ul class="list-unstyled">
-                        <li class="mb-2" style="font-size: 0.85rem;">✓ RPL - Rekayasa Perangkat Lunak</li>
-                        <li class="mb-2" style="font-size: 0.85rem;">✓ DKV - Desain Komunikasi Visual</li>
-                        <li class="mb-2" style="font-size: 0.85rem;">✓ MKT - Mekatronika</li>
-                        <li class="mb-2" style="font-size: 0.85rem;">✓ TKJ - Teknik Komputer dan Jaringan</li>
-                    </ul>
-                </div>
-                <div class="col-12 col-md-4">
-                    <h6 class="fw-bold text-warning mb-3">⚙️ Bidang Permesinan</h6>
-                    <ul class="list-unstyled">
-                        <li class="mb-2" style="font-size: 0.85rem;">✓ TPM - Teknik Permesinan</li>
-                        <li class="mb-2" style="font-size: 0.85rem;">✓ TL - Teknik Pengelasan</li>
-                        <li class="mb-2" style="font-size: 0.85rem;">✓ TBKR - Teknik Body Kendaraan Ringan</li>
-                        <li class="mb-2" style="font-size: 0.85rem;">✓ TKR - Teknik Kendaraan Ringan</li>
-                    </ul>
-                </div>
-                <div class="col-12 col-md-4">
-                    <h6 class="fw-bold text-success mb-3">🌾 Bidang Pertanian</h6>
-                    <ul class="list-unstyled">
-                        <li class="mb-2" style="font-size: 0.85rem;">✓ APHP - Agribisnis Pengolahan Hasil Pertanian</li>
-                        <li class="mb-2" style="font-size: 0.85rem;">✓ ATPH - Agribisnis Tanaman Pangan dan Hortikultura</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Transaksi Terbaru -->
-    <div class="card card-custom">
-        <div class="card-header-navy">
-            <h5 class="mb-0"><i class="fas fa-history me-2"></i>Transaksi Terbaru</h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead style="background-color: #f8f9fa;">
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>NISN</th>
-                            <th class="d-none d-md-table-cell">Nama Siswa</th>
-                            <th>Bulan</th>
-                            <th>Nominal</th>
-                            <th class="d-none d-lg-table-cell">Petugas</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($transaksi_terbaru as $t)
-                        <tr>
-                            <td>{{ \Carbon\Carbon::parse($t->tgl_bayar)->format('d/m/Y') }}</td>
-                            <td><span class="badge bg-secondary">{{ $t->nisn }}</span></td>
-                            <td class="d-none d-md-table-cell">{{ $t->siswa->nama }}</td>
-                            <td><span class="badge" style="background: var(--navy-primary); color: white;">{{ $t->bulan_dibayar }} {{ $t->tahun_dibayar }}</span></td>
-                            <td><strong class="text-success">Rp {{ number_format($t->jumlah_bayar, 0, ',', '.') }}</strong></td>
-                            <td class="d-none d-lg-table-cell">{{ $t->petugas->nama_petugas }}</td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" class="text-center py-4 text-muted">
-                                <i class="fas fa-inbox fa-3x mb-3 d-block opacity-25"></i>
-                                Belum ada transaksi
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-/* Additional responsive styles for dashboard */
-@media (max-width: 576px) {
-    .card-body {
-        padding: 10px !important;
-    }
-    
-    h3 {
-        font-size: 1.3rem !important;
-    }
-    
-    .table {
-        font-size: 0.65rem !important;
-    }
+.bg-gradient-navy {
+    background: linear-gradient(135deg, #001f3f, #001529);
+}
+.hover-lift {
+    transition: .3s;
+}
+.hover-lift:hover {
+    transform: translateY(-6px);
 }
 </style>
 @endsection

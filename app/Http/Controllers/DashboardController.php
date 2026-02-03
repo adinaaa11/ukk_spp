@@ -7,41 +7,50 @@ use App\Models\Siswa;
 use App\Models\Petugas;
 use App\Models\Pembayaran;
 use App\Models\Kelas;
-use App\Models\Spp;
 
 class DashboardController extends Controller
 {
+    public function __construct()
+    {
+        // Pastikan hanya user login yang bisa akses dashboard
+        $this->middleware('auth');
+    }
+
     public function index()
     {
         $user = auth()->user();
-
-        // Normalisasi level (tangani null dan variasi kapitalisasi)
         $userLevel = strtolower($user->level ?? '');
 
-        // Statistik untuk Admin/Petugas
+        // ===============================
+        // Dashboard Admin & Petugas
+        // ===============================
         if (in_array($userLevel, ['admin', 'petugas'])) {
-            $data = [
+
+            return view('dashboard', [
                 'total_siswa' => Siswa::count(),
                 'total_petugas' => Petugas::count(),
                 'total_kelas' => Kelas::count(),
                 'total_transaksi' => Pembayaran::count(),
                 'total_pendapatan' => Pembayaran::sum('jumlah_bayar'),
-                'transaksi_hari_ini' => Pembayaran::whereDate('tgl_bayar', today())->count(),
-                'pendapatan_hari_ini' => Pembayaran::whereDate('tgl_bayar', today())->sum('jumlah_bayar'),
+                'transaksi_hari_ini' => Pembayaran::whereDate('tgl_bayar', now())->count(),
+                'pendapatan_hari_ini' => Pembayaran::whereDate('tgl_bayar', now())->sum('jumlah_bayar'),
                 'transaksi_terbaru' => Pembayaran::with(['siswa', 'petugas'])
-                    ->latest('tgl_bayar')
-                    ->take(5)
+                    ->orderByDesc('tgl_bayar')
+                    ->limit(5)
                     ->get(),
-            ];
-            
-            return view('dashboard', $data);
+            ]);
         }
-        
-        // Jika siswa login (untuk fitur masa depan)
-        if ($userLevel == 'siswa') {
+
+        // ===============================
+        // Jika Siswa Login
+        // ===============================
+        if ($userLevel === 'siswa') {
             return redirect()->route('siswa.history');
         }
-        
+
+        // ===============================
+        // Role tidak dikenal
+        // ===============================
         abort(403, 'Akses tidak diizinkan');
     }
 }

@@ -1,118 +1,226 @@
 @extends('layouts.main')
 
-@section('content')
-<div class="container-fluid">
-    <div class="mb-4">
-        <h2 class="section-title">Transaksi Pembayaran SPP</h2>
-        <p class="section-subtitle">Pilih siswa untuk melakukan pembayaran</p>
-    </div>
+@section('title', 'Input Pembayaran SPP')
 
+@section('content')
+<div class="container-fluid py-4">
     <div class="row">
-        <div class="col-md-8">
-            <div class="card card-custom">
-                <div class="card-header-custom">
-                    <h5 class="mb-0"><i class="fas fa-search me-2"></i>Cari Siswa</h5>
+        <div class="col-12">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-navy text-white py-4">
+                    <h3 class="mb-0">
+                        <i class="fas fa-money-bill-wave me-2"></i>Input Pembayaran SPP
+                    </h3>
                 </div>
-                <div class="card-body">
-                    <form action="{{ route('pembayaran.create') }}" method="GET">
-                        <div class="row">
-                            <div class="col-md-8 mb-3">
-                                <label class="form-label fw-bold">Cari berdasarkan NISN atau Nama</label>
-                                <input type="text" name="search" class="form-control" 
-                                       placeholder="Masukkan NISN atau Nama Siswa" 
-                                       value="{{ request('search') }}">
+                
+                <div class="card-body p-5">
+                    <form action="{{ route('pembayaran.store') }}" method="POST">
+                        @csrf
+                        
+                        <div class="row g-4">
+                            <!-- Pilih Siswa -->
+                            <div class="col-md-6">
+                                <label for="nisn" class="form-label fw-bold" style="font-size: 18px;">
+                                    <i class="fas fa-user-graduate text-navy me-2"></i>Pilih Siswa (NISN)
+                                </label>
+                                <select name="nisn" 
+                                        id="nisn" 
+                                        class="form-select form-select-lg shadow-sm @error('nisn') is-invalid @enderror" 
+                                        required
+                                        style="font-size: 20px; padding: 18px 24px; border-radius: 12px; border: 2px solid #e0e0e0;">
+                                    <option value="">-- Pilih Siswa --</option>
+                                    @foreach($siswa as $s)
+                                        <option value="{{ $s->nisn }}" {{ old('nisn') == $s->nisn ? 'selected' : '' }}>
+                                            {{ $s->nisn }} - {{ $s->nama }} ({{ $s->kelas->nama_kelas }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('nisn')
+                                    <div class="invalid-feedback" style="font-size: 16px;">{{ $message }}</div>
+                                @enderror
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label fw-bold">&nbsp;</label>
-                                <button type="submit" class="btn btn-success-custom w-100">
-                                    <i class="fas fa-search me-2"></i>Cari
-                                </button>
+
+                            <!-- Tanggal Bayar -->
+                            <div class="col-md-6">
+                                <label for="tgl_bayar" class="form-label fw-bold" style="font-size: 18px;">
+                                    <i class="fas fa-calendar-alt text-navy me-2"></i>Tanggal Bayar
+                                </label>
+                                <input type="date" 
+                                       name="tgl_bayar" 
+                                       id="tgl_bayar" 
+                                       class="form-control form-control-lg shadow-sm @error('tgl_bayar') is-invalid @enderror"
+                                       value="{{ old('tgl_bayar', date('Y-m-d')) }}"
+                                       required
+                                       style="font-size: 20px; padding: 18px 24px; border-radius: 12px; border: 2px solid #e0e0e0;">
+                                @error('tgl_bayar')
+                                    <div class="invalid-feedback" style="font-size: 16px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Bulan Dibayar -->
+                            <div class="col-md-6">
+                                <label for="bulan_dibayar" class="form-label fw-bold" style="font-size: 18px;">
+                                    <i class="fas fa-calendar-day text-navy me-2"></i>Bulan Dibayar
+                                </label>
+                                <select name="bulan_dibayar" 
+                                        id="bulan_dibayar" 
+                                        class="form-select form-select-lg shadow-sm @error('bulan_dibayar') is-invalid @enderror" 
+                                        required
+                                        style="font-size: 20px; padding: 18px 24px; border-radius: 12px; border: 2px solid #e0e0e0;">
+                                    <option value="">-- Pilih Bulan --</option>
+                                    <option value="Januari" {{ old('bulan_dibayar') == 'Januari' ? 'selected' : '' }}>Januari</option>
+                                    <option value="Februari" {{ old('bulan_dibayar') == 'Februari' ? 'selected' : '' }}>Februari</option>
+                                    <option value="Maret" {{ old('bulan_dibayar') == 'Maret' ? 'selected' : '' }}>Maret</option>
+                                    <option value="April" {{ old('bulan_dibayar') == 'April' ? 'selected' : '' }}>April</option>
+                                    <option value="Mei" {{ old('bulan_dibayar') == 'Mei' ? 'selected' : '' }}>Mei</option>
+                                    <option value="Juni" {{ old('bulan_dibayar') == 'Juni' ? 'selected' : '' }}>Juni</option>
+                                    <option value="Juli" {{ old('bulan_dibayar') == 'Juli' ? 'selected' : '' }}>Juli</option>
+                                    <option value="Agustus" {{ old('bulan_dibayar') == 'Agustus' ? 'selected' : '' }}>Agustus</option>
+                                    <option value="September" {{ old('bulan_dibayar') == 'September' ? 'selected' : '' }}>September</option>
+                                    <option value="Oktober" {{ old('bulan_dibayar') == 'Oktober' ? 'selected' : '' }}>Oktober</option>
+                                    <option value="November" {{ old('bulan_dibayar') == 'November' ? 'selected' : '' }}>November</option>
+                                    <option value="Desember" {{ old('bulan_dibayar') == 'Desember' ? 'selected' : '' }}>Desember</option>
+                                </select>
+                                @error('bulan_dibayar')
+                                    <div class="invalid-feedback" style="font-size: 16px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Tahun Dibayar -->
+                            <div class="col-md-6">
+                                <label for="tahun_dibayar" class="form-label fw-bold" style="font-size: 18px;">
+                                    <i class="fas fa-calendar text-navy me-2"></i>Tahun Dibayar
+                                </label>
+                                <select name="tahun_dibayar" 
+                                        id="tahun_dibayar" 
+                                        class="form-select form-select-lg shadow-sm @error('tahun_dibayar') is-invalid @enderror" 
+                                        required
+                                        style="font-size: 20px; padding: 18px 24px; border-radius: 12px; border: 2px solid #e0e0e0;">
+                                    <option value="">-- Pilih Tahun --</option>
+                                    @for($y = date('Y'); $y >= 2020; $y--)
+                                        <option value="{{ $y }}" {{ old('tahun_dibayar', date('Y')) == $y ? 'selected' : '' }}>
+                                            {{ $y }}
+                                        </option>
+                                    @endfor
+                                </select>
+                                @error('tahun_dibayar')
+                                    <div class="invalid-feedback" style="font-size: 16px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- ID SPP -->
+                            <div class="col-md-6">
+                                <label for="id_spp" class="form-label fw-bold" style="font-size: 18px;">
+                                    <i class="fas fa-file-invoice-dollar text-navy me-2"></i>Pilih Tarif SPP
+                                </label>
+                                <select name="id_spp" 
+                                        id="id_spp" 
+                                        class="form-select form-select-lg shadow-sm @error('id_spp') is-invalid @enderror" 
+                                        required
+                                        style="font-size: 20px; padding: 18px 24px; border-radius: 12px; border: 2px solid #e0e0e0;">
+                                    <option value="">-- Pilih Tarif SPP --</option>
+                                    @foreach($spp as $s)
+                                        <option value="{{ $s->id_spp }}" {{ old('id_spp') == $s->id_spp ? 'selected' : '' }}>
+                                            {{ $s->tahun }} - Rp {{ number_format($s->nominal, 0, ',', '.') }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('id_spp')
+                                    <div class="invalid-feedback" style="font-size: 16px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Jumlah Bayar -->
+                            <div class="col-md-6">
+                                <label for="jumlah_bayar" class="form-label fw-bold" style="font-size: 18px;">
+                                    <i class="fas fa-money-bill-wave text-navy me-2"></i>Jumlah Bayar
+                                </label>
+                                <input type="number" 
+                                       name="jumlah_bayar" 
+                                       id="jumlah_bayar" 
+                                       class="form-control form-control-lg shadow-sm @error('jumlah_bayar') is-invalid @enderror"
+                                       placeholder="Masukkan jumlah pembayaran"
+                                       value="{{ old('jumlah_bayar') }}"
+                                       required
+                                       style="font-size: 20px; padding: 18px 24px; border-radius: 12px; border: 2px solid #e0e0e0;">
+                                @error('jumlah_bayar')
+                                    <div class="invalid-feedback" style="font-size: 16px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Metode Pembayaran (Hanya Tunai) -->
+                            <div class="col-md-12">
+                                <label for="metode_pembayaran" class="form-label fw-bold" style="font-size: 18px;">
+                                    <i class="fas fa-cash-register text-navy me-2"></i>Metode Pembayaran
+                                </label>
+                                <div class="form-check shadow-sm p-4" style="border: 2px solid #e0e0e0; border-radius: 12px; background: #f8f9fa;">
+                                    <input class="form-check-input" 
+                                           type="radio" 
+                                           name="metode_pembayaran" 
+                                           id="metode_tunai" 
+                                           value="tunai" 
+                                           checked
+                                           style="width: 24px; height: 24px; margin-top: 8px;">
+                                    <label class="form-check-label ms-2" for="metode_tunai" style="font-size: 20px;">
+                                        <i class="fas fa-money-bill-wave text-success me-2"></i>
+                                        <strong>Tunai</strong>
+                                        <small class="text-muted d-block mt-1" style="font-size: 16px;">Pembayaran langsung dengan uang tunai</small>
+                                    </label>
+                                </div>
+                                @error('metode_pembayaran')
+                                    <div class="text-danger mt-2" style="font-size: 16px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Tombol -->
+                        <div class="row mt-5">
+                            <div class="col-12">
+                                <div class="d-flex gap-3 justify-content-end">
+                                    <a href="{{ route('pembayaran.index') }}" 
+                                       class="btn btn-lg btn-secondary shadow-lg px-5 py-3"
+                                       style="font-size: 18px; border-radius: 12px;">
+                                        <i class="fas fa-arrow-left me-2"></i>Kembali
+                                    </a>
+                                    <button type="submit" 
+                                            class="btn btn-lg btn-primary shadow-lg px-5 py-3"
+                                            style="font-size: 18px; border-radius: 12px; background: linear-gradient(135deg, #001f3f 0%, #001529 100%); border: none;">
+                                        <i class="fas fa-save me-2"></i>Simpan Pembayaran
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </form>
-
-                    @if(isset($siswa) && $siswa->count() > 0)
-                        <hr>
-                        <h6 class="mb-3">Hasil Pencarian ({{ $siswa->count() }} siswa)</h6>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>NISN</th>
-                                        <th>Nama</th>
-                                        <th>Kelas</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($siswa as $s)
-                                    <tr>
-                                        <td>{{ $s->nisn }}</td>
-                                        <td>{{ $s->nama }}</td>
-                                        <td>{{ $s->kelas->nama_kelas ?? '-' }}</td>
-                                        <td>
-                                            <a href="{{ route('pembayaran.transaksi', $s->nisn) }}" 
-                                               class="btn btn-sm btn-success-custom">
-                                                <i class="fas fa-cash-register me-1"></i>Bayar
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @elseif(request('search'))
-                        <div class="alert alert-warning mt-3">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            Siswa dengan NISN atau nama "{{ request('search') }}" tidak ditemukan.
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card card-custom" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
-                <div class="card-body text-white p-4">
-                    <h5 class="mb-3 fw-bold"><i class="fas fa-info-circle me-2"></i>Panduan Pembayaran</h5>
-                    <ul class="ps-3 mb-0">
-                        <li class="mb-3">
-                            <strong>Langkah 1:</strong><br>
-                            Masukkan NISN atau Nama siswa pada kolom pencarian
-                        </li>
-                        <li class="mb-3">
-                            <strong>Langkah 2:</strong><br>
-                            Klik tombol "Cari" untuk mencari data siswa
-                        </li>
-                        <li class="mb-3">
-                            <strong>Langkah 3:</strong><br>
-                            Pilih siswa dari hasil pencarian
-                        </li>
-                        <li class="mb-3">
-                            <strong>Langkah 4:</strong><br>
-                            Klik tombol "Bayar" untuk melakukan transaksi pembayaran
-                        </li>
-                        <li class="mb-0">
-                            <strong>Nominal SPP:</strong><br>
-                            <span class="badge bg-light text-dark me-1">Rp 75.000</span>
-                            <span class="badge bg-light text-dark me-1">Rp 100.000</span>
-                            <span class="badge bg-light text-dark">Rp 175.000</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card card-custom mt-3" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
-                <div class="card-body text-white text-center p-4">
-                    <i class="fas fa-user-plus fa-3x mb-3"></i>
-                    <h6 class="fw-bold mb-2">Siswa Belum Terdaftar?</h6>
-                    <p class="mb-3 small">Tambahkan data siswa baru terlebih dahulu</p>
-                    <a href="{{ route('siswa.create') }}" class="btn btn-light w-100 fw-bold">
-                        <i class="fas fa-plus me-2"></i>Tambah Siswa Baru
-                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .bg-gradient-navy {
+        background: linear-gradient(135deg, #001f3f 0%, #001529 100%);
+    }
+    
+    .text-navy {
+        color: #001f3f;
+    }
+    
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #FFD700;
+        box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
+    }
+    
+    .form-check-input:checked {
+        background-color: #001f3f;
+        border-color: #001f3f;
+    }
+    
+    .btn-primary:hover,
+    .btn-secondary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 31, 63, 0.4) !important;
+    }
+</style>
 @endsection

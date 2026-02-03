@@ -33,11 +33,11 @@
         }
 
         /* =====================================================
-           SIDEBAR
+           SIDEBAR - DENGAN SCROLLBAR
            ===================================================== */
         .sidebar {
             background: linear-gradient(180deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
-            min-height: 100vh;
+            height: 100vh;
             color: white;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             position: fixed;
@@ -45,17 +45,35 @@
             left: 0;
             width: 260px;
             overflow-y: auto;
+            overflow-x: hidden;
             z-index: 1000;
             transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
 
+        /* Custom Scrollbar untuk Sidebar */
         .sidebar::-webkit-scrollbar {
-            width: 5px;
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(0, 31, 63, 0.3);
         }
 
         .sidebar::-webkit-scrollbar-thumb {
-            background: rgba(255,215,0,0.3);
+            background: rgba(255, 215, 0, 0.5);
             border-radius: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 215, 0, 0.7);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 20px;
         }
 
         .sidebar .nav-link {
@@ -706,86 +724,88 @@
             </div>
 
             <!-- NAVIGATION MENU -->
-            <ul class="nav flex-column mt-3">
-                <li class="nav-item">
-                    <a class="nav-link {{ Request::is('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
-                        <i class="fas fa-home me-2"></i> Dashboard
-                    </a>
-                </li>
-                
-                @if(auth()->user()->level == 'admin')
-                <li class="nav-item mt-3">
-                    <small class="text-white-50 px-3 d-block mb-2">DATA MASTER</small>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ Request::is('siswa*') ? 'active' : '' }}" href="{{ route('siswa.index') }}">
-                        <i class="fas fa-user-graduate me-2"></i> Data Siswa
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ Request::is('kelas*') ? 'active' : '' }}" href="{{ route('kelas.index') }}">
-                        <i class="fas fa-school me-2"></i> Data Kelas
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ Request::is('spp*') ? 'active' : '' }}" href="{{ route('spp.index') }}">
-                        <i class="fas fa-money-check-alt me-2"></i> Data SPP
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ Request::is('petugas*') ? 'active' : '' }}" href="{{ route('petugas.index') }}">
-                        <i class="fas fa-user-shield me-2"></i> Data Petugas
-                    </a>
-                </li>
-                @endif
-                
-                <li class="nav-item mt-3">
-                    <small class="text-white-50 px-3 d-block mb-2">TRANSAKSI</small>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ Request::is('entri-pembayaran*') ? 'active' : '' }}" href="{{ route('pembayaran.create') }}">
-                        <i class="fas fa-cash-register me-2"></i> Entri Pembayaran
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ Request::is('history-pembayaran') ? 'active' : '' }}" href="{{ route('pembayaran.index') }}">
-                        <i class="fas fa-history me-2"></i> History Pembayaran
-                    </a>
-                </li>
-                
-                @if(auth()->user()->level == 'admin')
-                <li class="nav-item mt-3">
-                    <small class="text-white-50 px-3 d-block mb-2">LAPORAN</small>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ Request::is('laporan*') ? 'active' : '' }}" href="{{ route('laporan.index') }}">
-                        <i class="fas fa-file-excel me-2"></i> Laporan Excel
-                    </a>
-                </li>
+            <div class="sidebar-content">
+                <ul class="nav flex-column mt-3">
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                            <i class="fas fa-home me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    
+                    @if(auth()->user()->level == 'admin')
+                    <li class="nav-item mt-3">
+                        <small class="text-white-50 px-3 d-block mb-2">DATA MASTER</small>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('siswa*') ? 'active' : '' }}" href="{{ route('siswa.index') }}">
+                            <i class="fas fa-user-graduate me-2"></i> Data Siswa
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('kelas*') ? 'active' : '' }}" href="{{ route('kelas.index') }}">
+                            <i class="fas fa-school me-2"></i> Data Kelas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('spp*') ? 'active' : '' }}" href="{{ route('spp.index') }}">
+                            <i class="fas fa-money-check-alt me-2"></i> Data SPP
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('petugas*') ? 'active' : '' }}" href="{{ route('petugas.index') }}">
+                            <i class="fas fa-user-shield me-2"></i> Data Petugas
+                        </a>
+                    </li>
+                    @endif
+                    
+                    <li class="nav-item mt-3">
+                        <small class="text-white-50 px-3 d-block mb-2">TRANSAKSI</small>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('entri-pembayaran*') ? 'active' : '' }}" href="{{ route('pembayaran.create') }}">
+                            <i class="fas fa-cash-register me-2"></i> Entri Pembayaran
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('history-pembayaran') ? 'active' : '' }}" href="{{ route('pembayaran.index') }}">
+                            <i class="fas fa-history me-2"></i> History Pembayaran
+                        </a>
+                    </li>
+                    
+                    @if(auth()->user()->level == 'admin')
+                    <li class="nav-item mt-3">
+                        <small class="text-white-50 px-3 d-block mb-2">LAPORAN</small>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('laporan*') ? 'active' : '' }}" href="{{ route('laporan.index') }}">
+                            <i class="fas fa-file-excel me-2"></i> Laporan Excel
+                        </a>
+                    </li>
 
-                <!-- TOMBOL LOGOUT DI BAWAH LAPORAN EXCEL -->
-                <li class="nav-item mt-3 px-3">
-                    <form method="POST" action="{{ route('logout') }}" class="w-100">
-                        @csrf
-                        <button type="submit" class="btn-logout">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
-                        </button>
-                    </form>
-                </li>
-                @else
-                <!-- TOMBOL LOGOUT UNTUK PETUGAS (di bawah history) -->
-                <li class="nav-item mt-3 px-3">
-                    <form method="POST" action="{{ route('logout') }}" class="w-100">
-                        @csrf
-                        <button type="submit" class="btn-logout">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
-                        </button>
-                    </form>
-                </li>
-                @endif
-            </ul>
+                    <!-- TOMBOL LOGOUT DI BAWAH LAPORAN EXCEL -->
+                    <li class="nav-item mt-3 px-3">
+                        <form method="POST" action="{{ route('logout') }}" class="w-100">
+                            @csrf
+                            <button type="submit" class="btn-logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </button>
+                        </form>
+                    </li>
+                    @else
+                    <!-- TOMBOL LOGOUT UNTUK PETUGAS (di bawah history) -->
+                    <li class="nav-item mt-3 px-3">
+                        <form method="POST" action="{{ route('logout') }}" class="w-100">
+                            @csrf
+                            <button type="submit" class="btn-logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </button>
+                        </form>
+                    </li>
+                    @endif
+                </ul>
+            </div>
         </div>
 
         <div class="content-area">
