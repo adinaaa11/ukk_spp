@@ -18,99 +18,100 @@ use App\Http\Controllers\SiswaDashboardController;
 |--------------------------------------------------------------------------
 */
 
-// ===================================================
-// 1. HALAMAN UTAMA
-// ===================================================
+// ======================================================
+// HALAMAN AWAL
+// ======================================================
 Route::get('/', function () {
     return view('welcome-page');
 })->name('home');
 
-// ===================================================
-// 2. AUTH ADMIN / PETUGAS (Laravel Breeze / Fortify)
-// ===================================================
+// ======================================================
+// AUTH ADMIN / PETUGAS (Laravel Breeze / Fortify / dll)
+// ======================================================
 if (file_exists(__DIR__ . '/auth.php')) {
     require __DIR__ . '/auth.php';
 }
 
-// ===================================================
-// 3. AUTH SISWA (GUARD TERPISAH)
-// ===================================================
+// ======================================================
+// AUTH SISWA (LOGIN TERPISAH)
+// ======================================================
 Route::prefix('siswa')->group(function () {
 
-    // -------- GUEST SISWA --------
+    // Guest siswa
     Route::middleware('guest:siswa')->group(function () {
         Route::get('/login', [SiswaAuthController::class, 'showLoginForm'])
             ->name('login.siswa');
         Route::post('/login', [SiswaAuthController::class, 'login']);
     });
 
-    // -------- AUTH SISWA --------
+    // Auth siswa
     Route::middleware('auth:siswa')->group(function () {
         Route::get('/dashboard', [SiswaDashboardController::class, 'index'])
             ->name('siswa.dashboard');
-
         Route::get('/history', [SiswaDashboardController::class, 'history'])
             ->name('siswa.history');
-
         Route::post('/logout', [SiswaAuthController::class, 'logout'])
             ->name('siswa.logout');
     });
 });
 
-// ===================================================
-// 4. DASHBOARD ADMIN / PETUGAS
-// ===================================================
+// ======================================================
+// DASHBOARD ADMIN & PETUGAS
+// ======================================================
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('dashboard');
 
-// ===================================================
-// 5. GRUP ADMIN (LEVEL: admin)
-// ===================================================
+// ======================================================
+// KHUSUS ADMIN
+// ======================================================
 Route::middleware(['auth', 'ceklevel:admin'])->group(function () {
 
-    // CRUD MASTER DATA
     Route::resource('kelas', KelasController::class);
     Route::resource('spp', SppController::class);
     Route::resource('petugas', PetugasController::class);
     Route::resource('siswa', SiswaController::class);
 
-    // DETAIL SISWA (AJAX)
-    Route::get('siswa/{nisn}/detail', [SiswaController::class, 'getDetail'])
+    // detail siswa (ajax)
+    Route::get('/siswa/{nisn}/detail', [SiswaController::class, 'getDetail'])
         ->name('siswa.detail');
 
-    // LAPORAN
+    // laporan
     Route::get('/laporan', [LaporanController::class, 'index'])
         ->name('laporan.index');
 
     Route::get('/laporan/pembayaran/excel', [LaporanController::class, 'laporanPembayaran'])
-        ->name('laporan.pembayaran');
+        ->name('laporan.pembayaran.excel');
 });
 
-// ===================================================
-// 6. GRUP ADMIN & PETUGAS (LEVEL: admin, petugas)
-// ===================================================
+// ======================================================
+// ADMIN & PETUGAS (PEMBAYARAN)
+// ======================================================
 Route::middleware(['auth', 'ceklevel:admin,petugas'])->group(function () {
 
-    // -------- PEMBAYARAN --------
+    // ================= PEMBAYARAN =================
 
     // History Pembayaran
     Route::get('/history-pembayaran', [PembayaranController::class, 'index'])
         ->name('pembayaran.index');
 
-    // Entri Pembayaran (Cari Siswa)
+    // Entri Pembayaran
     Route::get('/entri-pembayaran', [PembayaranController::class, 'create'])
         ->name('pembayaran.create');
-
-    // Form Transaksi Pembayaran per Siswa
-    Route::get('/pembayaran/transaksi/{nisn}', [PembayaranController::class, 'transaksi'])
-        ->name('pembayaran.transaksi');
 
     // Simpan Pembayaran
     Route::post('/simpan-pembayaran', [PembayaranController::class, 'store'])
         ->name('pembayaran.store');
 
-    // Cetak Struk
+    // Detail Pembayaran
+    Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])
+        ->name('pembayaran.show');
+
+    // Cetak Struk Pembayaran
     Route::get('/pembayaran/struk/{id}', [PembayaranController::class, 'cetakStruk'])
         ->name('pembayaran.struk');
+
+    // Hapus Pembayaran
+    Route::delete('/pembayaran/{id}', [PembayaranController::class, 'destroy'])
+        ->name('pembayaran.destroy');
 });

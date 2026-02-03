@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Pembayaran;
 use App\Models\Siswa;
+use App\Models\Spp;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class PembayaranController extends Controller
@@ -15,21 +15,27 @@ class PembayaranController extends Controller
      */
     public function index()
     {
-        $pembayaran = Pembayaran::with(['siswa.kelas', 'petugas'])
+        $pembayaran = Pembayaran::with(['siswa.kelas', 'petugas', 'spp'])
             ->orderByDesc('tgl_bayar')
-            ->paginate(10);
+            ->get();
 
-        return view('pembayaran.history', compact('pembayaran'));
+        return view('pembayaran.index', compact('pembayaran'));
     }
 
     /**
-     * FORM CARI SISWA (ENTRI PEMBAYARAN)
+     * HALAMAN ENTRI PEMBAYARAN
      */
     public function create(Request $request)
     {
-        // ⬅️ WAJIB collection, bukan null
-        $siswa = collect();
+        // ✅ AMBIL SEMUA SISWA (INI YANG MEMPERBAIKI DROPDOWN)
+        $siswa = Siswa::with(['kelas', 'spp'])
+            ->orderBy('nama')
+            ->get();
 
+        // Data SPP
+        $spp = Spp::orderByDesc('tahun')->get();
+
+        // Optional: jika pakai search
         if ($request->filled('search')) {
             $search = $request->search;
 
@@ -39,24 +45,7 @@ class PembayaranController extends Controller
                 ->get();
         }
 
-        return view('pembayaran.create', compact('siswa'));
-    }
-
-    /**
-     * FORM TRANSAKSI PEMBAYARAN SISWA
-     */
-    public function transaksi($nisn)
-    {
-        $siswa = Siswa::with(['kelas', 'spp'])
-            ->where('nisn', $nisn)
-            ->firstOrFail();
-
-        $history = Pembayaran::with('petugas')
-            ->where('nisn', $nisn)
-            ->orderByDesc('tgl_bayar')
-            ->get();
-
-        return view('pembayaran.transaksi', compact('siswa', 'history'));
+        return view('pembayaran.create', compact('siswa', 'spp'));
     }
 
     /**
@@ -64,71 +53,51 @@ class PembayaranController extends Controller
      */
     public function store(Request $request)
     {
-        $rules = [
-            'nisn' => 'required|exists:siswa,nisn',
-            'bulan_dibayar' => 'required',
-            'tahun_dibayar' => 'required|digits:4',
-            'jumlah_bayar' => 'required|numeric|min:0',
-            'metode_pembayaran' => 'required|in:tunai,transfer',
-        ];
+        $request->validate([
+            'nisn'             => 'required|exists:siswa,nisn',
+            'id_spp'           => 'required|exists:spp,id_spp',
+            'bulan_dibayar'    => 'required',
+            'tahun_dibayar'    => 'required',
+            'tgl_bayar'        => 'required|date',
+            'jumlah_bayar'     => 'required|numeric|min:0',
+            'metode_pembayaran'=> 'required',
+        ]);
 
-        if ($request->metode_pembayaran === 'transfer') {
-            $rules += [
-                'bank_tujuan' => 'required',
-                'no_rekening_pengirim' => 'required',
-                'nama_pengirim' => 'required',
-                'tanggal_transfer' => 'required|date',
-            ];
-        }
+        Pembayaran::create([
+            'id_petugas'       => Auth::user()->id_petugas ?? Auth::id(),
+            'nisn'             => $request->nisn,
+            'id_spp'           => $request->id_spp,
+            'tgl_bayar'        => $request->tgl_bayar,
+            'bulan_dibayar'    => $request->bulan_dibayar,
+            'tahun_dibayar'    => $request->tahun_dibayar,
+            'jumlah_bayar'     => $request->jumlah_bayar,
+            'metode_pembayaran'=> $request->metode_pembayaran,
+        ]);
 
-        $validated = $request->validate($rules);
-
-        $siswa = Siswa::findOrFail($validated['nisn']);
-
-        // ❌ CEK DOUBLE BAYAR
-        $cek = Pembayaran::where('nisn', $validated['nisn'])
-            ->where('bulan_dibayar', $validated['bulan_dibayar'])
-            ->where('tahun_dibayar', $validated['tahun_dibayar'])
-            ->exists();
-
-        if ($cek) {
-            return back()->with('error', 'SPP bulan tersebut sudah dibayar');
-        }
-
-        DB::beginTransaction();
-        try {
-            Pembayaran::create([
-                'id_petugas' => Auth::user()->id_petugas,
-                'nisn' => $validated['nisn'],
-                'tgl_bayar' => now(),
-                'bulan_dibayar' => $validated['bulan_dibayar'],
-                'tahun_dibayar' => $validated['tahun_dibayar'],
-                'id_spp' => $siswa->id_spp,
-                'jumlah_bayar' => $validated['jumlah_bayar'],
-                'metode_pembayaran' => $validated['metode_pembayaran'],
-                'bank_tujuan' => $request->bank_tujuan,
-                'no_rekening_pengirim' => $request->no_rekening_pengirim,
-                'nama_pengirim' => $request->nama_pengirim,
-                'tanggal_transfer' => $request->tanggal_transfer,
-                'catatan' => $request->catatan,
-            ]);
-
-            DB::commit();
-            return back()->with('success', 'Pembayaran berhasil disimpan');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', $e->getMessage());
-        }
+        return redirect()
+            ->route('pembayaran.index')
+            ->with('success', 'Pembayaran berhasil disimpan');
     }
 
     /**
-     * CETAK STRUK
+     * DETAIL PEMBAYARAN
      */
-    public function cetakStruk($id)
+    public function show($id)
     {
         $pembayaran = Pembayaran::with(['siswa.kelas', 'petugas', 'spp'])
             ->findOrFail($id);
 
-        return view('pembayaran.struk', compact('pembayaran'));
+        return view('pembayaran.show', compact('pembayaran'));
+    }
+
+    /**
+     * HAPUS PEMBAYARAN
+     */
+    public function destroy($id)
+    {
+        Pembayaran::findOrFail($id)->delete();
+
+        return redirect()->back()
+            ->with('success', 'Data pembayaran berhasil dihapus');
     }
 }
