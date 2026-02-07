@@ -12,20 +12,29 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class LaporanController extends Controller
 {
     /**
+     * Halaman Form Filter Laporan
+     */
+    public function index()
+    {
+        return view('laporan.index');
+    }
+
+    /**
      * Download Laporan Pembayaran ke Excel
      */
-    public function laporanPembayaran(Request $request)
+    public function downloadExcel(Request $request)
     {
         // Ambil data pembayaran dengan relasi
         $query = Pembayaran::with(['siswa.kelas', 'petugas', 'spp'])
             ->orderBy('tgl_bayar', 'DESC');
 
         // Filter berdasarkan tanggal jika ada
-        if ($request->has('tanggal_mulai') && $request->has('tanggal_akhir')) {
-            $query->whereBetween('tgl_bayar', [
-                $request->tanggal_mulai,
-                $request->tanggal_akhir
-            ]);
+        if ($request->has('tanggal_mulai') && $request->tanggal_mulai != '') {
+            $query->whereDate('tgl_bayar', '>=', $request->tanggal_mulai);
+        }
+
+        if ($request->has('tanggal_akhir') && $request->tanggal_akhir != '') {
+            $query->whereDate('tgl_bayar', '<=', $request->tanggal_akhir);
         }
 
         // Filter berdasarkan bulan
@@ -50,18 +59,19 @@ class LaporanController extends Controller
     /**
      * Download Laporan Pembayaran ke PDF
      */
-    public function laporanPembayaranPDF(Request $request)
+    public function downloadPDF(Request $request)
     {
         // Ambil data pembayaran dengan relasi
         $query = Pembayaran::with(['siswa.kelas', 'petugas', 'spp'])
             ->orderBy('tgl_bayar', 'DESC');
 
         // Filter berdasarkan tanggal jika ada
-        if ($request->has('tanggal_mulai') && $request->has('tanggal_akhir')) {
-            $query->whereBetween('tgl_bayar', [
-                $request->tanggal_mulai,
-                $request->tanggal_akhir
-            ]);
+        if ($request->has('tanggal_mulai') && $request->tanggal_mulai != '') {
+            $query->whereDate('tgl_bayar', '>=', $request->tanggal_mulai);
+        }
+
+        if ($request->has('tanggal_akhir') && $request->tanggal_akhir != '') {
+            $query->whereDate('tgl_bayar', '<=', $request->tanggal_akhir);
         }
 
         // Filter berdasarkan bulan
@@ -102,13 +112,5 @@ class LaporanController extends Controller
 
         // Download PDF
         return $pdf->download($filename);
-    }
-
-    /**
-     * Halaman Form Filter Laporan
-     */
-    public function index()
-    {
-        return view('laporan.index');
     }
 }

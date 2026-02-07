@@ -154,18 +154,6 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <!-- Pagination -->
-                    @if($pembayaran->count() > 0)
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <div style="font-size: 16px;">
-                            Menampilkan <strong>{{ $pembayaran->count() }}</strong> dari <strong>{{ $pembayaran->total() }}</strong> transaksi
-                        </div>
-                        <div>
-                            {{ $pembayaran->links() }}
-                        </div>
-                    </div>
-                    @endif
                 </div>
             </div>
         </div>

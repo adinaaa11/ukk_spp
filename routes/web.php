@@ -67,21 +67,29 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 // ======================================================
 Route::middleware(['auth', 'ceklevel:admin'])->group(function () {
 
+    // CRUD Resources
     Route::resource('kelas', KelasController::class);
     Route::resource('spp', SppController::class);
     Route::resource('petugas', PetugasController::class);
     Route::resource('siswa', SiswaController::class);
 
-    // detail siswa (ajax)
+    // Detail siswa (AJAX)
     Route::get('/siswa/{nisn}/detail', [SiswaController::class, 'getDetail'])
         ->name('siswa.detail');
 
-    // laporan
+    // ================= LAPORAN =================
+    
+    // Halaman Form Filter Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])
         ->name('laporan.index');
 
-    Route::get('/laporan/pembayaran/excel', [LaporanController::class, 'laporanPembayaran'])
-        ->name('laporan.pembayaran.excel');
+    // Download Laporan Excel
+    Route::get('/laporan/excel', [LaporanController::class, 'downloadExcel'])
+        ->name('laporan.download.excel');
+
+    // Download Laporan PDF
+    Route::get('/laporan/pdf', [LaporanController::class, 'downloadPDF'])
+        ->name('laporan.download.pdf');
 });
 
 // ======================================================
