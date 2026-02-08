@@ -26,7 +26,7 @@
         }
 
         /* ═══════════════════════════════════════════════════════════
-           NAVBAR
+           NAVBAR (TANPA TOMBOL LOGIN)
            ═══════════════════════════════════════════════════════════ */
         .navbar {
             position: fixed;
@@ -37,7 +37,7 @@
             backdrop-filter: blur(10px);
             padding: 15px 50px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             z-index: 1000;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
@@ -64,44 +64,6 @@
             font-size: 12px;
             opacity: 0.8;
             margin: 0;
-        }
-
-        .navbar-buttons {
-            display: flex;
-            gap: 15px;
-        }
-
-        .btn-nav {
-            padding: 12px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 15px;
-            transition: all 0.3s;
-            display: inline-block;
-        }
-
-        .btn-admin-nav {
-            background: linear-gradient(135deg, var(--yellow-accent) 0%, var(--yellow-hover) 100%);
-            color: var(--navy-primary);
-            border: 2px solid transparent;
-        }
-
-        .btn-admin-nav:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
-        }
-
-        .btn-siswa-nav {
-            background: transparent;
-            color: white;
-            border: 2px solid var(--yellow-accent);
-        }
-
-        .btn-siswa-nav:hover {
-            background: var(--yellow-accent);
-            color: var(--navy-primary);
-            transform: translateY(-3px);
         }
 
         /* ═══════════════════════════════════════════════════════════
@@ -196,7 +158,7 @@
             display: flex;
             gap: 30px;
             justify-content: center;
-            margin-bottom: 60px;
+            margin-bottom: 100px;
             animation: fadeInUp 1s ease-out 0.6s both;
         }
 
@@ -247,7 +209,7 @@
         }
 
         /* ═══════════════════════════════════════════════════════════
-           SOCIAL MEDIA
+           SOCIAL MEDIA (WARNA SESUAI TEMA)
            ═══════════════════════════════════════════════════════════ */
         .social-media {
             display: flex;
@@ -288,29 +250,36 @@
             height: 100px;
         }
 
+        /* WARNA SESUAI TEMA NAVY & YELLOW */
         .social-instagram {
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
+            color: var(--yellow-accent);
+            border: 2px solid var(--yellow-accent);
         }
 
         .social-facebook {
-            background: #1877F2;
-            color: white;
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
+            color: var(--yellow-accent);
+            border: 2px solid var(--yellow-accent);
         }
 
         .social-tiktok {
-            background: linear-gradient(180deg, #00f2ea 0%, #ff0050 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
+            color: var(--yellow-accent);
+            border: 2px solid var(--yellow-accent);
         }
 
         .social-btn:hover {
             transform: translateY(-5px) scale(1.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+            background: var(--yellow-accent);
+            color: var(--navy-primary);
         }
 
         .social-label {
             color: white;
-            margin-top: 80px;
+            margin-top: 30px;
+            margin-bottom: 20px;
             font-size: 16px;
             opacity: 0.9;
             animation: fadeInUp 1s ease-out 1s both;
@@ -402,22 +371,10 @@
         @media (max-width: 768px) {
             .navbar {
                 padding: 15px 20px;
-                flex-direction: column;
-                gap: 15px;
             }
 
             .navbar-logo h2 {
                 font-size: 20px;
-            }
-
-            .navbar-buttons {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .btn-nav {
-                padding: 10px 20px;
-                font-size: 13px;
             }
 
             .hero-content h1 {
@@ -435,6 +392,7 @@
             .hero-buttons {
                 flex-direction: column;
                 gap: 15px;
+                margin-bottom: 60px;
             }
 
             .btn-hero {
@@ -454,7 +412,7 @@
 </head>
 <body>
     <!-- ═══════════════════════════════════════════════════════════
-         NAVBAR
+         NAVBAR (HANYA LOGO, TANPA TOMBOL)
          ═══════════════════════════════════════════════════════════ -->
     <div class="navbar">
         <div class="navbar-logo">
@@ -463,14 +421,6 @@
                 <h2>SMKN 1 PURWOSARI</h2>
                 <p>Aplikasi SPP Digital</p>
             </div>
-        </div>
-        <div class="navbar-buttons">
-            <a href="{{ route('login') }}" class="btn-nav btn-admin-nav">
-                <i class="fas fa-user-shield"></i> Login Admin
-            </a>
-            <a href="{{ route('login.siswa') }}" class="btn-nav btn-siswa-nav">
-                <i class="fas fa-user-graduate"></i> Login Siswa
-            </a>
         </div>
     </div>
 
