@@ -1,0 +1,131 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin: 20px 0;
+    font-size: 13px;
+}
+
+.pagination a, .pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #0d1f2d;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.2s;
+    font-size: 13px;
+}
+
+.pagination a:hover {
+    background: #ffd700;
+    border-color: #ffd700;
+    color: #0d1f2d;
+    transform: translateY(-1px);
+}
+
+.pagination span.current {
+    background: linear-gradient(135deg, #1a3a52 0%, #0d1f2d 100%);
+    color: #ffd700;
+    border-color: #0d1f2d;
+    font-weight: 600;
+}
+
+.pagination .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Tombol Previous & Next */
+.pagination .prev, .pagination .next {
+    font-weight: 600;
+}
+
+.pagination .prev::before {
+    content: "← ";
+}
+
+.pagination .next::after {
+    content: " →";
+}
+
+/* Info halaman */
+.pagination-info {
+    text-align: center;
+    color: #666;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+/* Compact version - sangat kecil */
+.pagination-compact {
+    font-size: 12px;
+}
+
+.pagination-compact a, .pagination-compact span {
+    min-width: 28px;
+    height: 28px;
+    padding: 0 8px;
+    font-size: 12px;
+}
+
+/* Simple text-based pagination */
+.pagination-simple {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    font-size: 13px;
+}
+
+.pagination-simple .page-info {
+    color: #666;
+}
+
+.pagination-simple .page-nav {
+    display: flex;
+    gap: 10px;
+}
+
+.pagination-simple a {
+    padding: 5px 15px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #0d1f2d;
+    transition: all 0.2s;
+}
+
+.pagination-simple a:hover {
+    background: #ffd700;
+    border-color: #ffd700;
+}
+
+.pagination-simple a.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Responsive - mobile lebih kecil */
+@media (max-width: 768px) {
+    .pagination {
+        font-size: 11px;
+    }
+    
+    .pagination a, .pagination span {
+        min-width: 28px;
+        height: 28px;
+        padding: 0 6px;
+        font-size: 11px;
+    }
+}
