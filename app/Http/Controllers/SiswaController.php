@@ -11,231 +11,214 @@ use Illuminate\Validation\Rule;
 
 class SiswaController extends Controller
 {
+    /**
+     * =============================
+     *  INDEX DATA SISWA
+     * =============================
+     */
     public function index(Request $request)
     {
         $query = Siswa::with(['kelas', 'spp']);
 
-        // Filter pencarian
-        if ($request->has('search') && $request->search != '') {
+        // 🔍 SEARCH (NISN, NIS, NAMA)
+        if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('nisn', 'like', "%{$search}%")
                   ->orWhere('nis', 'like', "%{$search}%")
                   ->orWhere('nama', 'like', "%{$search}%");
             });
         }
 
-        // Filter kelas
-        if ($request->has('kelas') && $request->kelas != '') {
+        // 🎓 FILTER KELAS
+        if ($request->filled('kelas')) {
             $query->where('id_kelas', $request->kelas);
         }
 
-        // PERUBAHAN: Pagination 10 siswa per halaman (sebelumnya 5)
-        $siswa = $query->paginate(10);
-        return view('siswa.index', compact('siswa'));
+        // 📄 PAGINATION
+        $siswa = $query
+            ->orderBy('nama')
+            ->paginate(10)
+            ->withQueryString();
+
+        // ⚠️ INI YANG SEBELUMNYA KURANG
+        $kelas = Kelas::orderBy('nama_kelas')->get();
+
+        return view('siswa.index', compact('siswa', 'kelas'));
     }
 
+    /**
+     * =============================
+     *  FORM TAMBAH SISWA
+     * =============================
+     */
     public function create()
     {
-        $kelas = Kelas::all();
-        $spp = Spp::all();
+        $kelas = Kelas::orderBy('nama_kelas')->get();
+        $spp   = Spp::orderBy('tahun', 'desc')->get();
+
         return view('siswa.create', compact('kelas', 'spp'));
     }
 
+    /**
+     * =============================
+     *  SIMPAN DATA SISWA
+     * =============================
+     */
     public function store(Request $request)
     {
-        // VALIDASI LENGKAP
         $validated = $request->validate([
             'nisn' => [
-                'required',
-                'string',
-                'size:10',
-                'unique:siswa,nisn',
-                'regex:/^[0-9]+$/', // Hanya angka
+                'required', 'size:10', 'regex:/^[0-9]+$/', 'unique:siswa,nisn'
             ],
             'nis' => [
-                'required',
-                'string',
-                'size:8',
-                'regex:/^[0-9]+$/',
+                'required', 'size:8', 'regex:/^[0-9]+$/'
             ],
             'nama' => [
-                'required',
-                'string',
-                'max:35',
-                'min:3',
+                'required', 'string', 'min:3', 'max:35'
             ],
             'id_kelas' => [
-                'required',
-                'exists:kelas,id_kelas',
+                'required', 'exists:kelas,id_kelas'
             ],
             'alamat' => [
-                'required',
-                'string',
-                'min:10',
+                'required', 'string', 'min:10'
             ],
             'no_telp' => [
-                'required',
-                'string',
-                'max:13',
-                'regex:/^[0-9]+$/',
+                'required', 'regex:/^[0-9]+$/', 'max:13'
             ],
             'id_spp' => [
-                'required',
-                'exists:spp,id_spp',
+                'required', 'exists:spp,id_spp'
             ],
-        ], [
-            'nisn.required' => 'NISN harus diisi',
-            'nisn.size' => 'NISN harus 10 digit',
-            'nisn.unique' => 'NISN sudah terdaftar',
-            'nisn.regex' => 'NISN hanya boleh berisi angka',
-            'nis.required' => 'NIS harus diisi',
-            'nis.size' => 'NIS harus 8 digit',
-            'nis.regex' => 'NIS hanya boleh berisi angka',
-            'nama.required' => 'Nama harus diisi',
-            'nama.min' => 'Nama minimal 3 karakter',
-            'nama.max' => 'Nama maksimal 35 karakter',
-            'id_kelas.required' => 'Kelas harus dipilih',
-            'id_kelas.exists' => 'Kelas tidak valid',
-            'alamat.required' => 'Alamat harus diisi',
-            'alamat.min' => 'Alamat minimal 10 karakter',
-            'no_telp.required' => 'No. Telepon harus diisi',
-            'no_telp.regex' => 'No. Telepon hanya boleh berisi angka',
-            'id_spp.required' => 'SPP harus dipilih',
-            'id_spp.exists' => 'SPP tidak valid',
         ]);
 
-        // Tambahkan username dan password default
+        // DEFAULT AKUN SISWA
         $validated['username'] = $validated['nisn'];
-        $validated['password'] = Hash::make('siswa123'); // Password default
+        $validated['password'] = Hash::make('siswa123');
 
         Siswa::create($validated);
 
-        return redirect()->route('siswa.index')
+        return redirect()
+            ->route('siswa.index')
             ->with('success', '✅ Data siswa berhasil ditambahkan! Password default: siswa123');
     }
 
+    /**
+     * =============================
+     *  DETAIL SISWA
+     * =============================
+     */
     public function show(string $nisn)
     {
-        $siswa = Siswa::with(['kelas', 'spp', 'pembayaran'])->findOrFail($nisn);
+        $siswa = Siswa::with([
+                'kelas',
+                'spp',
+                'pembayaran.petugas'
+            ])
+            ->where('nisn', $nisn)
+            ->firstOrFail();
+
         return view('siswa.show', compact('siswa'));
     }
 
+    /**
+     * =============================
+     *  FORM EDIT SISWA
+     * =============================
+     */
     public function edit(string $nisn)
     {
-        $siswa = Siswa::findOrFail($nisn);
-        $kelas = Kelas::all();
-        $spp = Spp::all();
+        $siswa = Siswa::where('nisn', $nisn)->firstOrFail();
+        $kelas = Kelas::orderBy('nama_kelas')->get();
+        $spp   = Spp::orderBy('tahun', 'desc')->get();
+
         return view('siswa.edit', compact('siswa', 'kelas', 'spp'));
     }
 
+    /**
+     * =============================
+     *  UPDATE DATA SISWA
+     * =============================
+     */
     public function update(Request $request, string $nisn)
     {
-        $siswa = Siswa::findOrFail($nisn);
+        $siswa = Siswa::where('nisn', $nisn)->firstOrFail();
 
-        // VALIDASI LENGKAP
         $validated = $request->validate([
             'nisn' => [
                 'required',
-                'string',
                 'size:10',
                 'regex:/^[0-9]+$/',
-                Rule::unique('siswa', 'nisn')->ignore($nisn, 'nisn'),
+                Rule::unique('siswa', 'nisn')->ignore($siswa->nisn, 'nisn'),
             ],
             'nis' => [
-                'required',
-                'string',
-                'size:8',
-                'regex:/^[0-9]+$/',
+                'required', 'size:8', 'regex:/^[0-9]+$/'
             ],
             'nama' => [
-                'required',
-                'string',
-                'max:35',
-                'min:3',
+                'required', 'string', 'min:3', 'max:35'
             ],
             'id_kelas' => [
-                'required',
-                'exists:kelas,id_kelas',
+                'required', 'exists:kelas,id_kelas'
             ],
             'alamat' => [
-                'required',
-                'string',
-                'min:10',
+                'required', 'string', 'min:10'
             ],
             'no_telp' => [
-                'required',
-                'string',
-                'max:13',
-                'regex:/^[0-9]+$/',
+                'required', 'regex:/^[0-9]+$/', 'max:13'
             ],
             'id_spp' => [
-                'required',
-                'exists:spp,id_spp',
+                'required', 'exists:spp,id_spp'
             ],
-        ], [
-            'nisn.required' => 'NISN harus diisi',
-            'nisn.size' => 'NISN harus 10 digit',
-            'nisn.unique' => 'NISN sudah terdaftar',
-            'nisn.regex' => 'NISN hanya boleh berisi angka',
-            'nis.required' => 'NIS harus diisi',
-            'nis.size' => 'NIS harus 8 digit',
-            'nis.regex' => 'NIS hanya boleh berisi angka',
-            'nama.required' => 'Nama harus diisi',
-            'nama.min' => 'Nama minimal 3 karakter',
-            'id_kelas.required' => 'Kelas harus dipilih',
-            'alamat.required' => 'Alamat harus diisi',
-            'alamat.min' => 'Alamat minimal 10 karakter',
-            'no_telp.required' => 'No. Telepon harus diisi',
-            'no_telp.regex' => 'No. Telepon hanya boleh berisi angka',
-            'id_spp.required' => 'SPP harus dipilih',
         ]);
 
         $siswa->update($validated);
 
-        return redirect()->route('siswa.index')
-            ->with('success', '✅ Data siswa berhasil diupdate!');
+        return redirect()
+            ->route('siswa.index')
+            ->with('success', '✅ Data siswa berhasil diperbarui!');
     }
 
+    /**
+     * =============================
+     *  HAPUS SISWA
+     * =============================
+     */
     public function destroy(string $nisn)
     {
-        try {
-            $siswa = Siswa::findOrFail($nisn);
-            
-            // VALIDASI: Cek apakah siswa memiliki history pembayaran
-            if ($siswa->pembayaran()->count() > 0) {
-                return redirect()->route('siswa.index')
-                    ->with('error', '❌ Tidak dapat menghapus siswa yang memiliki riwayat pembayaran!');
-            }
+        $siswa = Siswa::where('nisn', $nisn)->firstOrFail();
 
-            $siswa->delete();
-
-            return redirect()->route('siswa.index')
-                ->with('success', '✅ Data siswa berhasil dihapus!');
-
-        } catch (\Exception $e) {
-            return redirect()->route('siswa.index')
-                ->with('error', '❌ Terjadi kesalahan: ' . $e->getMessage());
+        if ($siswa->pembayaran()->count() > 0) {
+            return redirect()
+                ->route('siswa.index')
+                ->with('error', '❌ Siswa tidak dapat dihapus karena memiliki riwayat pembayaran');
         }
+
+        $siswa->delete();
+
+        return redirect()
+            ->route('siswa.index')
+            ->with('success', '✅ Data siswa berhasil dihapus');
     }
 
-    // Method untuk Ajax detail siswa
+    /**
+     * =============================
+     *  AJAX DETAIL SISWA
+     * =============================
+     */
     public function getDetail(string $nisn)
     {
         $siswa = Siswa::with(['kelas', 'spp', 'pembayaran.petugas'])
-            ->findOrFail($nisn);
+            ->where('nisn', $nisn)
+            ->firstOrFail();
 
         return response()->json([
             'siswa' => $siswa,
-            'pembayaran' => $siswa->pembayaran->map(function($p) {
+            'pembayaran' => $siswa->pembayaran->map(function ($p) {
                 return [
-                    'tgl_bayar' => \Carbon\Carbon::parse($p->tgl_bayar)->format('d/m/Y'),
+                    'tgl_bayar'     => $p->tgl_bayar->format('d/m/Y'),
                     'bulan_dibayar' => $p->bulan_dibayar,
                     'tahun_dibayar' => $p->tahun_dibayar,
-                    'jumlah_bayar' => $p->jumlah_bayar,
-                    'petugas' => [
-                        'nama_petugas' => $p->petugas->nama_petugas
-                    ]
+                    'jumlah_bayar'  => $p->jumlah_bayar,
+                    'petugas'       => $p->petugas->nama_petugas ?? '-',
                 ];
             })
         ]);
