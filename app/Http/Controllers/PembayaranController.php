@@ -5,43 +5,56 @@ namespace App\Http\Controllers;
 use App\Models\Pembayaran;
 use App\Models\Siswa;
 use App\Models\Spp;
+use App\Models\Kelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PembayaranController extends Controller
 {
+    /**
+     * HISTORY PEMBAYARAN - TAMPILKAN SEMUA SISWA YANG SUDAH BAYAR
+     */
     public function index(Request $request)
     {
-        $query = Pembayaran::with(['siswa', 'spp', 'petugas']);
+        // Query untuk mendapatkan siswa yang sudah pernah bayar
+        $query = Siswa::with(['kelas', 'spp', 'pembayaran.petugas'])
+            ->whereHas('pembayaran'); // Hanya siswa yang punya pembayaran
         
-        // Filter berdasarkan NISN
-        if ($request->filled('nisn')) {
-            $query->where('nisn', $request->nisn);
+        // Filter berdasarkan pencarian nama/NISN
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nisn', 'like', "%{$search}%")
+                  ->orWhere('nama', 'like', "%{$search}%");
+            });
         }
         
-        // Filter berdasarkan bulan
-        if ($request->filled('bulan_dibayar')) {
-            $query->where('bulan_dibayar', $request->bulan_dibayar);
+        // Filter berdasarkan kelas
+        if ($request->filled('kelas')) {
+            $query->where('id_kelas', $request->kelas);
         }
         
-        // Filter berdasarkan tahun
-        if ($request->filled('tahun_dibayar')) {
-            $query->where('tahun_dibayar', $request->tahun_dibayar);
+        // Filter berdasarkan tahun pembayaran
+        if ($request->filled('tahun')) {
+            $query->whereHas('pembayaran', function($q) use ($request) {
+                $q->where('tahun_dibayar', $request->tahun);
+            });
         }
         
-        // Filter berdasarkan tanggal
-        if ($request->filled('dari_tanggal')) {
-            $query->where('tgl_bayar', '>=', $request->dari_tanggal);
-        }
+        $siswa = $query->paginate(15);
         
-        if ($request->filled('sampai_tanggal')) {
-            $query->where('tgl_bayar', '<=', $request->sampai_tanggal);
-        }
+        // Data untuk filter dropdown
+        $kelasList = Kelas::all();
+        $tahunList = Pembayaran::select('tahun_dibayar')
+            ->distinct()
+            ->orderBy('tahun_dibayar', 'desc')
+            ->pluck('tahun_dibayar');
         
-        $pembayaran = $query->orderBy('tgl_bayar', 'desc')->paginate(20);
-        $siswa = Siswa::with('kelas')->orderBy('nama')->get();
+        // Hitung total keseluruhan
+        $totalSiswa = Siswa::whereHas('pembayaran')->count();
+        $totalPembayaran = Pembayaran::sum('jumlah_bayar');
         
-        return view('pembayaran.index', compact('pembayaran', 'siswa'));
+        return view('pembayaran.index', compact('siswa', 'kelasList', 'tahunList', 'totalSiswa', 'totalPembayaran'));
     }
 
     public function create()
@@ -83,7 +96,7 @@ class PembayaranController extends Controller
             $bulanArray = $request->bulan_dibayar;
             $spp = Spp::findOrFail($request->id_spp);
             $nominalPerBulan = $spp->nominal;
-            $petugas = auth()->user(); // Atau sesuaikan dengan sistem auth Anda
+            $petugas = auth()->user();
             
             $pembayaranBerhasil = [];
             $pembayaranGagal = [];
@@ -109,7 +122,7 @@ class PembayaranController extends Controller
                 $pembayaran->id_spp = $request->id_spp;
                 $pembayaran->jumlah_bayar = $nominalPerBulan;
                 $pembayaran->metode_pembayaran = $request->metode_pembayaran;
-                $pembayaran->id_petugas = $petugas->id_petugas ?? 1; // Sesuaikan dengan field id petugas
+                $pembayaran->id_petugas = $petugas->id_petugas ?? 1;
                 $pembayaran->save();
                 
                 $pembayaranBerhasil[] = $bulan . ' ' . $request->tahun_dibayar;
