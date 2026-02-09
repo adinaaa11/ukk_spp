@@ -32,8 +32,6 @@ class DashboardController extends Controller
                 'total_kelas' => Kelas::count(),
                 'total_transaksi' => Pembayaran::count(),
                 'total_pendapatan' => Pembayaran::sum('jumlah_bayar'),
-                'transaksi_hari_ini' => Pembayaran::whereDate('tgl_bayar', now())->count(),
-                'pendapatan_hari_ini' => Pembayaran::whereDate('tgl_bayar', now())->sum('jumlah_bayar'),
                 'transaksi_terbaru' => Pembayaran::with(['siswa', 'petugas'])
                     ->orderByDesc('tgl_bayar')
                     ->limit(5)

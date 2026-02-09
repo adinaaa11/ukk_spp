@@ -30,7 +30,8 @@ class SiswaController extends Controller
             $query->where('id_kelas', $request->kelas);
         }
 
-        $siswa = $query->paginate(5);
+        // PERUBAHAN: Pagination 10 siswa per halaman (sebelumnya 5)
+        $siswa = $query->paginate(10);
         return view('siswa.index', compact('siswa'));
     }
 

@@ -14,7 +14,7 @@
                 </div>
                 
                 <div class="card-body p-4">
-                    <form action="{{ route('pembayaran.store') }}" method="POST">
+                    <form action="{{ route('pembayaran.store') }}" method="POST" id="formPembayaran">
                         @csrf
                         
                         <div class="row g-3">
@@ -30,7 +30,9 @@
                                         style="font-size: 14px; padding: 10px 12px;">
                                     <option value="">-- Pilih Siswa --</option>
                                     @foreach($siswa as $s)
-                                        <option value="{{ $s->nisn }}" {{ old('nisn') == $s->nisn ? 'selected' : '' }}>
+                                        <option value="{{ $s->nisn }}" 
+                                                data-spp="{{ $s->spp->nominal ?? 0 }}"
+                                                {{ old('nisn') == $s->nisn ? 'selected' : '' }}>
                                             {{ $s->nisn }} - {{ $s->nama }} ({{ $s->kelas->nama_kelas }})
                                         </option>
                                     @endforeach
@@ -53,35 +55,6 @@
                                        required
                                        style="font-size: 14px; padding: 10px 12px;">
                                 @error('tgl_bayar')
-                                    <div class="invalid-feedback" style="font-size: 13px;">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <!-- Bulan Dibayar -->
-                            <div class="col-md-6">
-                                <label for="bulan_dibayar" class="form-label fw-bold" style="font-size: 14px;">
-                                    <i class="fas fa-calendar-day text-navy me-2"></i>Bulan Dibayar
-                                </label>
-                                <select name="bulan_dibayar" 
-                                        id="bulan_dibayar" 
-                                        class="form-select @error('bulan_dibayar') is-invalid @enderror" 
-                                        required
-                                        style="font-size: 14px; padding: 10px 12px;">
-                                    <option value="">-- Pilih Bulan --</option>
-                                    <option value="Januari" {{ old('bulan_dibayar') == 'Januari' ? 'selected' : '' }}>Januari</option>
-                                    <option value="Februari" {{ old('bulan_dibayar') == 'Februari' ? 'selected' : '' }}>Februari</option>
-                                    <option value="Maret" {{ old('bulan_dibayar') == 'Maret' ? 'selected' : '' }}>Maret</option>
-                                    <option value="April" {{ old('bulan_dibayar') == 'April' ? 'selected' : '' }}>April</option>
-                                    <option value="Mei" {{ old('bulan_dibayar') == 'Mei' ? 'selected' : '' }}>Mei</option>
-                                    <option value="Juni" {{ old('bulan_dibayar') == 'Juni' ? 'selected' : '' }}>Juni</option>
-                                    <option value="Juli" {{ old('bulan_dibayar') == 'Juli' ? 'selected' : '' }}>Juli</option>
-                                    <option value="Agustus" {{ old('bulan_dibayar') == 'Agustus' ? 'selected' : '' }}>Agustus</option>
-                                    <option value="September" {{ old('bulan_dibayar') == 'September' ? 'selected' : '' }}>September</option>
-                                    <option value="Oktober" {{ old('bulan_dibayar') == 'Oktober' ? 'selected' : '' }}>Oktober</option>
-                                    <option value="November" {{ old('bulan_dibayar') == 'November' ? 'selected' : '' }}>November</option>
-                                    <option value="Desember" {{ old('bulan_dibayar') == 'Desember' ? 'selected' : '' }}>Desember</option>
-                                </select>
-                                @error('bulan_dibayar')
                                     <div class="invalid-feedback" style="font-size: 13px;">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -120,7 +93,9 @@
                                         style="font-size: 14px; padding: 10px 12px;">
                                     <option value="">-- Pilih Tarif SPP --</option>
                                     @foreach($spp as $s)
-                                        <option value="{{ $s->id_spp }}" {{ old('id_spp') == $s->id_spp ? 'selected' : '' }}>
+                                        <option value="{{ $s->id_spp }}" 
+                                                data-nominal="{{ $s->nominal }}"
+                                                {{ old('id_spp') == $s->id_spp ? 'selected' : '' }}>
                                             {{ $s->tahun }} - Rp {{ number_format($s->nominal, 0, ',', '.') }}
                                         </option>
                                     @endforeach
@@ -130,22 +105,62 @@
                                 @enderror
                             </div>
 
-                            <!-- Jumlah Bayar -->
-                            <div class="col-md-6">
-                                <label for="jumlah_bayar" class="form-label fw-bold" style="font-size: 14px;">
-                                    <i class="fas fa-money-bill-wave text-navy me-2"></i>Jumlah Bayar
+                            <!-- Bulan Dibayar (MULTIPLE SELECT) -->
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold" style="font-size: 14px;">
+                                    <i class="fas fa-calendar-day text-navy me-2"></i>Pilih Bulan yang Dibayar
+                                    <span class="badge bg-info ms-2" style="font-size: 12px;">Bisa pilih lebih dari 1 bulan</span>
                                 </label>
-                                <input type="number" 
-                                       name="jumlah_bayar" 
-                                       id="jumlah_bayar" 
-                                       class="form-control @error('jumlah_bayar') is-invalid @enderror"
-                                       placeholder="Masukkan jumlah pembayaran"
-                                       value="{{ old('jumlah_bayar') }}"
-                                       required
-                                       style="font-size: 14px; padding: 10px 12px;">
-                                @error('jumlah_bayar')
-                                    <div class="invalid-feedback" style="font-size: 13px;">{{ $message }}</div>
+                                <div class="row g-2">
+                                    @php
+                                        $bulanList = [
+                                            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                                            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                                        ];
+                                    @endphp
+                                    @foreach($bulanList as $index => $bulan)
+                                        <div class="col-md-3 col-sm-4 col-6">
+                                            <div class="form-check form-check-custom">
+                                                <input class="form-check-input bulan-checkbox" 
+                                                       type="checkbox" 
+                                                       name="bulan_dibayar[]" 
+                                                       value="{{ $bulan }}" 
+                                                       id="bulan_{{ $index }}"
+                                                       style="width: 20px; height: 20px; margin-top: 2px;">
+                                                <label class="form-check-label ms-2" for="bulan_{{ $index }}" style="font-size: 15px; cursor: pointer;">
+                                                    {{ $bulan }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                @error('bulan_dibayar')
+                                    <div class="text-danger mt-2" style="font-size: 13px;">{{ $message }}</div>
                                 @enderror
+                                <small class="text-muted d-block mt-2">
+                                    <i class="fas fa-info-circle me-1"></i>Centang bulan-bulan yang akan dibayar. Total pembayaran akan dihitung otomatis.
+                                </small>
+                            </div>
+
+                            <!-- Ringkasan Pembayaran -->
+                            <div class="col-md-12">
+                                <div class="alert alert-warning" style="font-size: 14px; border-radius: 10px; padding: 20px; background: #fff3cd; border: 2px solid #ffc107;">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-2">
+                                            <strong><i class="fas fa-calculator me-2"></i>Jumlah Bulan:</strong>
+                                            <div class="h4 mb-0 mt-1 text-primary" id="jumlahBulan">0 bulan</div>
+                                        </div>
+                                        <div class="col-md-4 mb-2">
+                                            <strong><i class="fas fa-money-bill me-2"></i>SPP per Bulan:</strong>
+                                            <div class="h4 mb-0 mt-1 text-success" id="nominalPerBulan">Rp 0</div>
+                                        </div>
+                                        <div class="col-md-4 mb-2">
+                                            <strong><i class="fas fa-wallet me-2"></i>Total Pembayaran:</strong>
+                                            <div class="h3 mb-0 mt-1 text-danger" id="totalPembayaran">Rp 0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="jumlah_bayar" id="jumlah_bayar" value="0">
                             </div>
 
                             <!-- Metode Pembayaran (Hanya Tunai) -->
@@ -184,6 +199,7 @@
                                     </a>
                                     <button type="submit" 
                                             class="btn btn-primary px-4 py-2"
+                                            id="btnSubmit"
                                             style="font-size: 14px; background: linear-gradient(135deg, #001f3f 0%, #001529 100%); border: none;">
                                         <i class="fas fa-save me-2"></i>Simpan Pembayaran
                                     </button>
@@ -217,10 +233,117 @@
         border-color: #001f3f;
     }
     
+    .form-check-custom {
+        padding: 12px 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s;
+    }
+    
+    .form-check-custom:hover {
+        border-color: #FFD700;
+        background: #fffef7;
+    }
+    
+    .form-check-custom .form-check-input:checked ~ .form-check-label {
+        color: #001f3f;
+        font-weight: 600;
+    }
+    
     .btn-primary:hover,
     .btn-secondary:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0, 31, 63, 0.3) !important;
     }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.bulan-checkbox');
+    const jumlahBulanEl = document.getElementById('jumlahBulan');
+    const nominalPerBulanEl = document.getElementById('nominalPerBulan');
+    const totalPembayaranEl = document.getElementById('totalPembayaran');
+    const jumlahBayarInput = document.getElementById('jumlah_bayar');
+    const sppSelect = document.getElementById('id_spp');
+    const siswaSelect = document.getElementById('nisn');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const formPembayaran = document.getElementById('formPembayaran');
+    
+    let nominalSpp = 0;
+    
+    // Update nominal SPP ketika pilih siswa atau SPP
+    function updateNominalSpp() {
+        const selectedSpp = sppSelect.options[sppSelect.selectedIndex];
+        if (selectedSpp && selectedSpp.dataset.nominal) {
+            nominalSpp = parseInt(selectedSpp.dataset.nominal);
+        } else {
+            nominalSpp = 0;
+        }
+        hitungTotal();
+    }
+    
+    sppSelect.addEventListener('change', updateNominalSpp);
+    siswaSelect.addEventListener('change', updateNominalSpp);
+    
+    // Hitung total pembayaran
+    function hitungTotal() {
+        const checkedBulan = document.querySelectorAll('.bulan-checkbox:checked');
+        const jumlahBulan = checkedBulan.length;
+        const total = jumlahBulan * nominalSpp;
+        
+        // Update tampilan
+        jumlahBulanEl.textContent = jumlahBulan + ' bulan';
+        nominalPerBulanEl.textContent = 'Rp ' + nominalSpp.toLocaleString('id-ID');
+        totalPembayaranEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
+        
+        // Update hidden input
+        jumlahBayarInput.value = total;
+        
+        // Enable/disable tombol submit
+        btnSubmit.disabled = jumlahBulan === 0;
+        if (jumlahBulan === 0) {
+            btnSubmit.classList.add('disabled');
+        } else {
+            btnSubmit.classList.remove('disabled');
+        }
+    }
+    
+    // Event listener untuk checkbox
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', hitungTotal);
+    });
+    
+    // Validasi sebelum submit
+    formPembayaran.addEventListener('submit', function(e) {
+        const checkedBulan = document.querySelectorAll('.bulan-checkbox:checked');
+        
+        if (checkedBulan.length === 0) {
+            e.preventDefault();
+            alert('Pilih minimal 1 bulan yang akan dibayar!');
+            return false;
+        }
+        
+        if (nominalSpp === 0) {
+            e.preventDefault();
+            alert('Pilih tarif SPP terlebih dahulu!');
+            return false;
+        }
+        
+        const confirmation = confirm(
+            'Anda akan membayar SPP untuk ' + checkedBulan.length + ' bulan\n' +
+            'Total: Rp ' + (checkedBulan.length * nominalSpp).toLocaleString('id-ID') + '\n\n' +
+            'Lanjutkan?'
+        );
+        
+        if (!confirmation) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // Initial calculation
+    updateNominalSpp();
+});
+</script>
 @endsection

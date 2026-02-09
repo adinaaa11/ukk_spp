@@ -13,68 +13,18 @@
         </a>
     </div>
 
-    <!-- Info Cards -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
+    <!-- Info Total Kelas -->
+    <div class="row mb-4">
+        <div class="col-md-12">
             <div class="card card-custom border-start border-4" style="border-color: var(--navy-primary) !important;">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-1" style="font-size: 0.75rem;">Total Kelas</h6>
-                            <h3 class="fw-bold mb-0" style="color: var(--navy-primary); font-size: 1.5rem;">{{ $kelas->total() }}</h3>
+                            <h6 class="text-muted mb-1" style="font-size: 0.85rem;">Total Seluruh Kelas (10-12)</h6>
+                            <h3 class="fw-bold mb-0" style="color: var(--navy-primary); font-size: 2rem;">{{ $kelas->total() }} Kelas</h3>
                         </div>
-                        <div style="font-size: 2rem; color: var(--navy-primary); opacity: 0.3;">
+                        <div style="font-size: 3rem; color: var(--navy-primary); opacity: 0.2;">
                             <i class="fas fa-school"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card card-custom border-start border-4 border-warning">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1" style="font-size: 0.75rem;">Total Siswa</h6>
-                            <h3 class="fw-bold mb-0 text-warning" style="font-size: 1.5rem;">{{ $kelas->sum('siswa_count') }}</h3>
-                        </div>
-                        <div style="font-size: 2rem; color: #ffc107; opacity: 0.3;">
-                            <i class="fas fa-users"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card card-custom border-start border-4 border-success">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1" style="font-size: 0.75rem;">Bidang IT</h6>
-                            <h3 class="fw-bold mb-0 text-success" style="font-size: 1.5rem;">4</h3>
-                            <small class="text-muted" style="font-size: 0.65rem;">RPL, DKV, MKT, TKJ</small>
-                        </div>
-                        <div style="font-size: 2rem; color: #27ae60; opacity: 0.3;">
-                            <i class="fas fa-laptop-code"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card card-custom border-start border-4 border-info">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-1" style="font-size: 0.75rem;">Bidang Teknik</h6>
-                            <h3 class="fw-bold mb-0 text-info" style="font-size: 1.5rem;">4</h3>
-                            <small class="text-muted" style="font-size: 0.65rem;">TPM, TL, TBKR, TKR</small>
-                        </div>
-                        <div style="font-size: 2rem; color: #3498db; opacity: 0.3;">
-                            <i class="fas fa-cogs"></i>
                         </div>
                     </div>
                 </div>
@@ -144,65 +94,71 @@
                 </table>
             </div>
         </div>
-        {{-- <div class="card-footer bg-white" style="padding: 0.5rem 1rem;">
-            <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <small class="text-muted mb-2 mb-md-0" style="font-size: 0.7rem;">
-                    Menampilkan {{ $kelas->firstItem() }} - {{ $kelas->lastItem() }} dari {{ $kelas->total() }} data
-                </small>
-                <div>
-                    {{ $kelas->links() }}
-                </div>
-            </div>
-        </div> --}}
     </div>
 
-    <!-- 10 Jurusan Info -->
+    <!-- 10 Jurusan Info dengan Total Siswa @35 per Kelas -->
     <div class="card card-custom mt-4">
         <div class="card-header bg-white border-bottom">
             <h5 class="mb-0 text-muted">
                 <i class="fas fa-info-circle me-2" style="font-size: 0.9rem;"></i>
-                10 Jurusan yang Tersedia
+                Daftar Jurusan & Kelas yang Tersedia
             </h5>
         </div>
         <div class="card-body">
             <div class="row g-3">
+                <!-- Bidang IT -->
                 <div class="col-md-4">
                     <div class="p-3 rounded" style="background-color: #f0f8ff; border-left: 4px solid #3498db;">
                         <h6 class="fw-bold text-primary mb-2" style="font-size: 0.85rem;">
                             <i class="fas fa-laptop-code me-2" style="font-size: 0.8rem;"></i>Bidang IT
                         </h6>
                         <ul class="list-unstyled mb-0" style="font-size: 0.75rem;">
-                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>RPL - Rekayasa Perangkat Lunak</li>
-                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>DKV - Desain Komunikasi Visual</li>
-                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>MKT - Mekatronika</li>
-                            <li class="mb-0"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>TKJ - Teknik Komputer dan Jaringan</li>
+                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>RPL - Rekayasa Perangkat Lunak (35 siswa/kelas)</li>
+                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>DKV - Desain Komunikasi Visual (35 siswa/kelas)</li>
+                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>MKT - Mekatronika (35 siswa/kelas)</li>
+                            <li class="mb-0"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>TKJ - Teknik Komputer dan Jaringan (35 siswa/kelas)</li>
                         </ul>
                     </div>
                 </div>
+                
+                <!-- Bidang Permesinan & Otomotif -->
                 <div class="col-md-4">
                     <div class="p-3 rounded" style="background-color: #fff8e1; border-left: 4px solid #ffc107;">
                         <h6 class="fw-bold text-warning mb-2" style="font-size: 0.85rem;">
-                            <i class="fas fa-cogs me-2" style="font-size: 0.8rem;"></i>Bidang Permesinan
+                            <i class="fas fa-cogs me-2" style="font-size: 0.8rem;"></i>Bidang Permesinan & Otomotif
                         </h6>
                         <ul class="list-unstyled mb-0" style="font-size: 0.75rem;">
-                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>TPM - Teknik Permesinan</li>
-                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>TL - Teknik Pengelasan</li>
-                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>TBKR - Teknik Body Kendaraan Ringan</li>
-                            <li class="mb-0"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>TKR - Teknik Kendaraan Ringan</li>
+                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>TPM - Teknik Permesinan (35 siswa/kelas)</li>
+                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>TL1 - Teknik Pengelasan 1 (35 siswa/kelas)</li>
+                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>TL2 - Teknik Pengelasan 2 (35 siswa/kelas)</li>
+                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>TBKR - Teknik Body Kendaraan Ringan (35 siswa/kelas)</li>
+                            <li class="mb-0"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>TKR2 - Teknik Kendaraan Ringan 2 (35 siswa/kelas)</li>
                         </ul>
                     </div>
                 </div>
+                
+                <!-- Bidang Pertanian -->
                 <div class="col-md-4">
                     <div class="p-3 rounded" style="background-color: #e8f5e9; border-left: 4px solid #27ae60;">
                         <h6 class="fw-bold text-success mb-2" style="font-size: 0.85rem;">
                             <i class="fas fa-seedling me-2" style="font-size: 0.8rem;"></i>Bidang Pertanian
                         </h6>
                         <ul class="list-unstyled mb-0" style="font-size: 0.75rem;">
-                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>APHP - Agribisnis Pengolahan Hasil Pertanian</li>
-                            <li class="mb-0"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>ATPH - Agribisnis Tanaman Pangan dan Hortikultura</li>
+                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>APHP1 - Agribisnis Pengolahan Hasil Pertanian 1 (35 siswa/kelas)</li>
+                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>APHP2 - Agribisnis Pengolahan Hasil Pertanian 2 (35 siswa/kelas)</li>
+                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>APHP3 - Agribisnis Pengolahan Hasil Pertanian 3 (35 siswa/kelas)</li>
+                            <li class="mb-1"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>ATPH1 - Agribisnis Tanaman Pangan dan Hortikultura 1 (35 siswa/kelas)</li>
+                            <li class="mb-0"><i class="fas fa-check text-success me-2" style="font-size: 0.7rem;"></i>ATPH2 - Agribisnis Tanaman Pangan dan Hortikultura 2 (35 siswa/kelas)</li>
                         </ul>
                     </div>
                 </div>
+            </div>
+            
+            <!-- Total Info -->
+            <div class="alert alert-info mt-3 mb-0" style="font-size: 0.8rem;">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Catatan:</strong> Setiap kelas dirancang untuk menampung maksimal <strong>35 siswa</strong>. 
+                Total terdapat <strong>14 jurusan</strong> dengan masing-masing tingkat (X, XI, XII), sehingga total ada sekitar <strong>42 kelas</strong> di seluruh sekolah.
             </div>
         </div>
     </div>

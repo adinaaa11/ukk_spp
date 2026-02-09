@@ -1,261 +1,270 @@
 @extends('layouts.main')
 
+@section('title', 'Data Siswa')
+
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid px-4">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="section-title mb-0">Data Siswa</h2>
-            <p class="section-subtitle">Kelola data siswa dan riwayat pembayaran SPP</p>
-        </div>
-        <a href="{{ route('siswa.create') }}" class="btn btn-primary-custom">
-            <i class="fas fa-plus me-2"></i>Tambah Siswa
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-users"></i> Data Siswa
+        </h1>
+        <a href="{{ route('siswa.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Tambah Siswa
         </a>
     </div>
 
-    <!-- Search & Filter -->
-    <div class="card card-custom mb-3">
+    <!-- Alert Messages -->
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    <!-- Card Siswa -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-primary text-white">
+            <h6 class="m-0 font-weight-bold">
+                <i class="fas fa-list"></i> Daftar Siswa untuk Pembayaran SPP
+            </h6>
+        </div>
         <div class="card-body">
-            <form method="GET" action="{{ route('siswa.index') }}" class="row g-3">
-                <div class="col-md-4">
-                    <input type="text" name="search" class="form-control" placeholder="Cari NISN atau Nama..." value="{{ request('search') }}">
-                </div>
-                <div class="col-md-3">
-                    <select name="kelas" class="form-select">
-                        <option value="">Semua Kelas</option>
-                        @foreach(\App\Models\Kelas::all() as $k)
-                        <option value="{{ $k->id_kelas }}" {{ request('kelas') == $k->id_kelas ? 'selected' : '' }}>
-                            {{ $k->nama_kelas }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary-custom w-100">
-                        <i class="fas fa-search me-2"></i>Cari
-                    </button>
+            <!-- Filter dan Pencarian -->
+            <form method="GET" action="{{ route('siswa.index') }}" class="mb-3">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" 
+                                   placeholder="Cari NISN, NIS, atau Nama..." 
+                                   value="{{ request('search') }}">
+                            <button class="btn btn-outline-secondary" type="submit">
+                                <i class="fas fa-search"></i> Cari
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select name="kelas" class="form-select" onchange="this.form.submit()">
+                            <option value="">Semua Kelas</option>
+                            @foreach(App\Models\Kelas::all() as $k)
+                            <option value="{{ $k->id_kelas }}" 
+                                {{ request('kelas') == $k->id_kelas ? 'selected' : '' }}>
+                                {{ $k->nama_kelas }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        @if(request('search') || request('kelas'))
+                        <a href="{{ route('siswa.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i> Reset
+                        </a>
+                        @endif
+                    </div>
                 </div>
             </form>
-        </div>
-    </div>
 
-    <!-- Data Table -->
-    <div class="card card-custom">
-        <div class="card-header-custom d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Daftar Siswa</h5>
-            <span class="badge bg-light text-dark">Total: {{ $siswa->total() }} siswa</span>
-        </div>
-        <div class="card-body p-0">
+            <!-- Info Pagination -->
+            <div class="mb-3">
+                <small class="text-muted">
+                    Menampilkan {{ $siswa->firstItem() ?? 0 }} - {{ $siswa->lastItem() ?? 0 }} 
+                    dari {{ $siswa->total() }} siswa
+                </small>
+            </div>
+
+            <!-- Tabel Siswa -->
             <div class="table-responsive">
-                <table class="table table-hover table-custom mb-0">
-                    <thead>
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
                         <tr>
-                            <th width="5%">No</th>
+                            <th width="5%" class="text-center">No</th>
                             <th width="10%">NISN</th>
-                            <th width="8%">NIS</th>
+                            <th width="10%">NIS</th>
                             <th width="20%">Nama Siswa</th>
-                            <th width="15%">Kelas</th>
-                            <th width="12%">No. Telp</th>
-                            <th width="12%">Tagihan SPP</th>
-                            <th width="18%" class="text-center">Aksi</th>
+                            <th width="12%">Kelas</th>
+                            <th width="10%">No. Telp</th>
+                            <th width="13%">Tahun SPP</th>
+                            <th width="10%">Nominal SPP</th>
+                            <th width="10%" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($siswa as $index => $s)
                         <tr>
-                            <td>{{ $siswa->firstItem() + $index }}</td>
-                            <td><span class="badge badge-custom bg-primary">{{ $s->nisn }}</span></td>
+                            <td class="text-center">
+                                {{ $siswa->firstItem() + $index }}
+                            </td>
+                            <td>{{ $s->nisn }}</td>
                             <td>{{ $s->nis }}</td>
                             <td>
                                 <strong>{{ $s->nama }}</strong>
-                            </td>
-                            <td>
-                                @if($s->kelas)
-                                    <span class="badge badge-custom bg-info">{{ $s->kelas->nama_kelas }}</span><br>
-                                    <small class="text-muted">{{ $s->kelas->kompetensi_keahlian }}</small>
-                                @else
-                                    <span class="badge bg-warning text-dark">Belum Ada Kelas</span>
+                                @if($s->created_at->diffInDays(now()) < 7)
+                                <span class="badge bg-success ms-2">
+                                    <i class="fas fa-star"></i> Baru
+                                </span>
                                 @endif
                             </td>
+                            <td>{{ $s->kelas->nama_kelas ?? '-' }}</td>
                             <td>{{ $s->no_telp }}</td>
-                            <td>
-                                @if($s->spp)
-                                    <strong class="text-success">Rp {{ number_format($s->spp->nominal, 0, ',', '.') }}</strong>
-                                @else
-                                    <span class="badge bg-warning text-dark">Belum Ada SPP</span>
-                                @endif
+                            <td>{{ $s->spp->tahun ?? '-' }}</td>
+                            <td class="text-end">
+                                <strong class="text-success">
+                                    Rp {{ number_format($s->spp->nominal ?? 0, 0, ',', '.') }}
+                                </strong>
                             </td>
                             <td class="text-center">
-                                <button class="btn btn-sm btn-info text-white" onclick="showDetail('{{ $s->nisn }}')" title="Detail">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <a href="{{ route('siswa.edit', $s->nisn) }}" class="btn btn-sm btn-warning-custom" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('siswa.destroy', $s->nisn) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger-custom" onclick="return confirm('Yakin ingin menghapus?')" title="Hapus">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ route('siswa.show', $s->nisn) }}" 
+                                       class="btn btn-sm btn-info" 
+                                       title="Detail">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('siswa.edit', $s->nisn) }}" 
+                                       class="btn btn-sm btn-warning" 
+                                       title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('siswa.destroy', $s->nisn) }}" 
+                                          method="POST" 
+                                          onsubmit="return confirm('Yakin ingin menghapus siswa ini?')"
+                                          style="display: inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" 
+                                                class="btn btn-sm btn-danger" 
+                                                title="Hapus">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center py-5">
-                                <i class="fas fa-inbox fa-3x text-muted mb-3 d-block"></i>
-                                <p class="text-muted">Belum ada data siswa</p>
+                            <td colspan="9" class="text-center py-4">
+                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">Tidak ada data siswa</p>
+                                <a href="{{ route('siswa.create') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Tambah Siswa Baru
+                                </a>
                             </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            @if($siswa->hasPages())
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <div>
+                    <p class="text-muted mb-0">
+                        Halaman {{ $siswa->currentPage() }} dari {{ $siswa->lastPage() }}
+                    </p>
+                </div>
+                <nav>
+                    <ul class="pagination mb-0">
+                        {{-- Previous Button --}}
+                        @if($siswa->onFirstPage())
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </span>
+                        </li>
+                        @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $siswa->previousPageUrl() }}">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a>
+                        </li>
+                        @endif
+
+                        {{-- Page Numbers --}}
+                        @foreach(range(1, $siswa->lastPage()) as $page)
+                            @if($page == $siswa->currentPage())
+                            <li class="page-item active">
+                                <span class="page-link">{{ $page }}</span>
+                            </li>
+                            @else
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $siswa->url($page) }}">
+                                    {{ $page }}
+                                </a>
+                            </li>
+                            @endif
+                        @endforeach
+
+                        {{-- Next Button --}}
+                        @if($siswa->hasMorePages())
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $siswa->nextPageUrl() }}">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        @else
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </li>
+                        @endif
+                    </ul>
+                </nav>
+            </div>
+            @endif
         </div>
     </div>
 </div>
 
-<!-- Modal Detail Siswa -->
-<div class="modal fade" id="modalDetail" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header" style="background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%); color: white;">
-                <h5 class="modal-title"><i class="fas fa-user-graduate me-2"></i>Detail Siswa & Riwayat Pembayaran</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="detailContent">
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<style>
+    /* Styling untuk tabel */
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fc;
+    }
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-function showDetail(nisn) {
-    $('#modalDetail').modal('show');
-    $('#detailContent').html(`
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-    `);
+    /* Badge baru */
+    .badge.bg-success {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+    }
 
-    fetch(`/siswa/${nisn}/detail`)
-        .then(response => response.json())
-        .then(data => {
-            let totalBayar = 0;
-            let riwayatHTML = '';
-            
-            if(data.pembayaran.length > 0) {
-                data.pembayaran.forEach((p, i) => {
-                    totalBayar += parseInt(p.jumlah_bayar);
-                    riwayatHTML += `
-                        <tr>
-                            <td>${i+1}</td>
-                            <td>${p.tgl_bayar}</td>
-                            <td><span class="badge bg-primary">${p.bulan_dibayar}</span></td>
-                            <td>Rp ${parseInt(p.jumlah_bayar).toLocaleString('id-ID')}</td>
-                            <td>${p.petugas.nama_petugas}</td>
-                        </tr>
-                    `;
-                });
-            } else {
-                riwayatHTML = `
-                    <tr>
-                        <td colspan="5" class="text-center py-4 text-muted">
-                            <i class="fas fa-info-circle me-2"></i>Belum ada riwayat pembayaran
-                        </td>
-                    </tr>
-                `;
-            }
+    /* Pagination styling */
+    .pagination {
+        margin: 0;
+    }
 
-            // Cek apakah kelas dan spp ada
-            let kelasInfo = data.siswa.kelas ? data.siswa.kelas.nama_kelas : 'Belum Ada Kelas';
-            let jurusanInfo = data.siswa.kelas ? data.siswa.kelas.kompetensi_keahlian : '-';
-            let sppInfo = data.siswa.spp ? `Rp ${parseInt(data.siswa.spp.nominal).toLocaleString('id-ID')}` : 'Belum Ada SPP';
+    .page-link {
+        color: #001f3f;
+        border-color: #dee2e6;
+    }
 
-            $('#detailContent').html(`
-                <div class="row">
-                    <div class="col-md-4 text-center mb-4">
-                        <img src="https://ui-avatars.com/api/?name=${data.siswa.nama}&background=3498db&color=fff&size=150" 
-                             class="rounded-circle mb-3" alt="Avatar">
-                        <h5 class="fw-bold">${data.siswa.nama}</h5>
-                        <p class="text-muted mb-1">${data.siswa.nisn}</p>
-                        <span class="badge bg-info">${kelasInfo}</span>
-                    </div>
-                    <div class="col-md-8">
-                        <h6 class="fw-bold mb-3">Informasi Siswa</h6>
-                        <table class="table table-borderless">
-                            <tr>
-                                <td width="35%"><strong>NIS</strong></td>
-                                <td>: ${data.siswa.nis}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Kelas</strong></td>
-                                <td>: ${kelasInfo}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Jurusan</strong></td>
-                                <td>: ${jurusanInfo}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Alamat</strong></td>
-                                <td>: ${data.siswa.alamat}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>No. Telp</strong></td>
-                                <td>: ${data.siswa.no_telp}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Tagihan SPP</strong></td>
-                                <td>: <strong class="text-success">${sppInfo}</strong></td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
+    .page-link:hover {
+        color: #001f3f;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
 
-                <hr>
+    .page-item.active .page-link {
+        background-color: #001f3f;
+        border-color: #001f3f;
+    }
 
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-bold mb-0">Riwayat Pembayaran</h6>
-                    <div>
-                        <span class="badge bg-success">Total: Rp ${totalBayar.toLocaleString('id-ID')}</span>
-                        <span class="badge bg-info">${data.pembayaran.length} Transaksi</span>
-                    </div>
-                </div>
+    .page-item.disabled .page-link {
+        color: #6c757d;
+        background-color: #fff;
+        border-color: #dee2e6;
+    }
 
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th width="5%">No</th>
-                                <th>Tanggal</th>
-                                <th>Bulan</th>
-                                <th>Nominal</th>
-                                <th>Petugas</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${riwayatHTML}
-                        </tbody>
-                    </table>
-                </div>
-            `);
-        })
-        .catch(error => {
-            $('#detailContent').html(`
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Terjadi kesalahan saat memuat data
-                </div>
-            `);
-        });
-}
-</script>
+    /* Button group */
+    .btn-group .btn {
+        margin: 0 2px;
+    }
+</style>
 @endsection

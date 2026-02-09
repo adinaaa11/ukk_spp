@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <!-- Statistik Cards -->
+    <!-- Statistik Cards - HANYA 4 CARD -->
     <div class="row g-4 mb-4">
         <!-- Total Siswa -->
         <div class="col-xl-3 col-lg-6 col-md-6">
@@ -76,18 +76,18 @@
             </div>
         </div>
 
-        <!-- Transaksi Hari Ini -->
+        <!-- Total Transaksi -->
         <div class="col-xl-3 col-lg-6 col-md-6">
             <div class="card border-0 shadow-lg hover-lift" style="border-radius: 15px; height: 100%;">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="icon-box bg-warning bg-opacity-10 p-3" style="border-radius: 12px;">
-                            <i class="fas fa-money-bill-wave fa-2x text-warning"></i>
+                            <i class="fas fa-receipt fa-2x text-warning"></i>
                         </div>
                         <div class="text-end">
-                            <h6 class="text-muted mb-1">Transaksi Hari Ini</h6>
+                            <h6 class="text-muted mb-1">Total Transaksi</h6>
                             <h2 class="mb-0 fw-bold text-warning">
-                                {{ number_format($transaksi_hari_ini, 0, ',', '.') }}
+                                {{ number_format($total_transaksi, 0, ',', '.') }}
                             </h2>
                         </div>
                     </div>
