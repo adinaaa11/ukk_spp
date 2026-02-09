@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Siswa extends Model
+class Siswa extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $table = 'siswa';
     protected $primaryKey = 'nisn';
@@ -22,7 +23,38 @@ class Siswa extends Model
         'alamat',
         'no_telp',
         'id_spp',
+        'username',
+        'password',
     ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * Override method untuk autentikasi dengan NISN
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'nisn';
+    }
+
+    /**
+     * Override method untuk mendapatkan identifier
+     */
+    public function getAuthIdentifier()
+    {
+        return $this->nisn;
+    }
+
+    /**
+     * Override method untuk mendapatkan password
+     */
+    public function getAuthPassword()
+    {
+        return $this->password;
+    }
 
     /**
      * Relasi ke Kelas
