@@ -1,349 +1,428 @@
 @extends('layouts.main')
 
-@section('title', 'Input Pembayaran SPP')
+@section('title', 'Entri Pembayaran')
 
 @section('content')
-<div class="container-fluid py-4">
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="section-title">Entri Pembayaran SPP</h2>
+        <p class="section-subtitle">Input pembayaran SPP siswa</p>
+    </div>
+
     <div class="row">
-        <div class="col-12">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-gradient-navy text-white py-3">
-                    <h4 class="mb-0">
-                        <i class="fas fa-money-bill-wave me-2"></i>Input Pembayaran SPP
-                    </h4>
+        <!-- Form Input -->
+        <div class="col-md-8">
+            <div class="card card-custom">
+                <div class="card-header-custom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-money-bill-wave me-2"></i>Form Pembayaran
+                    </h5>
                 </div>
-                
-                <div class="card-body p-4">
+                <div class="card-body">
                     <form action="{{ route('pembayaran.store') }}" method="POST" id="formPembayaran">
                         @csrf
-                        
-                        <div class="row g-3">
-                            <!-- Pilih Siswa -->
-                            <div class="col-md-6">
-                                <label for="nisn" class="form-label fw-bold" style="font-size: 14px;">
-                                    <i class="fas fa-user-graduate text-navy me-2"></i>Pilih Siswa (NISN)
+
+                        <!-- Pilih Siswa -->
+                        <div class="mb-3">
+                            <label for="nisn" class="form-label-custom">
+                                <i class="fas fa-user me-1"></i>Pilih Siswa <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select form-control-custom @error('nisn') is-invalid @enderror" 
+                                    id="nisn" 
+                                    name="nisn" 
+                                    required
+                                    onchange="getSiswaDetail(this.value)">
+                                <option value="">-- Pilih Siswa --</option>
+                                @foreach($siswa as $s)
+                                    <option value="{{ $s->nisn }}" 
+                                            data-nominal="{{ $s->spp->nominal ?? 0 }}"
+                                            {{ old('nisn') == $s->nisn ? 'selected' : '' }}>
+                                        {{ $s->nisn }} - {{ $s->nama }} ({{ $s->kelas->nama_kelas ?? '-' }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('nisn')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="row">
+                            <!-- Tanggal Bayar -->
+                            <div class="col-md-6 mb-3">
+                                <label for="tgl_bayar" class="form-label-custom">
+                                    <i class="fas fa-calendar me-1"></i>Tanggal Bayar <span class="text-danger">*</span>
                                 </label>
-                                <select name="nisn" 
-                                        id="nisn" 
-                                        class="form-select @error('nisn') is-invalid @enderror" 
-                                        required
-                                        style="font-size: 14px; padding: 10px 12px;">
-                                    <option value="">-- Pilih Siswa --</option>
-                                    @foreach($siswa as $s)
-                                        <option value="{{ $s->nisn }}" 
-                                                data-spp="{{ $s->spp->nominal ?? 0 }}"
-                                                {{ old('nisn') == $s->nisn ? 'selected' : '' }}>
-                                            {{ $s->nisn }} - {{ $s->nama }} ({{ $s->kelas->nama_kelas }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('nisn')
-                                    <div class="invalid-feedback" style="font-size: 13px;">{{ $message }}</div>
+                                <input type="date" 
+                                       class="form-control form-control-custom @error('tgl_bayar') is-invalid @enderror" 
+                                       id="tgl_bayar" 
+                                       name="tgl_bayar" 
+                                       value="{{ old('tgl_bayar', date('Y-m-d')) }}"
+                                       required>
+                                @error('tgl_bayar')
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            <!-- Tanggal Bayar -->
-                            <div class="col-md-6">
-                                <label for="tgl_bayar" class="form-label fw-bold" style="font-size: 14px;">
-                                    <i class="fas fa-calendar-alt text-navy me-2"></i>Tanggal Bayar
+                            <!-- Petugas -->
+                            <div class="col-md-6 mb-3">
+                                <label for="id_petugas" class="form-label-custom">
+                                    <i class="fas fa-user-tie me-1"></i>Petugas <span class="text-danger">*</span>
                                 </label>
-                                <input type="date" 
-                                       name="tgl_bayar" 
-                                       id="tgl_bayar" 
-                                       class="form-control @error('tgl_bayar') is-invalid @enderror"
-                                       value="{{ old('tgl_bayar', date('Y-m-d')) }}"
-                                       required
-                                       style="font-size: 14px; padding: 10px 12px;">
-                                @error('tgl_bayar')
-                                    <div class="invalid-feedback" style="font-size: 13px;">{{ $message }}</div>
+                                <select class="form-select form-control-custom @error('id_petugas') is-invalid @enderror" 
+                                        id="id_petugas" 
+                                        name="id_petugas" 
+                                        required>
+                                    <option value="">-- Pilih Petugas --</option>
+                                    @foreach($petugas as $p)
+                                        <option value="{{ $p->id_petugas }}" {{ old('id_petugas') == $p->id_petugas ? 'selected' : '' }}>
+                                            {{ $p->nama_petugas }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('id_petugas')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Bulan Dibayar -->
+                            <div class="col-md-6 mb-3">
+                                <label for="bulan_dibayar" class="form-label-custom">
+                                    <i class="fas fa-calendar-alt me-1"></i>Bulan Dibayar <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select form-control-custom @error('bulan_dibayar') is-invalid @enderror" 
+                                        id="bulan_dibayar" 
+                                        name="bulan_dibayar" 
+                                        required>
+                                    <option value="">-- Pilih Bulan --</option>
+                                    @foreach($bulan as $b)
+                                        <option value="{{ $b }}" {{ old('bulan_dibayar') == $b ? 'selected' : '' }}>
+                                            {{ $b }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('bulan_dibayar')
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <!-- Tahun Dibayar -->
-                            <div class="col-md-6">
-                                <label for="tahun_dibayar" class="form-label fw-bold" style="font-size: 14px;">
-                                    <i class="fas fa-calendar text-navy me-2"></i>Tahun Dibayar
+                            <div class="col-md-6 mb-3">
+                                <label for="tahun_dibayar" class="form-label-custom">
+                                    <i class="fas fa-calendar-check me-1"></i>Tahun Dibayar <span class="text-danger">*</span>
                                 </label>
-                                <select name="tahun_dibayar" 
+                                <select class="form-select form-control-custom @error('tahun_dibayar') is-invalid @enderror" 
                                         id="tahun_dibayar" 
-                                        class="form-select @error('tahun_dibayar') is-invalid @enderror" 
-                                        required
-                                        style="font-size: 14px; padding: 10px 12px;">
+                                        name="tahun_dibayar" 
+                                        required>
                                     <option value="">-- Pilih Tahun --</option>
-                                    @for($y = date('Y'); $y >= 2020; $y--)
-                                        <option value="{{ $y }}" {{ old('tahun_dibayar', date('Y')) == $y ? 'selected' : '' }}>
-                                            {{ $y }}
+                                    @for($i = $tahunSekarang; $i >= $tahunSekarang - 3; $i--)
+                                        <option value="{{ $i }}" {{ old('tahun_dibayar', $tahunSekarang) == $i ? 'selected' : '' }}>
+                                            {{ $i }}
                                         </option>
                                     @endfor
                                 </select>
                                 @error('tahun_dibayar')
-                                    <div class="invalid-feedback" style="font-size: 13px;">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <!-- ID SPP -->
-                            <div class="col-md-6">
-                                <label for="id_spp" class="form-label fw-bold" style="font-size: 14px;">
-                                    <i class="fas fa-file-invoice-dollar text-navy me-2"></i>Pilih Tarif SPP
-                                </label>
-                                <select name="id_spp" 
-                                        id="id_spp" 
-                                        class="form-select @error('id_spp') is-invalid @enderror" 
-                                        required
-                                        style="font-size: 14px; padding: 10px 12px;">
-                                    <option value="">-- Pilih Tarif SPP --</option>
-                                    @foreach($spp as $s)
-                                        <option value="{{ $s->id_spp }}" 
-                                                data-nominal="{{ $s->nominal }}"
-                                                {{ old('id_spp') == $s->id_spp ? 'selected' : '' }}>
-                                            {{ $s->tahun }} - Rp {{ number_format($s->nominal, 0, ',', '.') }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('id_spp')
-                                    <div class="invalid-feedback" style="font-size: 13px;">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <!-- Bulan Dibayar (MULTIPLE SELECT) -->
-                            <div class="col-md-12">
-                                <label class="form-label fw-bold" style="font-size: 14px;">
-                                    <i class="fas fa-calendar-day text-navy me-2"></i>Pilih Bulan yang Dibayar
-                                    <span class="badge bg-info ms-2" style="font-size: 12px;">Bisa pilih lebih dari 1 bulan</span>
-                                </label>
-                                <div class="row g-2">
-                                    @php
-                                        $bulanList = [
-                                            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                                            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-                                        ];
-                                    @endphp
-                                    @foreach($bulanList as $index => $bulan)
-                                        <div class="col-md-3 col-sm-4 col-6">
-                                            <div class="form-check form-check-custom">
-                                                <input class="form-check-input bulan-checkbox" 
-                                                       type="checkbox" 
-                                                       name="bulan_dibayar[]" 
-                                                       value="{{ $bulan }}" 
-                                                       id="bulan_{{ $index }}"
-                                                       style="width: 20px; height: 20px; margin-top: 2px;">
-                                                <label class="form-check-label ms-2" for="bulan_{{ $index }}" style="font-size: 15px; cursor: pointer;">
-                                                    {{ $bulan }}
-                                                </label>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                                @error('bulan_dibayar')
-                                    <div class="text-danger mt-2" style="font-size: 13px;">{{ $message }}</div>
-                                @enderror
-                                <small class="text-muted d-block mt-2">
-                                    <i class="fas fa-info-circle me-1"></i>Centang bulan-bulan yang akan dibayar. Total pembayaran akan dihitung otomatis.
-                                </small>
-                            </div>
-
-                            <!-- Ringkasan Pembayaran -->
-                            <div class="col-md-12">
-                                <div class="alert alert-warning" style="font-size: 14px; border-radius: 10px; padding: 20px; background: #fff3cd; border: 2px solid #ffc107;">
-                                    <div class="row">
-                                        <div class="col-md-4 mb-2">
-                                            <strong><i class="fas fa-calculator me-2"></i>Jumlah Bulan:</strong>
-                                            <div class="h4 mb-0 mt-1 text-primary" id="jumlahBulan">0 bulan</div>
-                                        </div>
-                                        <div class="col-md-4 mb-2">
-                                            <strong><i class="fas fa-money-bill me-2"></i>SPP per Bulan:</strong>
-                                            <div class="h4 mb-0 mt-1 text-success" id="nominalPerBulan">Rp 0</div>
-                                        </div>
-                                        <div class="col-md-4 mb-2">
-                                            <strong><i class="fas fa-wallet me-2"></i>Total Pembayaran:</strong>
-                                            <div class="h3 mb-0 mt-1 text-danger" id="totalPembayaran">Rp 0</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <input type="hidden" name="jumlah_bayar" id="jumlah_bayar" value="0">
-                            </div>
-
-                            <!-- Metode Pembayaran (Hanya Tunai) -->
-                            <div class="col-md-12">
-                                <label for="metode_pembayaran" class="form-label fw-bold" style="font-size: 14px;">
-                                    <i class="fas fa-cash-register text-navy me-2"></i>Metode Pembayaran
-                                </label>
-                                <div class="form-check p-3" style="border: 2px solid #e0e0e0; border-radius: 10px; background: #f8f9fa;">
-                                    <input class="form-check-input" 
-                                           type="radio" 
-                                           name="metode_pembayaran" 
-                                           id="metode_tunai" 
-                                           value="tunai" 
-                                           checked
-                                           style="width: 18px; height: 18px; margin-top: 4px;">
-                                    <label class="form-check-label ms-2" for="metode_tunai" style="font-size: 14px;">
-                                        <i class="fas fa-money-bill-wave text-success me-2"></i>
-                                        <strong>Tunai</strong>
-                                        <small class="text-muted d-block mt-1" style="font-size: 12px;">Pembayaran langsung dengan uang tunai</small>
-                                    </label>
-                                </div>
-                                @error('metode_pembayaran')
-                                    <div class="text-danger mt-2" style="font-size: 13px;">{{ $message }}</div>
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
 
-                        <!-- Tombol -->
-                        <div class="row mt-4">
-                            <div class="col-12">
-                                <div class="d-flex gap-2 justify-content-end">
-                                    <a href="{{ route('pembayaran.index') }}" 
-                                       class="btn btn-secondary px-4 py-2"
-                                       style="font-size: 14px;">
-                                        <i class="fas fa-arrow-left me-2"></i>Kembali
-                                    </a>
-                                    <button type="submit" 
-                                            class="btn btn-primary px-4 py-2"
-                                            id="btnSubmit"
-                                            style="font-size: 14px; background: linear-gradient(135deg, #001f3f 0%, #001529 100%); border: none;">
-                                        <i class="fas fa-save me-2"></i>Simpan Pembayaran
-                                    </button>
-                                </div>
+                        <div class="row">
+                            <!-- Jumlah Bayar -->
+                            <div class="col-md-6 mb-3">
+                                <label for="jumlah_bayar" class="form-label-custom">
+                                    <i class="fas fa-money-bill me-1"></i>Jumlah Bayar <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" 
+                                       class="form-control form-control-custom @error('jumlah_bayar') is-invalid @enderror" 
+                                       id="jumlah_bayar" 
+                                       name="jumlah_bayar" 
+                                       value="{{ old('jumlah_bayar') }}"
+                                       placeholder="Masukkan jumlah pembayaran"
+                                       min="0"
+                                       required>
+                                @error('jumlah_bayar')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="text-muted">Nominal SPP: <span id="nominalSpp" class="fw-bold text-success">-</span></small>
                             </div>
+
+                            <!-- Metode Pembayaran -->
+                            <div class="col-md-6 mb-3">
+                                <label for="metode_pembayaran" class="form-label-custom">
+                                    <i class="fas fa-credit-card me-1"></i>Metode Pembayaran <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select form-control-custom @error('metode_pembayaran') is-invalid @enderror" 
+                                        id="metode_pembayaran" 
+                                        name="metode_pembayaran" 
+                                        required>
+                                    <option value="">-- Pilih Metode --</option>
+                                    <option value="tunai" {{ old('metode_pembayaran') == 'tunai' ? 'selected' : '' }}>Tunai</option>
+                                    <option value="transfer" {{ old('metode_pembayaran') == 'transfer' ? 'selected' : '' }}>Transfer</option>
+                                </select>
+                                @error('metode_pembayaran')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Tombol Aksi -->
+                        <div class="d-flex gap-2 justify-content-end mt-4">
+                            <a href="{{ route('pembayaran.index') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Batal
+                            </a>
+                            <button type="submit" class="btn btn-primary-custom">
+                                <i class="fas fa-save me-2"></i>Simpan Pembayaran
+                            </button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Siswa (Sidebar) -->
+        <div class="col-md-4">
+            <div class="card card-custom" id="siswaInfoCard" style="display: none;">
+                <div class="card-header-custom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Info Siswa
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <img src="" 
+                             id="siswaAvatar" 
+                             class="rounded-circle" 
+                             alt="Avatar"
+                             style="width: 100px; height: 100px; border: 3px solid var(--yellow-accent);">
+                    </div>
+                    
+                    <div class="mb-2">
+                        <small class="text-muted">Nama Siswa</small>
+                        <p class="mb-0 fw-bold" id="siswaNama">-</p>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">NIS</small>
+                        <p class="mb-0" id="siswaNis">-</p>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">Kelas</small>
+                        <p class="mb-0" id="siswaKelas">-</p>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">Kompetensi Keahlian</small>
+                        <p class="mb-0" id="siswaJurusan">-</p>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="p-3 text-center" style="background: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--navy-primary);">
+                        <small class="text-muted d-block">Nominal SPP/Bulan</small>
+                        <h4 class="mb-0 text-success" id="siswaSppdisplay">-</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Riwayat Pembayaran Siswa -->
+            <div class="card card-custom mt-3" id="riwayatCard" style="display: none;">
+                <div class="card-header-custom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Riwayat Pembayaran
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div id="riwayatList" class="list-group list-group-flush">
+                        <!-- Akan diisi via JavaScript -->
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .bg-gradient-navy {
-        background: linear-gradient(135deg, #001f3f 0%, #001529 100%);
-    }
-    
-    .text-navy {
-        color: #001f3f;
-    }
-    
-    .form-control:focus,
-    .form-select:focus {
-        border-color: #FFD700;
-        box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
-    }
-    
-    .form-check-input:checked {
-        background-color: #001f3f;
-        border-color: #001f3f;
-    }
-    
-    .form-check-custom {
-        padding: 12px 15px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        border: 2px solid #e0e0e0;
-        transition: all 0.3s;
-    }
-    
-    .form-check-custom:hover {
-        border-color: #FFD700;
-        background: #fffef7;
-    }
-    
-    .form-check-custom .form-check-input:checked ~ .form-check-label {
-        color: #001f3f;
-        font-weight: 600;
-    }
-    
-    .btn-primary:hover,
-    .btn-secondary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 31, 63, 0.3) !important;
-    }
-</style>
-
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const checkboxes = document.querySelectorAll('.bulan-checkbox');
-    const jumlahBulanEl = document.getElementById('jumlahBulan');
-    const nominalPerBulanEl = document.getElementById('nominalPerBulan');
-    const totalPembayaranEl = document.getElementById('totalPembayaran');
-    const jumlahBayarInput = document.getElementById('jumlah_bayar');
-    const sppSelect = document.getElementById('id_spp');
-    const siswaSelect = document.getElementById('nisn');
-    const btnSubmit = document.getElementById('btnSubmit');
-    const formPembayaran = document.getElementById('formPembayaran');
-    
-    let nominalSpp = 0;
-    
-    // Update nominal SPP ketika pilih siswa atau SPP
-    function updateNominalSpp() {
-        const selectedSpp = sppSelect.options[sppSelect.selectedIndex];
-        if (selectedSpp && selectedSpp.dataset.nominal) {
-            nominalSpp = parseInt(selectedSpp.dataset.nominal);
-        } else {
-            nominalSpp = 0;
-        }
-        hitungTotal();
+function getSiswaDetail(nisn) {
+    if (!nisn) {
+        document.getElementById('siswaInfoCard').style.display = 'none';
+        document.getElementById('riwayatCard').style.display = 'none';
+        document.getElementById('nominalSpp').textContent = '-';
+        document.getElementById('jumlah_bayar').value = '';
+        return;
     }
+
+    // Ambil nominal dari option yang dipilih
+    const selectedOption = document.querySelector('#nisn option:checked');
+    const nominal = selectedOption.getAttribute('data-nominal');
     
-    sppSelect.addEventListener('change', updateNominalSpp);
-    siswaSelect.addEventListener('change', updateNominalSpp);
+    // Set jumlah bayar otomatis
+    document.getElementById('jumlah_bayar').value = nominal;
+    document.getElementById('nominalSpp').textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(nominal);
+
+    // Tampilkan info siswa card
+    document.getElementById('siswaInfoCard').style.display = 'block';
+
+    // Update info siswa di sidebar menggunakan data dari select option
+    const siswaData = @json($siswa);
+    const siswa = siswaData.find(s => s.nisn == nisn);
     
-    // Hitung total pembayaran
-    function hitungTotal() {
-        const checkedBulan = document.querySelectorAll('.bulan-checkbox:checked');
-        const jumlahBulan = checkedBulan.length;
-        const total = jumlahBulan * nominalSpp;
+    if (siswa) {
+        document.getElementById('siswaAvatar').src = `https://ui-avatars.com/api/?name=${siswa.nama}&background=001f3f&color=FFD700&size=200`;
+        document.getElementById('siswaNama').textContent = siswa.nama;
+        document.getElementById('siswaNis').textContent = siswa.nis;
+        document.getElementById('siswaKelas').textContent = siswa.kelas ? siswa.kelas.nama_kelas : '-';
+        document.getElementById('siswaJurusan').textContent = siswa.kelas ? siswa.kelas.kompetensi_keahlian : '-';
+        document.getElementById('siswaSppdisplay').textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(siswa.spp ? siswa.spp.nominal : 0);
         
-        // Update tampilan
-        jumlahBulanEl.textContent = jumlahBulan + ' bulan';
-        nominalPerBulanEl.textContent = 'Rp ' + nominalSpp.toLocaleString('id-ID');
-        totalPembayaranEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
-        
-        // Update hidden input
-        jumlahBayarInput.value = total;
-        
-        // Enable/disable tombol submit
-        btnSubmit.disabled = jumlahBulan === 0;
-        if (jumlahBulan === 0) {
-            btnSubmit.classList.add('disabled');
-        } else {
-            btnSubmit.classList.remove('disabled');
-        }
+        // Load riwayat pembayaran
+        loadRiwayatPembayaran(nisn);
     }
+}
+
+function loadRiwayatPembayaran(nisn) {
+    const riwayatCard = document.getElementById('riwayatCard');
+    const riwayatList = document.getElementById('riwayatList');
     
-    // Event listener untuk checkbox
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', hitungTotal);
-    });
+    // Ambil data pembayaran siswa dari blade
+    const siswaData = @json($siswa);
+    const siswa = siswaData.find(s => s.nisn == nisn);
     
-    // Validasi sebelum submit
-    formPembayaran.addEventListener('submit', function(e) {
-        const checkedBulan = document.querySelectorAll('.bulan-checkbox:checked');
+    if (siswa && siswa.pembayaran && siswa.pembayaran.length > 0) {
+        riwayatCard.style.display = 'block';
         
-        if (checkedBulan.length === 0) {
-            e.preventDefault();
-            alert('Pilih minimal 1 bulan yang akan dibayar!');
-            return false;
+        let html = '';
+        siswa.pembayaran.slice(0, 5).forEach(p => {
+            html += `
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-primary">${p.bulan_dibayar} ${p.tahun_dibayar}</span>
+                        </div>
+                        <div class="text-success fw-bold">
+                            Rp ${new Intl.NumberFormat('id-ID').format(p.jumlah_bayar)}
+                        </div>
+                    </div>
+                    <small class="text-muted">${new Date(p.tgl_bayar).toLocaleDateString('id-ID')}</small>
+                </div>
+            `;
+        });
+        
+        if (siswa.pembayaran.length > 5) {
+            html += `<div class="list-group-item text-center"><small class="text-muted">+${siswa.pembayaran.length - 5} pembayaran lainnya</small></div>`;
         }
         
-        if (nominalSpp === 0) {
-            e.preventDefault();
-            alert('Pilih tarif SPP terlebih dahulu!');
-            return false;
-        }
-        
-        const confirmation = confirm(
-            'Anda akan membayar SPP untuk ' + checkedBulan.length + ' bulan\n' +
-            'Total: Rp ' + (checkedBulan.length * nominalSpp).toLocaleString('id-ID') + '\n\n' +
-            'Lanjutkan?'
-        );
-        
-        if (!confirmation) {
-            e.preventDefault();
-            return false;
-        }
-    });
-    
-    // Initial calculation
-    updateNominalSpp();
-});
+        riwayatList.innerHTML = html;
+    } else {
+        riwayatCard.style.display = 'none';
+    }
+}
 </script>
+
+<style>
+/* Form Label Custom */
+.form-label-custom {
+    font-weight: 600;
+    color: var(--navy-primary);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Form Control Custom */
+.form-control-custom,
+.form-select.form-control-custom {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.form-control-custom:focus,
+.form-select.form-control-custom:focus {
+    border-color: var(--yellow-accent);
+    box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+    outline: none;
+}
+
+.form-control-custom:hover:not(:focus),
+.form-select.form-control-custom:hover:not(:focus) {
+    border-color: var(--navy-primary);
+}
+
+.form-control-custom.is-invalid {
+    border-color: #dc3545;
+}
+
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875rem;
+}
+
+/* Card Custom */
+.card-custom {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.card-header-custom {
+    background: linear-gradient(135deg, var(--navy-primary) 0%, #003366 100%);
+    color: var(--yellow-accent);
+    padding: 1.25rem 1.5rem;
+    border: none;
+}
+
+.card-header-custom h5 {
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Button Styles */
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--navy-primary) 0%, #003366 100%);
+    border: none;
+    color: var(--yellow-accent);
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 31, 63, 0.2);
+}
+
+.btn-primary-custom:hover {
+    background: linear-gradient(135deg, #003366 0%, var(--navy-primary) 100%);
+    color: var(--yellow-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 31, 63, 0.3);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    border: none;
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.section-title {
+    color: var(--navy-primary);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    color: #6c757d;
+    margin-bottom: 0;
+}
+</style>
 @endsection

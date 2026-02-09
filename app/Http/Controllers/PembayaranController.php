@@ -5,188 +5,369 @@ namespace App\Http\Controllers;
 use App\Models\Pembayaran;
 use App\Models\Siswa;
 use App\Models\Spp;
-use App\Models\Kelas;
+use App\Models\Petugas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PembayaranController extends Controller
 {
     /**
-     * HISTORY PEMBAYARAN - TAMPILKAN SEMUA SISWA YANG SUDAH BAYAR
+     * Display a listing of the resource.
+     * Halaman History Pembayaran
      */
     public function index(Request $request)
     {
-        // Query untuk mendapatkan siswa yang sudah pernah bayar
-        $query = Siswa::with(['kelas', 'spp', 'pembayaran.petugas'])
-            ->whereHas('pembayaran'); // Hanya siswa yang punya pembayaran
+        // Query dasar dengan relasi
+        $query = Pembayaran::with(['siswa.kelas', 'siswa.spp', 'petugas']);
         
-        // Filter berdasarkan pencarian nama/NISN
-        if ($request->filled('search')) {
+        // Filter berdasarkan search (nama/nisn/nis)
+        if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('nisn', 'like', "%{$search}%")
-                  ->orWhere('nama', 'like', "%{$search}%");
+            $query->whereHas('siswa', function($q) use ($search) {
+                $q->where('nama', 'like', '%' . $search . '%')
+                  ->orWhere('nisn', 'like', '%' . $search . '%')
+                  ->orWhere('nis', 'like', '%' . $search . '%');
             });
         }
         
-        // Filter berdasarkan kelas
-        if ($request->filled('kelas')) {
-            $query->where('id_kelas', $request->kelas);
+        // Filter berdasarkan bulan
+        if ($request->has('bulan') && $request->bulan != '') {
+            $query->where('bulan_dibayar', $request->bulan);
         }
         
-        // Filter berdasarkan tahun pembayaran
-        if ($request->filled('tahun')) {
-            $query->whereHas('pembayaran', function($q) use ($request) {
-                $q->where('tahun_dibayar', $request->tahun);
-            });
+        // Filter berdasarkan tahun
+        if ($request->has('tahun') && $request->tahun != '') {
+            $query->where('tahun_dibayar', $request->tahun);
         }
         
-        $siswa = $query->paginate(15);
+        // Ambil data dengan pagination (15 per halaman)
+        $pembayaran = $query->orderBy('tgl_bayar', 'desc')->paginate(15);
         
-        // Data untuk filter dropdown
-        $kelasList = Kelas::all();
-        $tahunList = Pembayaran::select('tahun_dibayar')
-            ->distinct()
-            ->orderBy('tahun_dibayar', 'desc')
-            ->pluck('tahun_dibayar');
+        // Append query string ke pagination agar filter tetap ada saat pindah halaman
+        $pembayaran->appends($request->all());
         
-        // Hitung total keseluruhan
-        $totalSiswa = Siswa::whereHas('pembayaran')->count();
-        $totalPembayaran = Pembayaran::sum('jumlah_bayar');
-        
-        return view('pembayaran.index', compact('siswa', 'kelasList', 'tahunList', 'totalSiswa', 'totalPembayaran'));
+        // Kirim ke view
+        return view('pembayaran.index', compact('pembayaran'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     * Halaman Form Tambah Pembayaran
+     */
     public function create()
     {
-        $siswa = Siswa::with(['kelas', 'spp'])->orderBy('nama')->get();
-        $spp = Spp::orderBy('tahun', 'desc')->get();
+        // Ambil data siswa yang aktif dengan relasi kelas dan spp
+        $siswa = Siswa::with(['kelas', 'spp'])->orderBy('nama', 'asc')->get();
         
-        return view('pembayaran.create', compact('siswa', 'spp'));
+        // Ambil data petugas
+        $petugas = Petugas::orderBy('nama_petugas', 'asc')->get();
+        
+        // Daftar bulan
+        $bulan = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        
+        // Tahun saat ini
+        $tahunSekarang = date('Y');
+        
+        return view('pembayaran.create', compact('siswa', 'petugas', 'bulan', 'tahunSekarang'));
     }
 
+    /**
+     * Store a newly created resource in storage.
+     * Proses Simpan Pembayaran Baru
+     */
     public function store(Request $request)
     {
         // Validasi input
-        $request->validate([
+        $validated = $request->validate([
             'nisn' => 'required|exists:siswa,nisn',
+            'id_petugas' => 'required|exists:petugas,id_petugas',
             'tgl_bayar' => 'required|date',
-            'bulan_dibayar' => 'required|array|min:1',
-            'bulan_dibayar.*' => 'required|string',
+            'bulan_dibayar' => 'required|string',
             'tahun_dibayar' => 'required|integer',
-            'id_spp' => 'required|exists:spp,id_spp',
             'jumlah_bayar' => 'required|numeric|min:0',
-            'metode_pembayaran' => 'required|in:tunai',
+            'metode_pembayaran' => 'required|in:tunai,transfer',
         ], [
-            'bulan_dibayar.required' => 'Pilih minimal 1 bulan yang akan dibayar',
-            'bulan_dibayar.min' => 'Pilih minimal 1 bulan yang akan dibayar',
             'nisn.required' => 'Siswa harus dipilih',
             'nisn.exists' => 'Data siswa tidak ditemukan',
-            'tgl_bayar.required' => 'Tanggal bayar harus diisi',
-            'tahun_dibayar.required' => 'Tahun dibayar harus diisi',
-            'id_spp.required' => 'Tarif SPP harus dipilih',
-            'id_spp.exists' => 'Data SPP tidak ditemukan',
-            'jumlah_bayar.required' => 'Jumlah bayar harus diisi',
+            'id_petugas.required' => 'Petugas harus dipilih',
+            'id_petugas.exists' => 'Data petugas tidak ditemukan',
+            'tgl_bayar.required' => 'Tanggal pembayaran harus diisi',
+            'tgl_bayar.date' => 'Format tanggal tidak valid',
+            'bulan_dibayar.required' => 'Bulan pembayaran harus dipilih',
+            'tahun_dibayar.required' => 'Tahun pembayaran harus diisi',
+            'tahun_dibayar.integer' => 'Format tahun tidak valid',
+            'jumlah_bayar.required' => 'Jumlah pembayaran harus diisi',
+            'jumlah_bayar.numeric' => 'Jumlah pembayaran harus berupa angka',
+            'jumlah_bayar.min' => 'Jumlah pembayaran tidak boleh negatif',
             'metode_pembayaran.required' => 'Metode pembayaran harus dipilih',
+            'metode_pembayaran.in' => 'Metode pembayaran tidak valid',
         ]);
-        
+
         try {
-            DB::beginTransaction();
-            
-            $bulanArray = $request->bulan_dibayar;
-            $spp = Spp::findOrFail($request->id_spp);
-            $nominalPerBulan = $spp->nominal;
-            $petugas = auth()->user();
-            
-            $pembayaranBerhasil = [];
-            $pembayaranGagal = [];
-            
-            foreach ($bulanArray as $bulan) {
-                // Cek apakah sudah pernah bayar di bulan dan tahun yang sama
-                $cekSudahBayar = Pembayaran::where('nisn', $request->nisn)
-                    ->where('bulan_dibayar', $bulan)
-                    ->where('tahun_dibayar', $request->tahun_dibayar)
-                    ->exists();
-                
-                if ($cekSudahBayar) {
-                    $pembayaranGagal[] = $bulan . ' ' . $request->tahun_dibayar . ' (sudah dibayar)';
-                    continue;
-                }
-                
-                // Simpan pembayaran
-                $pembayaran = new Pembayaran();
-                $pembayaran->nisn = $request->nisn;
-                $pembayaran->tgl_bayar = $request->tgl_bayar;
-                $pembayaran->bulan_dibayar = $bulan;
-                $pembayaran->tahun_dibayar = $request->tahun_dibayar;
-                $pembayaran->id_spp = $request->id_spp;
-                $pembayaran->jumlah_bayar = $nominalPerBulan;
-                $pembayaran->metode_pembayaran = $request->metode_pembayaran;
-                $pembayaran->id_petugas = $petugas->id_petugas ?? 1;
-                $pembayaran->save();
-                
-                $pembayaranBerhasil[] = $bulan . ' ' . $request->tahun_dibayar;
+            // Ambil data siswa untuk mendapatkan id_spp
+            $siswa = Siswa::where('nisn', $validated['nisn'])->first();
+
+            if (!$siswa) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Data siswa tidak ditemukan!');
             }
-            
-            DB::commit();
-            
-            // Buat pesan notifikasi
-            $message = '';
-            if (!empty($pembayaranBerhasil)) {
-                $message .= 'Pembayaran berhasil untuk bulan: ' . implode(', ', $pembayaranBerhasil) . '. ';
-                $message .= 'Total: Rp ' . number_format(count($pembayaranBerhasil) * $nominalPerBulan, 0, ',', '.');
+
+            // Cek apakah sudah pernah bayar di bulan dan tahun yang sama
+            $cekDuplikat = Pembayaran::where('nisn', $validated['nisn'])
+                ->where('bulan_dibayar', $validated['bulan_dibayar'])
+                ->where('tahun_dibayar', $validated['tahun_dibayar'])
+                ->first();
+
+            if ($cekDuplikat) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Pembayaran untuk bulan ' . $validated['bulan_dibayar'] . ' ' . $validated['tahun_dibayar'] . ' sudah ada!');
             }
-            
-            if (!empty($pembayaranGagal)) {
-                $message .= ' | Gagal/Sudah dibayar: ' . implode(', ', $pembayaranGagal);
-            }
-            
-            return redirect()
-                ->route('pembayaran.index')
-                ->with('success', $message);
-                
+
+            // Simpan data pembayaran
+            $pembayaran = new Pembayaran();
+            $pembayaran->id_petugas = $validated['id_petugas'];
+            $pembayaran->nisn = $validated['nisn'];
+            $pembayaran->tgl_bayar = $validated['tgl_bayar'];
+            $pembayaran->bulan_dibayar = $validated['bulan_dibayar'];
+            $pembayaran->tahun_dibayar = $validated['tahun_dibayar'];
+            $pembayaran->id_spp = $siswa->id_spp;
+            $pembayaran->jumlah_bayar = $validated['jumlah_bayar'];
+            $pembayaran->metode_pembayaran = $validated['metode_pembayaran'];
+            $pembayaran->save();
+
+            // Redirect dengan pesan sukses
+            return redirect()->route('pembayaran.index')
+                ->with('success', 'Data pembayaran berhasil ditambahkan!');
+
         } catch (\Exception $e) {
-            DB::rollBack();
-            
-            return redirect()
-                ->back()
+            return redirect()->back()
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
+    /**
+     * Display the specified resource.
+     * Detail Pembayaran (opsional)
+     */
     public function show($id)
     {
-        $pembayaran = Pembayaran::with(['siswa.kelas', 'spp', 'petugas'])->findOrFail($id);
+        $pembayaran = Pembayaran::with(['siswa.kelas', 'siswa.spp', 'petugas'])
+            ->findOrFail($id);
         
         return view('pembayaran.show', compact('pembayaran'));
     }
 
-    public function destroy($id)
+    /**
+     * Show the form for editing the specified resource.
+     * Halaman Edit Pembayaran
+     */
+    public function edit($id)
     {
+        $pembayaran = Pembayaran::with(['siswa', 'petugas'])->findOrFail($id);
+        
+        // Ambil data siswa
+        $siswa = Siswa::with(['kelas', 'spp'])->orderBy('nama', 'asc')->get();
+        
+        // Ambil data petugas
+        $petugas = Petugas::orderBy('nama_petugas', 'asc')->get();
+        
+        // Daftar bulan
+        $bulan = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        
+        return view('pembayaran.edit', compact('pembayaran', 'siswa', 'petugas', 'bulan'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     * Proses Update Pembayaran
+     */
+    public function update(Request $request, $id)
+    {
+        // Validasi input
+        $validated = $request->validate([
+            'nisn' => 'required|exists:siswa,nisn',
+            'id_petugas' => 'required|exists:petugas,id_petugas',
+            'tgl_bayar' => 'required|date',
+            'bulan_dibayar' => 'required|string',
+            'tahun_dibayar' => 'required|integer',
+            'jumlah_bayar' => 'required|numeric|min:0',
+            'metode_pembayaran' => 'required|in:tunai,transfer',
+        ], [
+            'nisn.required' => 'Siswa harus dipilih',
+            'nisn.exists' => 'Data siswa tidak ditemukan',
+            'id_petugas.required' => 'Petugas harus dipilih',
+            'id_petugas.exists' => 'Data petugas tidak ditemukan',
+            'tgl_bayar.required' => 'Tanggal pembayaran harus diisi',
+            'tgl_bayar.date' => 'Format tanggal tidak valid',
+            'bulan_dibayar.required' => 'Bulan pembayaran harus dipilih',
+            'tahun_dibayar.required' => 'Tahun pembayaran harus diisi',
+            'tahun_dibayar.integer' => 'Format tahun tidak valid',
+            'jumlah_bayar.required' => 'Jumlah pembayaran harus diisi',
+            'jumlah_bayar.numeric' => 'Jumlah pembayaran harus berupa angka',
+            'jumlah_bayar.min' => 'Jumlah pembayaran tidak boleh negatif',
+            'metode_pembayaran.required' => 'Metode pembayaran harus dipilih',
+            'metode_pembayaran.in' => 'Metode pembayaran tidak valid',
+        ]);
+
         try {
             $pembayaran = Pembayaran::findOrFail($id);
-            $bulan = $pembayaran->bulan_dibayar;
-            $tahun = $pembayaran->tahun_dibayar;
-            $siswa = $pembayaran->siswa->nama;
-            
-            $pembayaran->delete();
-            
-            return redirect()
-                ->route('pembayaran.index')
-                ->with('success', "Pembayaran SPP $siswa bulan $bulan $tahun berhasil dihapus");
-                
+
+            // Ambil data siswa untuk mendapatkan id_spp
+            $siswa = Siswa::where('nisn', $validated['nisn'])->first();
+
+            if (!$siswa) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Data siswa tidak ditemukan!');
+            }
+
+            // Cek duplikat (kecuali data yang sedang diedit)
+            $cekDuplikat = Pembayaran::where('nisn', $validated['nisn'])
+                ->where('bulan_dibayar', $validated['bulan_dibayar'])
+                ->where('tahun_dibayar', $validated['tahun_dibayar'])
+                ->where('id_pembayaran', '!=', $id)
+                ->first();
+
+            if ($cekDuplikat) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Pembayaran untuk bulan ' . $validated['bulan_dibayar'] . ' ' . $validated['tahun_dibayar'] . ' sudah ada!');
+            }
+
+            // Update data pembayaran
+            $pembayaran->id_petugas = $validated['id_petugas'];
+            $pembayaran->nisn = $validated['nisn'];
+            $pembayaran->tgl_bayar = $validated['tgl_bayar'];
+            $pembayaran->bulan_dibayar = $validated['bulan_dibayar'];
+            $pembayaran->tahun_dibayar = $validated['tahun_dibayar'];
+            $pembayaran->id_spp = $siswa->id_spp;
+            $pembayaran->jumlah_bayar = $validated['jumlah_bayar'];
+            $pembayaran->metode_pembayaran = $validated['metode_pembayaran'];
+            $pembayaran->save();
+
+            // Redirect dengan pesan sukses
+            return redirect()->route('pembayaran.index')
+                ->with('success', 'Data pembayaran berhasil diperbarui!');
+
         } catch (\Exception $e) {
-            return redirect()
-                ->back()
+            return redirect()->back()
+                ->withInput()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
-    public function cetakStruk($id)
+    /**
+     * Remove the specified resource from storage.
+     * Hapus Pembayaran
+     */
+    public function destroy($id)
     {
-        $pembayaran = Pembayaran::with(['siswa.kelas', 'spp', 'petugas'])->findOrFail($id);
+        try {
+            $pembayaran = Pembayaran::findOrFail($id);
+            $pembayaran->delete();
+
+            return redirect()->route('pembayaran.index')
+                ->with('success', 'Data pembayaran berhasil dihapus!');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * AJAX: Get detail siswa by NISN
+     * Untuk mendapatkan info SPP siswa saat input pembayaran
+     */
+    public function getSiswaDetail($nisn)
+    {
+        $siswa = Siswa::with(['kelas', 'spp'])->where('nisn', $nisn)->first();
+
+        if (!$siswa) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data siswa tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'nama' => $siswa->nama,
+                'nis' => $siswa->nis,
+                'kelas' => $siswa->kelas->nama_kelas ?? '-',
+                'kompetensi_keahlian' => $siswa->kelas->kompetensi_keahlian ?? '-',
+                'tahun_spp' => $siswa->spp->tahun ?? '-',
+                'nominal_spp' => $siswa->spp->nominal ?? 0,
+                'nominal_formatted' => 'Rp ' . number_format($siswa->spp->nominal ?? 0, 0, ',', '.')
+            ]
+        ]);
+    }
+
+    /**
+     * AJAX: Cek pembayaran yang sudah ada untuk siswa tertentu
+     * Untuk menampilkan histori pembayaran saat input
+     */
+    public function getRiwayatPembayaran($nisn)
+    {
+        $pembayaran = Pembayaran::with('petugas')
+            ->where('nisn', $nisn)
+            ->orderBy('tahun_dibayar', 'desc')
+            ->orderByRaw("FIELD(bulan_dibayar, 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember') DESC")
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $pembayaran
+        ]);
+    }
+
+    /**
+     * Export/Print Laporan Pembayaran (opsional)
+     */
+    public function laporan(Request $request)
+    {
+        $query = Pembayaran::with(['siswa.kelas', 'petugas']);
+
+        // Filter
+        if ($request->has('bulan') && $request->bulan != '') {
+            $query->where('bulan_dibayar', $request->bulan);
+        }
+
+        if ($request->has('tahun') && $request->tahun != '') {
+            $query->where('tahun_dibayar', $request->tahun);
+        }
+
+        if ($request->has('metode') && $request->metode != '') {
+            $query->where('metode_pembayaran', $request->metode);
+        }
+
+        $pembayaran = $query->orderBy('tgl_bayar', 'desc')->get();
+
+        $totalPemasukan = $pembayaran->sum('jumlah_bayar');
+        $totalTunai = $pembayaran->where('metode_pembayaran', 'tunai')->sum('jumlah_bayar');
+        $totalTransfer = $pembayaran->where('metode_pembayaran', 'transfer')->sum('jumlah_bayar');
+
+        return view('pembayaran.laporan', compact('pembayaran', 'totalPemasukan', 'totalTunai', 'totalTransfer'));
+    }
+
+    /**
+     * Cetak Struk Pembayaran
+     */
+    public function cetak($id)
+    {
+        $pembayaran = Pembayaran::with(['siswa.kelas', 'petugas'])->findOrFail($id);
         
-        return view('pembayaran.struk', compact('pembayaran'));
+        return view('pembayaran.cetak', compact('pembayaran'));
     }
 }
