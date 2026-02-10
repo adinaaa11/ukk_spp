@@ -214,10 +214,15 @@
         /* ═══════════════════════════════════════════════════════════
            FORM CONTROLS
            ═══════════════════════════════════════════════════════════ */
+        .form-floating {
+            margin-bottom: 20px;
+        }
+
         .form-control {
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             padding: 12px 15px;
+            height: 56px;
             transition: all 0.3s;
             font-size: 15px;
         }
@@ -233,6 +238,23 @@
             color: #666;
         }
 
+        .form-floating > .form-control:focus ~ label,
+        .form-floating > .form-control:not(:placeholder-shown) ~ label {
+            opacity: 0.65;
+            transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+        }
+
+        .form-check {
+            margin-bottom: 25px;
+        }
+
+        .form-check-input {
+            width: 18px;
+            height: 18px;
+            margin-top: 0.2em;
+            cursor: pointer;
+        }
+
         .form-check-input:checked {
             background-color: var(--yellow-accent);
             border-color: var(--yellow-accent);
@@ -241,6 +263,12 @@
         .form-check-input:focus {
             border-color: var(--yellow-accent);
             box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
+        }
+
+        .form-check-label {
+            margin-left: 8px;
+            cursor: pointer;
+            user-select: none;
         }
 
         /* ═══════════════════════════════════════════════════════════
@@ -316,6 +344,31 @@
             color: #3c3;
         }
 
+        .alert i {
+            margin-right: 8px;
+        }
+
+        .btn-close {
+            padding: 0.5rem;
+        }
+
+        /* Invalid feedback */
+        .invalid-feedback {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #dc3545;
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+
+        .form-control.is-invalid:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
         /* ═══════════════════════════════════════════════════════════
            LINK TO ADMIN
            ═══════════════════════════════════════════════════════════ */
@@ -374,6 +427,11 @@
                 padding: 12px;
                 font-size: 14px;
             }
+
+            .form-control {
+                height: 52px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -408,20 +466,20 @@
                 <!-- ERROR MESSAGES -->
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <i class="fas fa-exclamation-circle"></i>
                         @foreach ($errors->all() as $error)
                             {{ $error }}
                         @endforeach
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
 
                 <!-- SUCCESS MESSAGES -->
                 @if(session('status'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle me-2"></i>
+                        <i class="fas fa-check-circle"></i>
                         {{ session('status') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
 
@@ -430,7 +488,7 @@
                     @csrf
 
                     <!-- NISN INPUT -->
-                    <div class="form-floating mb-3">
+                    <div class="form-floating mb-4">
                         <input 
                             type="text" 
                             class="form-control @error('nisn') is-invalid @enderror" 
@@ -446,10 +504,13 @@
                         <label for="nisn">
                             <i class="fas fa-id-card me-2"></i>NISN (10 digit)
                         </label>
+                        @error('nisn')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <!-- PASSWORD INPUT -->
-                    <div class="form-floating mb-3">
+                    <div class="form-floating mb-4">
                         <input 
                             type="password" 
                             class="form-control @error('password') is-invalid @enderror" 
@@ -461,10 +522,13 @@
                         <label for="password">
                             <i class="fas fa-lock me-2"></i>Password
                         </label>
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <!-- REMEMBER ME CHECKBOX -->
-                    <div class="form-check mb-3">
+                    <div class="form-check mb-4">
                         <input class="form-check-input" type="checkbox" id="remember" name="remember">
                         <label class="form-check-label" for="remember">
                             Ingat saya
@@ -481,7 +545,7 @@
                 <div class="link-to-admin">
                     <p class="text-muted mb-2">Login sebagai Admin/Petugas?</p>
                     <a href="{{ route('login') }}">
-                        <i class="fas fa-user-shield me-2"></i>Klik di sini
+                        <i class="fas fa-user-shield"></i>Klik di sini
                     </a>
                 </div>
             </div>

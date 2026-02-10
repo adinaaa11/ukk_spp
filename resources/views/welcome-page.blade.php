@@ -22,9 +22,23 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow-x: hidden;
-            background: var(--navy-dark);
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+            background-size: cover;
+            background-position: center;
+            position: relative;
         }
 
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 31, 63, 0.85);
+            z-index: -1;
+        }
+        
         /* ═══════════════════════════════════════════════════════════
            NAVBAR (TANPA TOMBOL LOGIN)
            ═══════════════════════════════════════════════════════════ */
@@ -70,7 +84,7 @@
            HERO SECTION
            ═══════════════════════════════════════════════════════════ */
         .hero-section {
-            background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-dark) 100%);
+            background: transparent;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -78,6 +92,26 @@
             padding-top: 80px;
             position: relative;
             overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 215, 0, 0.12) 0%, transparent 50%);
+            z-index: 2;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
         }
 
         .particles {
@@ -92,22 +126,38 @@
 
         .particle {
             position: absolute;
-            background: rgba(255, 215, 0, 0.1);
+            background: rgba(255, 215, 0, 0.2);
             border-radius: 50%;
-            animation: float 15s infinite;
+            animation: float 25s infinite;
+            filter: blur(2px);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
         }
 
-        .particle:nth-child(1) { width: 80px; height: 80px; top: 10%; left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { width: 60px; height: 60px; top: 20%; left: 80%; animation-delay: 2s; }
-        .particle:nth-child(3) { width: 100px; height: 100px; top: 60%; left: 20%; animation-delay: 4s; }
-        .particle:nth-child(4) { width: 70px; height: 70px; top: 80%; left: 70%; animation-delay: 1s; }
-        .particle:nth-child(5) { width: 50px; height: 50px; top: 40%; left: 50%; animation-delay: 3s; }
+        .particle:nth-child(1) { width: 150px; height: 150px; top: 5%; left: 5%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 100px; height: 100px; top: 15%; left: 85%; animation-delay: 4s; }
+        .particle:nth-child(3) { width: 180px; height: 180px; top: 55%; left: 15%; animation-delay: 8s; }
+        .particle:nth-child(4) { width: 120px; height: 120px; top: 75%; left: 75%; animation-delay: 3s; }
+        .particle:nth-child(5) { width: 80px; height: 80px; top: 35%; left: 45%; animation-delay: 6s; }
+        .particle:nth-child(6) { width: 110px; height: 110px; top: 25%; left: 65%; animation-delay: 9s; }
+        .particle:nth-child(7) { width: 90px; height: 90px; top: 65%; left: 35%; animation-delay: 7s; }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0) translateX(0); }
-            25% { transform: translateY(-50px) translateX(50px); }
-            50% { transform: translateY(-100px) translateX(-50px); }
-            75% { transform: translateY(-50px) translateX(50px); }
+            0%, 100% { 
+                transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+                opacity: 0.2;
+            }
+            25% { 
+                transform: translateY(-100px) translateX(80px) rotate(90deg) scale(1.1);
+                opacity: 0.4;
+            }
+            50% { 
+                transform: translateY(-200px) translateX(-60px) rotate(180deg) scale(0.9);
+                opacity: 0.3;
+            }
+            75% { 
+                transform: translateY(-80px) translateX(100px) rotate(270deg) scale(1.05);
+                opacity: 0.5;
+            }
         }
 
         .hero-content {
@@ -120,12 +170,53 @@
         }
 
         .hero-content h1 {
-            font-size: 64px;
+            font-size: 72px;
             color: var(--yellow-accent);
-            margin-bottom: 20px;
-            font-weight: 800;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            animation: fadeInDown 1s ease-out;
+            margin-bottom: 25px;
+            font-weight: 900;
+            text-shadow: 
+                0 4px 20px rgba(0,0,0,0.4),
+                0 0 40px rgba(255, 215, 0, 0.4),
+                0 0 60px rgba(255, 215, 0, 0.2);
+            animation: fadeInDown 1.2s ease-out, glow 3s ease-in-out infinite alternate;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 
+                0 4px 20px rgba(0,0,0,0.4),
+                0 0 40px rgba(255, 215, 0, 0.4),
+                0 0 60px rgba(255, 215, 0, 0.2);
+            }
+            to { text-shadow: 
+                0 4px 20px rgba(0,0,0,0.4),
+                0 0 50px rgba(255, 215, 0, 0.6),
+                0 0 80px rgba(255, 215, 0, 0.3);
+            }
+        }
+
+        .hero-content h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--yellow-accent), transparent);
+            animation: slideIn 1.5s ease-out 0.5s both;
+        }
+
+        @keyframes slideIn {
+            from {
+                width: 0;
+                opacity: 0;
+            }
+            to {
+                width: 100px;
+                opacity: 1;
+            }
         }
 
         .hero-content .subtitle {
@@ -174,38 +265,84 @@
         }
 
         .btn-hero {
-            padding: 20px 50px;
+            padding: 22px 55px;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 700;
             font-size: 18px;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-hero:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-admin {
-            background: linear-gradient(135deg, var(--yellow-accent) 0%, var(--yellow-hover) 100%);
+            background: linear-gradient(135deg, var(--yellow-accent) 0%, var(--yellow-hover) 50%, #FFB300 100%);
             color: var(--navy-primary);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            box-shadow: 
+                0 10px 30px rgba(255, 215, 0, 0.3),
+                0 0 20px rgba(255, 215, 0, 0.1);
+            border: 2px solid transparent;
         }
 
         .btn-admin:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 
+                0 20px 40px rgba(255, 215, 0, 0.4),
+                0 0 30px rgba(255, 215, 0, 0.2);
         }
 
         .btn-siswa {
             background: transparent;
             color: white;
             border: 3px solid var(--yellow-accent);
+            position: relative;
+        }
+
+        .btn-siswa::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--yellow-accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: -1;
         }
 
         .btn-siswa:hover {
-            background: var(--yellow-accent);
             color: var(--navy-primary);
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.05);
+            border-color: var(--yellow-hover);
+        }
+
+        .btn-siswa:hover::after {
+            transform: scaleX(1);
         }
 
         /* ═══════════════════════════════════════════════════════════
@@ -219,17 +356,18 @@
         }
 
         .social-btn {
-            width: 60px;
-            height: 60px;
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            font-size: 28px;
-            transition: all 0.3s;
+            font-size: 30px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(10px);
         }
 
         .social-btn::before {
@@ -246,8 +384,26 @@
         }
 
         .social-btn:hover::before {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
+        }
+
+        .social-btn::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--yellow-accent), var(--yellow-hover), var(--yellow-accent));
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .social-btn:hover::after {
+            opacity: 1;
         }
 
         /* WARNA SESUAI TEMA NAVY & YELLOW */
@@ -270,10 +426,13 @@
         }
 
         .social-btn:hover {
-            transform: translateY(-5px) scale(1.1);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
-            background: var(--yellow-accent);
-            color: var(--navy-primary);
+            transform: translateY(-8px) scale(1.15) rotate(5deg);
+            box-shadow: 
+                0 15px 35px rgba(255, 215, 0, 0.4),
+                0 0 25px rgba(255, 215, 0, 0.2);
+            background: var(--yellow-accent) !important;
+            color: var(--navy-primary) !important;
+            border-color: var(--yellow-hover) !important;
         }
 
         .social-label {
@@ -289,9 +448,20 @@
            FEATURES SECTION
            ═══════════════════════════════════════════════════════════ */
         .features-section {
-            background: white;
-            padding: 100px 50px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #ffffff 100%);
+            padding: 120px 50px;
             text-align: center;
+            position: relative;
+        }
+
+        .features-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--yellow-accent), transparent);
         }
 
         .features-section h2 {
@@ -317,24 +487,51 @@
 
         .feature-box {
             padding: 50px 30px;
-            border-radius: 20px;
-            background: #f8f9fa;
-            transition: all 0.3s;
+            border-radius: 25px;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 31, 63, 0.1);
+        }
+
+        .feature-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .feature-box:hover::before {
+            left: 100%;
         }
 
         .feature-box:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.15),
+                0 0 30px rgba(255, 215, 0, 0.1);
+            border-color: var(--yellow-accent);
         }
 
         .feature-box i {
-            font-size: 60px;
+            font-size: 70px;
             margin-bottom: 25px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-block;
+        }
+
+        .feature-box:hover i {
+            transform: scale(1.2) rotate(5deg);
         }
 
         .feature-box:nth-child(1) i { color: var(--navy-primary); }
         .feature-box:nth-child(2) i { color: var(--yellow-accent); }
-        .feature-box:nth-child(3) i { color: #27ae60; }
+        .feature-box:nth-child(3) i { color: #3498db; }
         .feature-box:nth-child(4) i { color: #e74c3c; }
 
         .feature-box h3 {
@@ -354,10 +551,28 @@
            FOOTER
            ═══════════════════════════════════════════════════════════ */
         .footer {
-            background: var(--navy-dark);
+            background: linear-gradient(135deg, var(--navy-dark) 0%, #0a2540 100%);
             color: white;
-            padding: 40px 20px;
+            padding: 50px 20px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--yellow-accent), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         .footer p {
@@ -369,24 +584,16 @@
            RESPONSIVE
            ═══════════════════════════════════════════════════════════ */
         @media (max-width: 768px) {
-            .navbar {
-                padding: 15px 20px;
-            }
-
-            .navbar-logo h2 {
-                font-size: 20px;
-            }
-
             .hero-content h1 {
-                font-size: 36px;
+                font-size: 48px;
             }
 
             .hero-content .subtitle {
-                font-size: 20px;
+                font-size: 18px;
             }
 
             .hero-content .tagline {
-                font-size: 16px;
+                font-size: 14px;
             }
 
             .hero-buttons {
@@ -429,6 +636,8 @@
          ═══════════════════════════════════════════════════════════ -->
     <div class="hero-section">
         <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
             <div class="particle"></div>
             <div class="particle"></div>
             <div class="particle"></div>
@@ -488,9 +697,9 @@
             </div>
             
             <div class="feature-box">
-                <i class="fas fa-mobile-alt"></i>
-                <h3>Mobile Friendly</h3>
-                <p>Akses dari mana saja menggunakan smartphone, tablet, atau komputer</p>
+                <i class="fas fa-desktop"></i>
+                <h3>Desktop Optimized</h3>
+                <p>Dirancang khusus untuk akses melalui laptop dan komputer dengan performa optimal</p>
             </div>
             
             <div class="feature-box">

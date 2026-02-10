@@ -80,7 +80,8 @@ class SiswaAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
-        return redirect()->route('login.siswa')->with('status', '✅ Anda telah logout.');
+        // PERBAIKAN: Langsung redirect ke login siswa
+        return redirect()->route('login.siswa');
     }
 
     /**

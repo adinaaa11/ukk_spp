@@ -10,25 +10,38 @@ use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\SiswaAuthController;
 use App\Http\Controllers\SiswaDashboardController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 /*
 |--------------------------------------------------------------------------
-| WEB ROUTES
-| Aplikasi Pembayaran SPP
+| HALAMAN AWAL (LANDING PAGE)
 |--------------------------------------------------------------------------
 */
-
-// ===================== HALAMAN AWAL =====================
 Route::get('/', function () {
     return view('welcome-page');
 })->name('home');
 
-// ===================== AUTH DEFAULT =====================
-if (file_exists(__DIR__ . '/auth.php')) {
-    require __DIR__ . '/auth.php';
-}
+/*
+|--------------------------------------------------------------------------
+| AUTH ADMIN & PETUGAS
+|--------------------------------------------------------------------------
+*/
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])
+        ->name('login');
 
-// ===================== AUTH SISWA =====================
+    Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+});
+
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('logout');
+
+/*
+|--------------------------------------------------------------------------
+| AUTH SISWA
+|--------------------------------------------------------------------------
+*/
 Route::prefix('siswa')->group(function () {
 
     Route::middleware('guest:siswa')->group(function () {
@@ -47,12 +60,20 @@ Route::prefix('siswa')->group(function () {
     });
 });
 
-// ===================== DASHBOARD ADMIN =====================
+/*
+|--------------------------------------------------------------------------
+| DASHBOARD ADMIN
+|--------------------------------------------------------------------------
+*/
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth'])
     ->name('dashboard');
 
-// ===================== KHUSUS ADMIN =====================
+/*
+|--------------------------------------------------------------------------
+| KHUSUS ADMIN
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'ceklevel:admin'])->group(function () {
 
     Route::resource('kelas', KelasController::class);
@@ -72,32 +93,30 @@ Route::middleware(['auth', 'ceklevel:admin'])->group(function () {
         ->name('laporan.download.pdf');
 });
 
-// ===================== ADMIN & PETUGAS =====================
+/*
+|--------------------------------------------------------------------------
+| ADMIN & PETUGAS
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'ceklevel:admin,petugas'])->group(function () {
 
     Route::prefix('pembayaran')->group(function () {
 
-        // History
         Route::get('/', [PembayaranController::class, 'index'])
             ->name('pembayaran.index');
 
-        // Form Entri
         Route::get('/create', [PembayaranController::class, 'create'])
             ->name('pembayaran.create');
 
-        // Simpan
         Route::post('/store', [PembayaranController::class, 'store'])
             ->name('pembayaran.store');
 
-        // CETAK STRUK (HARUS DI ATAS DETAIL)
         Route::get('/{id}/struk', [PembayaranController::class, 'cetakStruk'])
             ->name('pembayaran.struk');
 
-        // DETAIL
         Route::get('/{id}', [PembayaranController::class, 'show'])
             ->name('pembayaran.show');
 
-        // HAPUS
         Route::delete('/{id}', [PembayaranController::class, 'destroy'])
             ->name('pembayaran.destroy');
     });

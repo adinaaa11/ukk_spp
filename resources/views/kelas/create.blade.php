@@ -3,147 +3,246 @@
 @section('content')
 <div class="container-fluid">
     <div class="mb-4">
-        <h2 class="section-title">Tambah Kelas</h2>
+        <h2 class="section-title">
+            <i class="fas fa-school me-2"></i>Tambah Data Kelas
+        </h2>
         <p class="section-subtitle">Masukkan informasi kelas baru</p>
     </div>
 
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card card-custom">
-                <div class="card-header-custom">
-                    <h5 class="mb-0"><i class="fas fa-school me-2"></i>Form Tambah Kelas</h5>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card card-custom shadow-lg">
+                <div class="card-header-custom bg-gradient" style="background: linear-gradient(135deg, var(--navy-primary), var(--navy-dark));">
+                    <h5 class="mb-0 text-white">
+                        <i class="fas fa-school me-2"></i>Form Tambah Kelas
+                    </h5>
                 </div>
-                <div class="card-body">
-                    <form action="{{ route('kelas.store') }}" method="POST">
+                <div class="card-body p-4">
+                    <form action="{{ route('kelas.store') }}" method="POST" id="formKelas">
                         @csrf
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Nama Kelas <span class="text-danger">*</span></label>
-                            <input type="text" name="nama_kelas" 
-                                   class="form-control @error('nama_kelas') is-invalid @enderror" 
-                                   value="{{ old('nama_kelas') }}" 
-                                   placeholder="Contoh: XII RPL 1" maxlength="10" required>
-                            <small class="text-muted">Maksimal 10 karakter</small>
-                            @error('nama_kelas')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <!-- Data Kelas -->
+                        <div class="mb-4">
+                            <h6 class="text-primary fw-bold mb-3">
+                                <i class="fas fa-info-circle me-2"></i>Data Kelas
+                            </h6>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-tag me-1 text-primary"></i>Nama Kelas 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-primary text-white">
+                                        <i class="fas fa-school"></i>
+                                    </span>
+                                    <input type="text" name="nama_kelas" 
+                                        class="form-control @error('nama_kelas') is-invalid @enderror" 
+                                        value="{{ old('nama_kelas') }}" 
+                                        placeholder="Contoh: XII RPL 1" 
+                                        maxlength="10" 
+                                        required>
+                                </div>
+                                <small class="text-muted">Format: [Tingkat] [Jurusan] [Nomor] (contoh: X RPL 1)</small>
+                                @error('nama_kelas')
+                                    <div class="invalid-feedback d-block">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-graduation-cap me-1 text-primary"></i>Kompetensi Keahlian 
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-primary text-white">
+                                        <i class="fas fa-book"></i>
+                                    </span>
+                                    <input type="text" name="kompetensi_keahlian" 
+                                        class="form-control @error('kompetensi_keahlian') is-invalid @enderror" 
+                                        value="{{ old('kompetensi_keahlian') }}" 
+                                        placeholder="Contoh: Rekayasa Perangkat Lunak" 
+                                        maxlength="50" 
+                                        required>
+                                </div>
+                                <small class="text-muted">Nama jurusan sesuai kurikulum</small>
+                                @error('kompetensi_keahlian')
+                                    <div class="invalid-feedback d-block">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Kompetensi Keahlian <span class="text-danger">*</span></label>
-                            <input type="text" name="kompetensi_keahlian" 
-                                   class="form-control @error('kompetensi_keahlian') is-invalid @enderror" 
-                                   value="{{ old('kompetensi_keahlian') }}" 
-                                   placeholder="Contoh: Rekayasa Perangkat Lunak" maxlength="50" required>
-                            <small class="text-muted">Maksimal 50 karakter</small>
-                            @error('kompetensi_keahlian')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        <hr class="my-4">
 
-                        <hr>
-
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('kelas.index') }}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>Kembali
+                        <!-- Tombol Aksi -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ route('kelas.index') }}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                <span>Kembali ke Daftar</span>
                             </a>
-                            <button type="submit" class="btn btn-success-custom">
-                                <i class="fas fa-save me-2"></i>Simpan Data
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button type="reset" class="btn btn-outline-danger btn-lg">
+                                    <i class="fas fa-redo me-2"></i>
+                                    <span>Reset Form</span>
+                                </button>
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-save me-2"></i>
+                                    <span>Simpan Data</span>
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card card-custom" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white;">
+        <!-- Sidebar Info -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Panduan Pengisian
+                    </h6>
+                </div>
                 <div class="card-body">
-                    <h5 class="mb-3 fw-bold">
-                        <i class="fas fa-info-circle me-2" style="font-size: 0.9rem;"></i>
-                        Panduan Pengisian
-                    </h5>
-                    <ul class="ps-3 mb-0" style="font-size: 0.85rem; line-height: 1.8;">
-                        <li class="mb-2">Nama kelas biasanya menggunakan format: [Tingkat] [Jurusan] [Nomor Kelas]</li>
-                        <li class="mb-2">Contoh: X RPL 1, XI TKJ 2, XII OTKP 1</li>
-                        <li class="mb-2">Kompetensi keahlian harus sesuai dengan kurikulum</li>
-                        <li class="mb-0">Pastikan tidak ada duplikasi nama kelas</li>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Gunakan format standar nama kelas
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Pastikan kompetensi keahlian sesuai
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Hindari duplikasi nama kelas
+                        </li>
                     </ul>
                 </div>
             </div>
 
             <!-- Info 10 Jurusan -->
-            <div class="card card-custom mt-3">
-                <div class="card-body">
-                    <h6 class="fw-bold mb-3" style="color: var(--navy-primary);">
-                        <i class="fas fa-graduation-cap me-2" style="font-size: 0.85rem;"></i>
-                        10 Jurusan Tersedia
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-list me-2"></i>10 Jurusan Tersedia
                     </h6>
+                </div>
+                <div class="card-body">
                     <div class="row g-2">
                         <div class="col-6">
-                            <small class="d-block mb-1 text-muted">
-                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
-                                <strong>RPL</strong>
+                            <small class="d-block mb-1">
+                                <span class="badge bg-primary me-1">RPL</span>
+                                Rekayasa Perangkat Lunak
                             </small>
                         </div>
                         <div class="col-6">
-                            <small class="d-block mb-1 text-muted">
-                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
-                                <strong>DKV</strong>
+                            <small class="d-block mb-1">
+                                <span class="badge bg-primary me-1">DKV</span>
+                                Desain Komunikasi Visual
                             </small>
                         </div>
                         <div class="col-6">
-                            <small class="d-block mb-1 text-muted">
-                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
-                                <strong>MKT</strong>
+                            <small class="d-block mb-1">
+                                <span class="badge bg-primary me-1">MKT</span>
+                                Mekatronika
                             </small>
                         </div>
                         <div class="col-6">
-                            <small class="d-block mb-1 text-muted">
-                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
-                                <strong>TKJ</strong>
+                            <small class="d-block mb-1">
+                                <span class="badge bg-primary me-1">TKJ</span>
+                                Teknik Komputer Jaringan
                             </small>
                         </div>
                         <div class="col-6">
-                            <small class="d-block mb-1 text-muted">
-                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
-                                <strong>TPM</strong>
+                            <small class="d-block mb-1">
+                                <span class="badge bg-warning text-dark me-1">TPM</span>
+                                Teknik Permesinan
                             </small>
                         </div>
                         <div class="col-6">
-                            <small class="d-block mb-1 text-muted">
-                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
-                                <strong>TL</strong>
+                            <small class="d-block mb-1">
+                                <span class="badge bg-warning text-dark me-1">TL</span>
+                                Teknik Pengelasan
                             </small>
                         </div>
                         <div class="col-6">
-                            <small class="d-block mb-1 text-muted">
-                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
-                                <strong>TBKR</strong>
+                            <small class="d-block mb-1">
+                                <span class="badge bg-warning text-dark me-1">TBKR</span>
+                                Teknik Body Kendaraan
                             </small>
                         </div>
                         <div class="col-6">
-                            <small class="d-block mb-1 text-muted">
-                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
-                                <strong>TKR</strong>
+                            <small class="d-block mb-1">
+                                <span class="badge bg-warning text-dark me-1">TKR</span>
+                                Teknik Kendaraan Ringan
                             </small>
                         </div>
                         <div class="col-6">
-                            <small class="d-block mb-1 text-muted">
-                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
-                                <strong>APHP</strong>
+                            <small class="d-block mb-1">
+                                <span class="badge bg-success me-1">APHP</span>
+                                Agribisnis Pengolahan Hasil
                             </small>
                         </div>
                         <div class="col-6">
-                            <small class="d-block mb-1 text-muted">
-                                <i class="fas fa-check-circle text-success me-1" style="font-size: 0.7rem;"></i>
-                                <strong>ATPH</strong>
+                            <small class="d-block mb-1">
+                                <span class="badge bg-success me-1">ATPH</span>
+                                Agribisnis Tanaman Pangan
                             </small>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Penting!
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        <strong>Kapasitas maksimal:</strong> 35 siswa per kelas
+                    </p>
+                    <p class="mb-0">
+                        <strong>Total kelas:</strong> 42 kelas (14 jurusan × 3 tingkat)
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Validasi form -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto uppercase untuk nama kelas
+    document.querySelector('input[name="nama_kelas"]').addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+
+    // Auto capitalize untuk kompetensi keahlian
+    document.querySelector('input[name="kompetensi_keahlian"]').addEventListener('input', function() {
+        this.value = this.value.replace(/\b\w/g, l => l.toUpperCase());
+    });
+
+    // Preview data sebelum submit
+    document.getElementById('formKelas').addEventListener('submit', function(e) {
+        const namaKelas = document.querySelector('input[name="nama_kelas"]').value;
+        const kompetensi = document.querySelector('input[name="kompetensi_keahlian"]').value;
+        
+        if (namaKelas && kompetensi) {
+            const confirmMsg = `Apakah data kelas berikut sudah benar?\n\nNama Kelas: ${namaKelas}\nKompetensi: ${kompetensi}\n\nData akan disimpan.`;
+            if (!confirm(confirmMsg)) {
+                e.preventDefault();
+            }
+        }
+    });
+});
+</script>
 @endsection

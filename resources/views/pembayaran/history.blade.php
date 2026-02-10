@@ -73,7 +73,17 @@
                                     <td><strong>{{ $bayar->siswa->nisn }}</strong></td>
                                     <td>{{ $bayar->siswa->nama }}</td>
                                     <td>{{ $bayar->siswa->kelas->nama_kelas }}</td>
-                                    <td>{{ $bayar->bulan_dibayar }}</td>
+                                    <td>
+                                        @php
+                                            $bulans = explode(', ', $bayar->bulan_dibayar);
+                                            $badgeColors = ['primary', 'success', 'warning', 'info', 'secondary'];
+                                        @endphp
+                                        @foreach($bulans as $index => $bulan)
+                                            <span class="badge bg-{{ $badgeColors[$index % count($badgeColors)] }} me-1 mb-1">
+                                                {{ $bulan }}
+                                            </span>
+                                        @endforeach
+                                    </td>
                                     <td>{{ $bayar->tahun_dibayar }}</td>
                                     <td class="text-success fw-bold">
                                         Rp {{ number_format($bayar->jumlah_bayar, 0, ',', '.') }}

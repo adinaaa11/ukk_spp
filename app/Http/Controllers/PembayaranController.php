@@ -111,36 +111,41 @@ class PembayaranController extends Controller
         try {
             $siswa   = Siswa::with('spp')->where('nisn', $request->nisn)->firstOrFail();
             $nominal = $siswa->spp->nominal;
+            $bulanList = $request->bulan_dibayar;
 
-            foreach ($request->bulan_dibayar as $bulan) {
-
-                // ❗ Cegah double bayar bulan yang sama
+            // ❗ Cegah double bayar untuk setiap bulan
+            foreach ($bulanList as $bulan) {
                 $cek = Pembayaran::where('nisn', $request->nisn)
                     ->where('bulan_dibayar', $bulan)
                     ->where('tahun_dibayar', $request->tahun_dibayar)
                     ->exists();
 
                 if ($cek) {
-                    throw new \Exception("Bulan $bulan sudah dibayar.");
+                    throw new \Exception("Bulan $bulan tahun $request->tahun_dibayar sudah dibayar.");
                 }
-
-                Pembayaran::create([
-                    'id_petugas'        => $request->id_petugas,
-                    'nisn'              => $request->nisn,
-                    'tgl_bayar'         => $request->tgl_bayar,
-                    'bulan_dibayar'     => $bulan,
-                    'tahun_dibayar'     => $request->tahun_dibayar,
-                    'id_spp'            => $siswa->id_spp,
-                    'jumlah_bayar'      => $nominal,
-                    'metode_pembayaran' => 'tunai',
-                ]);
             }
+
+            // ✅ Gabungkan semua bulan menjadi SATU transaksi
+            $jumlahBulan = count($bulanList);
+            $totalBayar = $nominal * $jumlahBulan;
+            $bulanGabung = implode(', ', $bulanList);
+
+            Pembayaran::create([
+                'id_petugas'        => $request->id_petugas,
+                'nisn'              => $request->nisn,
+                'tgl_bayar'         => $request->tgl_bayar,
+                'bulan_dibayar'     => $bulanGabung, // Simpan semua bulan dalam satu field
+                'tahun_dibayar'     => $request->tahun_dibayar,
+                'id_spp'            => $siswa->id_spp,
+                'jumlah_bayar'      => $totalBayar, // Total semua bulan
+                'metode_pembayaran' => 'tunai',
+            ]);
 
             DB::commit();
 
             return redirect()
                 ->route('pembayaran.index')
-                ->with('success', 'Pembayaran berhasil disimpan');
+                ->with('success', "Pembayaran berhasil untuk $jumlahBulan bulan ($bulanGabung) sebesar Rp " . number_format($totalBayar, 0, ',', '.'));
 
         } catch (\Exception $e) {
             DB::rollBack();

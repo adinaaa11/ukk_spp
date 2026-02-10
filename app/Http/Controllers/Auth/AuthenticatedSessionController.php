@@ -3,45 +3,47 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view (Admin/Petugas).
-     */
-    public function create(): View
+    public function create()
     {
         return view('auth.login');
     }
 
-    /**
-     * Handle an incoming authentication request (Admin/Petugas).
-     */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(Request $request)
     {
-        $request->authenticate();
+        $request->validate([
+            'login_id' => 'required',
+            'password' => 'required',
+        ]);
 
-        $request->session()->regenerate();
+        if (Auth::attempt([
+            'username' => $request->login_id,
+            'password' => $request->password,
+        ])) {
+            $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'));
+            if (auth()->user()->level === 'admin') {
+                return redirect()->route('dashboard');
+            }
+
+            return redirect()->route('pembayaran.index');
+        }
+
+        return back()->withErrors([
+            'login_id' => 'Username atau password salah',
+        ]);
     }
 
-    /**
-     * Destroy an authenticated session (Logout Admin/Petugas).
-     */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request)
     {
-        Auth::guard('web')->logout();
-
+        Auth::logout();
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('home');
     }
 }
